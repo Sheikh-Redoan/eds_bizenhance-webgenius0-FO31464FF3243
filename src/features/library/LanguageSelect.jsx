@@ -3,6 +3,7 @@ import cardBg from "../../assets/images/cardFreame.png";
 import { ChevronRight, Music } from "lucide-react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const languages = [
   {
@@ -28,6 +29,8 @@ const languages = [
 ];
 
 const LanguageSelect = () => {
+  const navigate = useNavigate(); // Initialize hook
+  
   const [titleRef, titleInView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
@@ -244,6 +247,7 @@ const LanguageSelect = () => {
                       className="text-white flex justify-center items-center gap-2 group"
                       variants={buttonVariants}
                       whileHover="hover"
+                      onClick={() => navigate(`/languages/${lang.id}`)} // Navigate on click
                     >
                       <Music size={18} className="group-hover:text-yellow-300 transition-colors" />
                       <p className="text-center justify-center text-white text-sm font-normal font-Merriweather leading-5 group-hover:text-yellow-300 transition-colors">

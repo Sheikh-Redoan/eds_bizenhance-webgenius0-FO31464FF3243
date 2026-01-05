@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
-import { Check, Crown, Hourglass } from "lucide-react";
+import { Check, Crown, HandCoins, Hourglass } from "lucide-react";
 import Button from "../../components/ui/Button";
 import buttonBG from "../../assets/images/Buttonbordersecoundary.png";
-import Input from "../../components/ui/Inout";
+import Input from "../../components/ui/Input";
 import { motion } from "framer-motion";
 import { useState } from "react";
 
@@ -46,7 +46,7 @@ const subscriptionPlans = [
   },
   {
     id: "donation",
-    icon: Crown,
+    icon: HandCoins ,
     title: "Supporter Donate",
     price: "Custom Amount",
     description: "Support future development, language content, and creative community projects.",
