@@ -132,10 +132,10 @@ const BookPlayer = () => {
 
     if (content.type === 'cover_art') {
       return (
-        <div className="h-full flex flex-col items-center justify-center text-center p-4 border-4 border-double border-yellow-600">
-           <h1 className="text-5xl font-serif mb-4 font-bold text-amber-100">{content.data.title}</h1>
-           <p className="text-xl text-amber-200 italic mb-8">{content.data.artist}</p>
-           {content.data.coverUrl && <img src={content.data.coverUrl} className="w-48 h-48 object-cover rounded shadow-lg border-2 border-amber-800" alt="Cover" />}
+        <div className="h-full flex flex-col items-center justify-center text-center p-4 ">
+           <h1 className="text-7xl font-serif mb-4 font-bold text-white text-shadow-2xl">{content.data.title}</h1>
+           <p className="text-3xl text-white italic mb-8">{content.data.artist}</p>
+           {content.data.coverUrl && <img src={content.data.coverUrl} className="w-60 h-60 object-cover rounded-full border-2 border-black shadow-2xl" alt="Cover" />}
            <div className="mt-12 text-amber-400 opacity-50 text-sm animate-pulse">
               Click to Open
            </div>
@@ -194,7 +194,6 @@ const BookPlayer = () => {
 
   return (
     <div className="book-container w-full min-h-screen flex flex-col items-center justify-center relative">
-      
       
       {/* Hidden Audio Element */}
       <audio 

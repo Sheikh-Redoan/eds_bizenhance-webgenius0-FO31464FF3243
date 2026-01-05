@@ -23,15 +23,6 @@ const AudioControls = ({ audioRef }) => {
     }
   };
 
-/*************  ✨ Windsurf Command ⭐  *************/
-/**
- * Handles a change in the volume slider, updating the Redux state and
- * applying the new volume to the audio element if it exists.
- *
- * If the volume is set above 0 while the audio is muted, this function
- * will unmute the audio.
- */
-/*******  5022a2d1-0be6-49b8-8a8e-ee1d048fd25a  *******/
   const handleVolumeChange = (e) => {
     const newVolume = Number(e.target.value);
     
