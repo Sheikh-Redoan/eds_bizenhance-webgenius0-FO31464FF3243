@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Inter:wght@400;500;600;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&display=swap");
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Metal+Mania&display=swap');
 @import url("https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Playfair+Display:ital,wght@0,700;1,700&display=swap");
+@import "tailwindcss";
 
 @theme {
   --font-OldLondon: "OldLondon", sans-serif;
@@ -15,7 +15,6 @@
   font-weight: normal;
   font-style: normal;
 }
-
 
 /* Responsive adjustments */
 @media (max-width: 1000px) {
@@ -42,6 +41,10 @@ body {
 
 .font-medieval {
   font-family: "UnifrakturMaguntia", cursive;
+}
+
+.font-MetalMania {
+  font-family: "Metal Mania", serif;
 }
 
 .font-Merriweather {
@@ -87,8 +90,8 @@ body {
 
 
 :root {
-  --book-width: 650px;
-  --book-height: 800px;
+  --book-width: 550px;
+  --book-height: 700px;
   --anim-speed: 0.8s;
 }
 

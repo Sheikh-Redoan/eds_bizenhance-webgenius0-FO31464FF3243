@@ -1,4 +1,4 @@
-// Enhanced Mock Song Data with proper audio timing
+// src/data/mockSongs.js
 export const ENHANCED_SONGS = [
   {
     id: "imagine-001",
@@ -11,6 +11,28 @@ export const ENHANCED_SONGS = [
     description: "A timeless classic about peace and unity",
     genre: "Pop",
     difficulty: "beginner",
+    quiz: [
+      {
+        question: "How do you say 'Hello' in French?",
+        options: ["Au revoir", "Bonjour", "Merci", "S'il vous plait"],
+        correctAnswer: 1
+      },
+      {
+        question: "What does 'Barajar' mean?",
+        options: ["To Shuffle", "To Dance", "To Sing", "To Jump"],
+        correctAnswer: 0
+      },
+      {
+        question: "Which word means 'Deck'?",
+        options: ["Mesa", "Baraja", "Silla", "Casa"],
+        correctAnswer: 1
+      },
+      {
+        question: "What is the message of 'Imagine'?",
+        options: ["War", "Money", "Peace and Unity", "Fame"],
+        correctAnswer: 2
+      }
+    ],
     pages: [
       {
         pageIndex: 0,
@@ -122,15 +144,6 @@ export const ENHANCED_SONGS = [
             context: "A flat surface, also used in expressions like 'lay it on the table'" 
           }
         ]
-      },
-      {
-        pageIndex: 5,
-        type: "quiz_prompt",
-        content: {
-          title: "Ready to Test Your Knowledge?",
-          description: "You've learned the lyrics and vocabulary. Now let's see how much you remember!",
-          buttonText: "Start Quiz"
-        }
       }
     ]
   },
@@ -144,6 +157,18 @@ export const ENHANCED_SONGS = [
     description: "A romantic bolero that has captured hearts worldwide",
     genre: "Bolero",
     difficulty: "intermediate",
+    quiz: [
+      {
+        question: "What does 'Bésame' mean?",
+        options: ["Hug me", "Kiss me", "Love me", "Hold me"],
+        correctAnswer: 1
+      },
+      {
+        question: "What genre is 'Bésame Mucho'?",
+        options: ["Tango", "Bolero", "Salsa", "Flamenco"],
+        correctAnswer: 1
+      }
+    ],
     pages: [
       {
         pageIndex: 0,
@@ -185,6 +210,22 @@ export const ENHANCED_SONGS = [
             target: "Bésame, bésame mucho", 
             time: 16,
             endTime: 21
+          }
+        ]
+      },
+      {
+        pageIndex: 3,
+        type: "vocab",
+        words: [
+          { 
+            word: "Bésame", 
+            translation: "Kiss me", 
+            context: "Imperative form of 'besar' (to kiss)" 
+          },
+          { 
+            word: "Mucho", 
+            translation: "A lot/Much", 
+            context: "Adverb meaning 'very much' or 'a lot'" 
           }
         ]
       }

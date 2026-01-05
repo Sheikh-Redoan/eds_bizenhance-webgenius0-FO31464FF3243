@@ -5,6 +5,7 @@ import LanguageSelect from "./features/library/LanguageSelect";
 import LanguageSongs from "./features/library/LanguageSongs";
 import BookPlayer from "./features/player/BookPlayer";
 import Quiz from "./features/quiz/Quiz";
+import QuizResults from "./features/quiz/QuizResults";
 import Membership from "./features/auth/Membership";
 import Contact from "./features/contact/Contact";
 import Login from "./features/login/Login";
@@ -46,6 +47,7 @@ function App() {
           <Route path="/listen/:songId" element={<BookPlayer />} />
           
           <Route path="/quiz/:songId" element={<Quiz />} />
+          <Route path="/quiz/:songId/results" element={<QuizResults />} />
         </Routes>
       </main>
     </div>

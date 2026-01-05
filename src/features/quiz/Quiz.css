@@ -1,0 +1,129 @@
+/* Quiz-specific styles */
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+/* Fallback fonts for custom font families */
+.font-old-london {
+  font-family: 'Old London', 'Merriweather', serif;
+}
+
+.font-merriweather {
+  font-family: 'Merriweather', serif;
+}
+
+.font-crimes-times-six {
+  font-family: 'Crimes Times Six', 'Merriweather', serif;
+}
+
+.font-metal-mania {
+  font-family: 'Metal Mania', 'Merriweather', serif;
+}
+
+.font-inter {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Quiz container styles */
+.quiz-container {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  min-height: 100vh;
+}
+
+/* Custom scrollbar for quiz content */
+.quiz-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.quiz-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.quiz-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+.quiz-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Animation for quiz transitions */
+.quiz-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Button hover effects */
+.quiz-button-hover {
+  transition: all 0.3s ease;
+}
+
+.quiz-button-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Progress bar animation */
+.quiz-progress {
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Question option styles */
+.quiz-option {
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.quiz-option:hover:not(.disabled) {
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateX(4px);
+}
+
+.quiz-option.selected {
+  border-color: #10b981;
+}
+
+.quiz-option.correct {
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-color: #10b981;
+}
+
+.quiz-option.incorrect {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  border-color: #ef4444;
+}
+
+/* Results page styles */
+.results-container {
+  background: radial-gradient(circle at center, #2d2d2d 0%, #1a1a1a 100%);
+}
+
+.results-score {
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .quiz-container {
+    padding: 1rem;
+  }
+  
+  .quiz-question {
+    font-size: 1.5rem;
+  }
+  
+  .quiz-option {
+    padding: 0.75rem;
+  }
+}

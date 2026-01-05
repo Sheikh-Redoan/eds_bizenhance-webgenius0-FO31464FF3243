@@ -1,15 +1,20 @@
+// src/features/player/BookPlayer.jsx
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/set-state-in-effect */
 import React, { useRef, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { setPage, setCurrentTime, setDuration, setIsPlaying } from './playerSlice';
 import AudioControls from './AudioControls';
-
+import Button from '../../components/ui/Button';
+import buttonBG from "../../assets/images/QuizButtonBG.png"
+import topicon from "../../assets/icons/top-icon.png"
 // Styles from the demo adapted for React
 
 
 const BookPlayer = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { currentSong, isPlaying, currentTime, currentPageIndex, autoFlip } = useSelector((state) => state.player);
   const audioRef = useRef(null);
   const [sheets, setSheets] = useState([]);
@@ -126,6 +131,11 @@ const BookPlayer = () => {
     dispatch(setPage(index));
   };
 
+  const handleStartQuiz = () => {
+    dispatch(setIsPlaying(false));
+    navigate(`/quiz/${currentSong.id}`);
+  };
+
   // Helper to render content
   const renderContent = (content) => {
     if (!content) return null;
@@ -174,15 +184,33 @@ const BookPlayer = () => {
 
     if (content.type === 'vocab') {
         return (
-            <div className="text-left p-2">
-                <h2 className="font-serif text-3xl mb-6 text-center text-amber-900 opacity-70">Vocabulary</h2>
-                {content.words.map((vocab, k) => (
-                  <div key={k} className="bg-orange-50/50 p-3 mb-3 rounded border-b border-orange-200">
-                    <span className="font-bold text-amber-900 text-lg">{vocab.word}</span> 
-                    <span className="text-sm text-gray-600"> → {vocab.translation}</span>
-                    <p className="text-xs italic mt-1 text-gray-500">"{vocab.context}"</p>
-                  </div>
-                ))}
+            <div className="text-left p-2 h-full flex flex-col">
+                <div className="flex-1 overflow-y-auto custom-scrollbar">
+                    <h2 className="font-serif text-3xl mb-6 text-center text-amber-900 opacity-70">Vocabulary</h2>
+                    {content.words.map((vocab, k) => (
+                      <div key={k} className="bg-orange-50/50 p-3 mb-3 rounded border-b border-orange-200">
+                        <span className="font-bold text-amber-900 text-lg">{vocab.word}</span> 
+                        <span className="text-sm text-gray-600"> → {vocab.translation}</span>
+                        <p className="text-xs italic mt-1 text-gray-500">"{vocab.context}"</p>
+                      </div>
+                    ))}
+                </div>
+
+                {/* Added Button directly here */}
+                {currentSong.quiz && (
+                    <div className="mt-4 flex justify-center pb-4 pt-2 border-t border-amber-900/10">
+                        <Button 
+                            className="text-lg  font-Merriweather p-10 flex items-center gap-2 text-white w-[250px] text-center justify-center transform hover:scale-105"
+                            style={{backgroundImage: `url(${buttonBG})`}}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleStartQuiz();
+                            }}
+                        >
+                           <img src={topicon} alt="" /> Start Quiz
+                        </Button>
+                    </div>
+                )}
             </div>
         );
     }
