@@ -20,7 +20,7 @@ const SONGS_DATA = [
     description: "A timeless classic about peace and unity",
     genre: "Pop",
     difficulty: "beginner",
-    image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=200&fit=crop", // Using Unsplash placeholder
+    image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=200&fit=crop",
     coverColor: "from-orange-200/20 to-emerald-200/20",
   },
   {
@@ -55,16 +55,16 @@ const SONGS_DATA = [
   },
 ];
 
-// Simplified WaveformVisual without complex animations
+// Simplified WaveformVisual
 const WaveformVisual = ({ isPlaying = false }) => {
   return (
-    <div className="flex items-center gap-[2px] h-8 w-full opacity-50">
-      {[...Array(15)].map((_, i) => (
+    <div className="flex items-center gap-[1px] sm:gap-[2px] h-6 sm:h-8 w-full opacity-50">
+      {[...Array(12)].map((_, i) => (
         <div
           key={i}
-          className="w-1 bg-gradient-to-t from-[#D4B483] to-[#8B7355] rounded-full"
+          className="w-[1px] sm:w-1 bg-gradient-to-t from-[#D4B483] to-[#8B7355] rounded-full"
           style={{
-            height: `${Math.max(20, Math.random() * 100)}%`,
+            height: `${Math.max(15, Math.random() * 100)}%`,
           }}
         />
       ))}
@@ -72,7 +72,7 @@ const WaveformVisual = ({ isPlaying = false }) => {
   );
 };
 
-// Simplified SongCard - removing complex animations that might cause issues
+// Responsive SongCard
 const SongCard = ({ song, onClick, index }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -91,8 +91,8 @@ const SongCard = ({ song, onClick, index }) => {
       }
     }),
     hover: {
-      y: -8,
-      boxShadow: "0 20px 40px rgba(0, 0, 0, 0.3)",
+      y: -6,
+      boxShadow: "0 15px 30px rgba(0, 0, 0, 0.25)",
       transition: {
         duration: 0.2,
       }
@@ -114,12 +114,12 @@ const SongCard = ({ song, onClick, index }) => {
       variants={cardVariants}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
-      className="relative w-full max-w-[300px] cursor-pointer"
+      className="relative w-full cursor-pointer"
       onClick={onClick}
     >
       {/* Frame Container */}
       <div
-        className="border-[20px] border-[#5d4037] rounded-lg shadow-lg relative overflow-hidden bg-transparent"
+        className="border-[10px] sm:border-[14px] lg:border-[20px] border-[#5d4037] rounded-lg shadow-lg relative overflow-hidden bg-transparent w-full"
         style={{
           borderImage: `url(${cardBg}) 30 round`,
         }}
@@ -128,24 +128,24 @@ const SongCard = ({ song, onClick, index }) => {
         <div className="bg-[#FFF1E0] flex flex-col h-full relative overflow-hidden">
           
           {/* Image Section */}
-          <div className="relative h-44 w-full shrink-0 overflow-hidden">
+          <div className="relative h-32 sm:h-36 md:h-40 lg:h-44 w-full shrink-0 overflow-hidden">
             <div className="w-full h-full relative">
               <div className={`absolute inset-0 bg-gradient-to-br ${song.coverColor} opacity-70`} />
               <motion.img
                 src={song.image}
                 alt={song.title}
                 className="w-full h-full object-cover"
-                animate={{ scale: isHovered ? 1.1 : 1 }}
+                animate={{ scale: isHovered ? 1.05 : 1 }}
                 transition={{ duration: 0.5 }}
               />
             </div>
             
             {/* Difficulty Badge */}
             <div 
-              className="absolute top-2 right-0 px-3 py-1 rounded-l-md shadow-md z-10"
+              className="absolute top-1 sm:top-2 right-0 px-2 sm:px-3 py-0.5 sm:py-1 rounded-l-md shadow-md z-10"
               style={{ backgroundColor: difficultyColor[song.difficulty] + "CC" }}
             >
-              <span className="text-white text-[10px] font-Merriweather uppercase tracking-wide">
+              <span className="text-white text-[8px] xs:text-[9px] sm:text-[10px] font-Merriweather uppercase tracking-wide">
                 {song.difficulty}
               </span>
             </div>
@@ -153,49 +153,49 @@ const SongCard = ({ song, onClick, index }) => {
           </div>
 
           {/* Details Section */}
-          <div className="px-4 pb-4 pt-1 flex flex-col gap-3 flex-1">
+          <div className="px-3 sm:px-4 pb-3 sm:pb-4 pt-1 flex flex-col gap-2 sm:gap-3 flex-1">
             {/* Header */}
             <div className="relative z-10">
-              <h3 className="text-[#3F291B] text-xl font-Merriweather font-bold truncate">
+              <h3 className="text-[#3F291B] text-base sm:text-lg md:text-xl font-Merriweather font-bold truncate">
                 {song.title}
               </h3>
-              <div className="flex items-center gap-2 mt-0.5">
-                <Music size={12} className="text-[#8B7355]" />
-                <p className="text-[#5D4037] text-sm font-Merriweather font-medium truncate italic">
+              <div className="flex items-center gap-1 sm:gap-2 mt-0.5">
+                <Music size={10} smSize={12} className="text-[#8B7355] w-2 h-2 sm:w-3 sm:h-3" />
+                <p className="text-[#5D4037] text-xs sm:text-sm font-Merriweather font-medium truncate italic">
                   {song.artist}
                 </p>
               </div>
             </div>
 
             {/* Description */}
-            <div className="relative z-10 min-h-[40px]">
-              <p className="text-[#5D4037]/90 text-[11px] font-Merriweather leading-relaxed line-clamp-2">
+            <div className="relative z-10 min-h-[32px] sm:min-h-[40px]">
+              <p className="text-[#5D4037]/90 text-[9px] xs:text-[10px] sm:text-[11px] font-Merriweather leading-relaxed line-clamp-2">
                 {song.description}
               </p>
             </div>
 
             {/* Footer / Controls */}
-            <div className="mt-auto flex flex-col gap-2 relative z-10 border-t border-[#8B7355]/30 pt-2">
+            <div className="mt-auto flex flex-col gap-1 sm:gap-2 relative z-10 border-t border-[#8B7355]/30 pt-1 sm:pt-2">
               <div className="flex justify-between items-end">
-                <span className="px-2 py-0.5 bg-[#755F48]/10 rounded text-[#755F48] text-[10px] font-bold uppercase tracking-wider">
+                <span className="px-1.5 sm:px-2 py-0.5 bg-[#755F48]/10 rounded text-[#755F48] text-[8px] xs:text-[9px] sm:text-[10px] font-bold uppercase tracking-wider">
                   {song.genre}
                 </span>
                 
                 {/* Visualizer */}
-                <div className="w-20">
+                <div className="w-16 sm:w-20">
                   <WaveformVisual />
                 </div>
               </div>
 
               {/* Action Button Area */}
-              <div className="flex items-center justify-between w-full mt-1">
+              <div className="flex items-center justify-between w-full mt-0.5 sm:mt-1">
                 <Button 
-                  className='py-3 px-4 w-full mx-auto group'
-                  style={{ backgroundImage: `url(${buttonBG})` }}
+                  className='py-2 sm:py-3 px-3 sm:px-4 w-full mx-auto group'
+                  style={{ backgroundImage: `url(${buttonBG})`, backgroundSize: 'contain' }}
                 >
-                  <span className="text-[#3F291B] text-xs font-Merriweather font-bold group-hover:text-[#8B7355] transition-colors flex items-center justify-center gap-1">
-                    Open Song Page
-                    <ChevronRight size={14} />
+                  <span className="text-[#3F291B] text-[10px] xs:text-xs sm:text-xs font-Merriweather font-bold group-hover:text-[#8B7355] transition-colors flex items-center justify-center gap-0.5 sm:gap-1">
+                    <span className="truncate">Open Song</span>
+                    <ChevronRight size={10} smSize={14} className="w-2 h-2 sm:w-3 sm:h-3 flex-shrink-0" />
                   </span>
                 </Button>
               </div>
@@ -286,32 +286,33 @@ const LanguageSongs = () => {
 
   return (
     <div 
-      className="min-h-[calc(100vh-80px)] w-full py-12 px-4 md:px-8 flex flex-col items-center gap-12"
+      className="min-h-[calc(100vh-80px)] w-full py-6 sm:py-8 md:py-10 lg:py-12 px-3 sm:px-4 md:px-6 lg:px-8 flex flex-col items-center gap-6 sm:gap-8 md:gap-10 lg:gap-12"
       style={{
         minHeight: "calc(100vh - 80px)"
       }}
     >
       {/* Header Section */}
       <motion.div 
-        className="flex flex-col items-center gap-6 text-center"
+        className="flex flex-col items-center gap-3 sm:gap-4 md:gap-6 text-center w-full px-2"
         variants={titleVariants}
         initial="hidden"
         animate="visible"
       >
-        <h1 className="text-white text-5xl md:text-7xl font-OldLondon">
+        <h1 className="text-white text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-OldLondon leading-tight">
           Explore {languageName}
         </h1>
         
-        <p className="text-white/80 text-lg md:text-xl font-Merriweather max-w-2xl">
+        <p className="text-white/80 text-sm sm:text-base md:text-lg lg:text-xl font-Merriweather max-w-xs sm:max-w-sm md:max-w-lg lg:max-w-2xl leading-snug sm:leading-normal">
           Discover songs and start your language learning journey
         </p>
       </motion.div>
 
       {/* Filters Bar */}
-      <div className="w-full max-w-5xl flex flex-col md:flex-row gap-4 items-center justify-center">
+      <div className="w-full max-w-5xl flex flex-col sm:flex-row gap-3 sm:gap-4 items-center justify-center">
         {/* Search Component */}
-        <div className="w-full md:w-96">
+        <div className="w-full sm:w-48 md:w-64 lg:w-80 xl:w-96">
           <SearchInput 
+          className='max-[640px]:bg-[#E4C395] max-[640px]:shadow-2xl'
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search songs..."
@@ -319,8 +320,9 @@ const LanguageSongs = () => {
         </div>
 
         {/* Difficulty Select */}
-        <div className="w-full md:w-64">
+        <div className="w-full sm:w-40 md:w-48 lg:w-56 xl:w-64">
           <Select 
+          className='max-[640px]:bg-[#1C1009] max-[640px]:shadow-2xl'
             placeholder="All Difficulties"
             options={difficulties}
             value={selectedDifficulty}
@@ -329,8 +331,9 @@ const LanguageSongs = () => {
         </div>
 
         {/* Genre Select */}
-        <div className="w-full md:w-64">
+        <div className="w-full sm:w-40 md:w-48 lg:w-56 xl:w-64">
           <Select 
+          className='max-[640px]:bg-[#4F3120] max-[640px]:shadow-2xl'
             placeholder="All Genres"
             options={genres}
             value={selectedGenre}
@@ -342,47 +345,49 @@ const LanguageSongs = () => {
         {(searchQuery || selectedDifficulty || selectedGenre) && (
           <Button
             onClick={clearFilters}
-            className="p-2 bg-transparent border border-[#B28769] hover:bg-[#B28769]/20 "
+            className="p-1.5 sm:p-2 bg-transparent border border-[#B28769] hover:bg-[#B28769]/20 w-full sm:w-auto justify-center"
             style={{ backgroundImage: `none` }}
           >
-            <X size={18} className="text-white" />
+            <X size={16} smSize={18} className="text-white w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="ml-1 sm:ml-2 text-white text-xs sm:text-sm font-Merriweather sm:block hidden">Clear</span>
           </Button>
         )}
       </div>
 
       {/* Results Counter */}
-      <div className="text-white/60 font-Merriweather">
+      <div className="text-white/60 font-Merriweather text-sm sm:text-base">
         Found {filteredSongs.length} {filteredSongs.length === 1 ? 'song' : 'songs'}
       </div>
 
       {/* Songs Grid */}
       <motion.div 
-        className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 justify-items-center"
+        className="w-full max-w-7xl grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 justify-items-center px-2 sm:px-4"
         variants={gridVariants}
         initial="hidden"
         animate="visible"
       >
         {filteredSongs.length > 0 ? (
           filteredSongs.map((song, index) => (
-            <SongCard
-              key={song.id}
-              song={song}
-              index={index}
-              onClick={() => navigate(`/listen/${song.id}`)}
-            />
+            <div key={song.id} className="w-full max-w-xs sm:max-w-sm lg:max-w-full">
+              <SongCard
+                song={song}
+                index={index}
+                onClick={() => navigate(`/listen/${song.id}`)}
+              />
+            </div>
           ))
         ) : (
-          <div className="col-span-full text-center py-12">
-            <Music size={48} className="text-white/40 mx-auto mb-4" />
-            <h3 className="text-white/60 text-xl font-Merriweather mb-2">
+          <div className="col-span-full text-center py-8 sm:py-12 md:py-16 px-4">
+            <Music size={32} smSize={40} mdSize={48} className="text-white/40 mx-auto mb-3 sm:mb-4" />
+            <h3 className="text-white/60 text-lg sm:text-xl md:text-2xl font-Merriweather mb-2">
               No songs found
             </h3>
-            <p className="text-white/40 font-Merriweather mb-4">
+            <p className="text-white/40 font-Merriweather text-sm sm:text-base mb-4 sm:mb-6 max-w-md mx-auto">
               Try adjusting your search or filters
             </p>
             <Button
               onClick={clearFilters}
-              className="px-6 py-2 bg-transparent border border-[#B28769] text-white hover:bg-[#B28769]/20"
+              className="px-4 sm:px-6 py-2 sm:py-2 bg-transparent border border-[#B28769] text-white hover:bg-[#B28769]/20 text-sm sm:text-base"
             >
               Clear All Filters
             </Button>
