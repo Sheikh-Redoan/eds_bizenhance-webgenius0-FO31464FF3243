@@ -7,24 +7,29 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const languages = [
   {
-    id: "japanese",
-    name: "Japanese",
+    id: "Spanish",
+    name: "Spanish",
     imagesrc: "src/assets/images/languageImages/Japnasse.png",
   },
   {
-    id: "korean",
-    name: "Korean",
+    id: "French",
+    name: "French",
     imagesrc: "src/assets/images/languageImages/Korean.png",
   },
   {
-    id: "spanish",
-    name: "Spanish",
+    id: "Portuguese",
+    name: "Portuguese",
     imagesrc: "src/assets/images/languageImages/Spanish.png",
   },
   {
-    id: "italian",
-    name: "Italian",
+    id: "Russian",
+    name: "Russian",
     imagesrc: "src/assets/images/languageImages/Japnasse.png",
+  },
+  {
+    id: "Japanese",
+    name: "Japanese",
+    imagesrc: "src/assets/images/languageImages/Korean.png",
   },
 ];
 

@@ -243,3 +243,48 @@ input[type="range"]::-moz-range-thumb {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
   cursor: pointer;
 }
+
+/* Add to existing CSS */
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.perspective {
+  perspective: 1000px;
+}
+
+/* 3D Card specific styles */
+.card-3d {
+  transform-style: preserve-3d;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Responsive height adjustments */
+@media (min-width: 640px) {
+  .card-container {
+    height: 350px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .card-container {
+    height: 400px;
+  }
+}
+
+/* Improve font rendering */
+.font-OldLondon {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: 1px;
+}
+
+/* Smooth transitions */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent text selection during animation */
+.no-select {
+  user-select: none;
+}

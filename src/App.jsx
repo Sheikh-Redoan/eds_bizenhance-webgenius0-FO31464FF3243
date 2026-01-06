@@ -15,7 +15,7 @@ import ForgotPassword from "./features/forgotpassword/ForgotPassword";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setSong } from "./features/player/playerSlice";
-import { ENHANCED_SONGS } from "./data/mockSongs"; // Updated import
+import { ENHANCED_SONGS } from "./data/mockSongs";
 import main_bg from "./assets/main-bg1.png";
 
 function App() {
@@ -30,7 +30,7 @@ function App() {
     <div className="min-h-screen bg-wood-dark font-sans text-paper-light bg-[#E4C395] bg-cover bg-no-repeat">
       <Navbar />
       <main
-        className="bg-no-repeat bg-center bg-contain min-h-screen pt-20.25"
+        className="bg-no-repeat bg-center bg-contain min-h-screen pt-20.25 max-[1024px]:bg-cover"
         style={{ backgroundImage: `url(${main_bg})` }}
       >
         <Routes>
