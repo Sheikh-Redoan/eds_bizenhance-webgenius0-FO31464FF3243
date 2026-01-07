@@ -1,4 +1,3 @@
-// src/features/player/BookPlayer.jsx
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/set-state-in-effect */
 import React, { useRef, useEffect, useState } from 'react';
@@ -9,27 +8,35 @@ import AudioControls from './AudioControls';
 import Button from '../../components/ui/Button';
 import buttonBG from "../../assets/images/QuizButtonBG.png"
 import topicon from "../../assets/icons/top-icon.png"
-// Styles from the demo adapted for React
-
 
 const BookPlayer = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { currentSong, isPlaying, currentTime, currentPageIndex, autoFlip } = useSelector((state) => state.player);
+  const { currentSong, isPlaying, currentTime, currentPageIndex } = useSelector((state) => state.player);
   const audioRef = useRef(null);
   const [sheets, setSheets] = useState([]);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Process song data into sheets (Front/Back pairs)
+  // Check if mobile on mount and resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Process song data into sheets
   useEffect(() => {
     if (!currentSong) return;
 
-    // Flatten pages from mock data into a linear array to map to Book Sheets
-    // Assuming currentSong.pages is an array of content objects
     const contentPages = currentSong.pages || [];
     const generatedSheets = [];
     
     // Create Cover Sheet (Sheet 0)
-    // Front: Cover Art, Back: Dedication/Empty
     generatedSheets.push({
       index: 0,
       front: { type: 'cover_art', data: currentSong },
@@ -37,7 +44,6 @@ const BookPlayer = () => {
     });
 
     // Create Content Sheets
-    // Map content pages to front/back of subsequent sheets
     for (let i = 0; i < contentPages.length; i += 2) {
       const sheetIndex = Math.floor(i / 2) + 1;
       generatedSheets.push({
@@ -69,47 +75,6 @@ const BookPlayer = () => {
     if (audioRef.current) {
       const time = audioRef.current.currentTime;
       dispatch(setCurrentTime(time));
-      
-      // Auto-flip logic
-      if (autoFlip && currentSong) {
-        // Find the page containing the current lyric
-        // This requires searching through all pages to find the active lyric time
-        let targetPageIndex = -1;
-        
-        currentSong.pages.forEach((page, pIndex) => {
-          if (page.type === 'lyrics' && page.lines) {
-            const hasActiveLine = page.lines.some(line => 
-              time >= line.time && time < (line.endTime || line.time + 5) // Simplified duration logic
-            );
-            // If this page has the active line, we need to show it
-            if (hasActiveLine) {
-               // Calculate which sheet index this page belongs to
-               // Pages in data: 0, 1, 2...
-               // Sheets: Cover(0), Sheet1(Page0-Front, Page1-Back), Sheet2(Page2-Front...)
-               // Actually, let's align with the loop above:
-               // contentPages[0] is on Sheet 1 Front.
-               // contentPages[1] is on Sheet 1 Back.
-               // contentPages[2] is on Sheet 2 Front.
-               // So: Sheet Index = Math.floor(pIndex / 2) + 1
-               targetPageIndex = Math.floor(pIndex / 2) + 1;
-            }
-          }
-        });
-
-        // Determine if we need to be on the left (flipped) or right
-        // If targetPageIndex is found, we should ensure sheets up to that index are flipped?
-        // Actually, if content is on Sheet 1 Front (Right side), Sheet 0 should be flipped (Cover open).
-        // If content is on Sheet 1 Back (Left side), Sheet 1 should be flipped.
-        
-        if (targetPageIndex !== -1) {
-             // Logic: To see Sheet X Front, we need Sheet X-1 Flipped.
-             // To see Sheet X Back, we need Sheet X Flipped.
-             // For simplicity in this demo, we just flip to the sheet index.
-             if (currentPageIndex !== targetPageIndex) {
-                 // Don't flip wildly; precise logic would go here
-             }
-        }
-      }
     }
   };
 
@@ -128,7 +93,9 @@ const BookPlayer = () => {
   };
 
   const flipToSheet = (index) => {
-    dispatch(setPage(index));
+    if (index >= 0 && index < sheets.length) {
+      dispatch(setPage(index));
+    }
   };
 
   const handleStartQuiz = () => {
@@ -136,93 +103,229 @@ const BookPlayer = () => {
     navigate(`/quiz/${currentSong.id}`);
   };
 
-  // Helper to render content
-  const renderContent = (content) => {
+  // Render content for mobile
+  const renderMobileContent = (content, isFront = true) => {
     if (!content) return null;
 
     if (content.type === 'cover_art') {
       return (
-        <div className="h-full flex flex-col items-center justify-center text-center p-4 ">
-           <h1 className="text-7xl font-serif mb-4 font-bold text-white text-shadow-2xl">{content.data.title}</h1>
-           <p className="text-3xl text-white italic mb-8">{content.data.artist}</p>
-           {content.data.coverUrl && <img src={content.data.coverUrl} className="w-60 h-60 object-cover rounded-full border-2 border-black shadow-2xl" alt="Cover" />}
-           <div className="mt-12 text-amber-400 opacity-50 text-sm animate-pulse">
-              Click to Open
-           </div>
+        <div className="cover-mobile">
+          <h1 className="cover-title-mobile">{content.data.title}</h1>
+          <p className="cover-artist-mobile">{content.data.artist}</p>
+          {content.data.coverUrl && (
+            <img 
+              src={content.data.coverUrl} 
+              className="cover-image-mobile" 
+              alt="Cover" 
+            />
+          )}
+          <div className="text-amber-600 mt-4 text-sm animate-pulse">
+            Swipe or use arrows to navigate
+          </div>
         </div>
       );
     }
 
     if (content.type === 'dedication') {
-        return (
-            <div className="h-full flex items-center justify-center text-gray-500 italic">
-                <p>Enjoy the music...</p>
-            </div>
-        );
+      return (
+        <div className="flex items-center justify-center h-full text-gray-600 italic text-center p-4">
+          <p>Enjoy the music and language journey...</p>
+        </div>
+      );
     }
 
     if (content.type === 'lyrics') {
       return (
-        <div className="flex-1 flex flex-col justify-center">
-            <h3 className="text-2xl font-bold text-amber-900 mb-6 font-serif opacity-50">Lyrics</h3>
+        <div className="flex-1 flex flex-col p-2">
+          <h3 className="text-xl font-bold text-amber-900 mb-4 font-serif text-center">
+            Lyrics
+          </h3>
+          <div className="space-y-3 overflow-y-auto flex-1">
             {content.lines.map((line, idx) => {
-                const isActive = currentTime >= line.time && currentTime < (content.lines[idx+1]?.time || line.time + 10);
-                return (
-                    <div 
-                        key={idx} 
-                        className={`lyric-line ${isActive ? 'active' : ''}`}
-                        onClick={(e) => { e.stopPropagation(); handleSeek(line.time); }}
-                    >
-                        <p className="text-xs text-gray-500 italic">{line.en}</p>
-                        <p className="text-lg text-amber-900 font-serif">{line.target}</p>
-                    </div>
-                );
+              const isActive = currentTime >= line.time && currentTime < (content.lines[idx+1]?.time || line.time + 10);
+              return (
+                <div 
+                  key={idx} 
+                  className={`lyric-line-mobile ${isActive ? 'active' : ''}`}
+                  onClick={(e) => { e.stopPropagation(); handleSeek(line.time); }}
+                >
+                  <div className="english">{line.en}</div>
+                  <div className="target">{line.target}</div>
+                </div>
+              );
             })}
+          </div>
         </div>
       );
     }
 
     if (content.type === 'vocab') {
-        return (
-            <div className="text-left p-2 h-full flex flex-col">
-                <div className="flex-1 overflow-y-auto custom-scrollbar">
-                    <h2 className="font-serif text-3xl mb-6 text-center text-amber-900 opacity-70">Vocabulary</h2>
-                    {content.words.map((vocab, k) => (
-                      <div key={k} className="bg-orange-50/50 p-3 mb-3 rounded border-b border-orange-200">
-                        <span className="font-bold text-amber-900 text-lg">{vocab.word}</span> 
-                        <span className="text-sm text-gray-600"> → {vocab.translation}</span>
-                        <p className="text-xs italic mt-1 text-gray-500">"{vocab.context}"</p>
-                      </div>
-                    ))}
+      return (
+        <div className="flex flex-col h-full">
+          <div className="flex-1 overflow-y-auto">
+            <h2 className="text-xl font-bold text-amber-900 mb-4 text-center">
+              Vocabulary
+            </h2>
+            <div className="space-y-3">
+              {content.words.map((vocab, k) => (
+                <div key={k} className="vocab-card-mobile">
+                  <div className="vocab-word">{vocab.word}</div>
+                  <div className="vocab-translation">→ {vocab.translation}</div>
+                  <div className="vocab-context">"{vocab.context}"</div>
                 </div>
-
-                {/* Added Button directly here */}
-                {currentSong.quiz && (
-                    <div className="mt-4 flex justify-center pb-4 pt-2 border-t border-amber-900/10">
-                        <Button 
-                            className="text-lg  font-Merriweather p-10 flex items-center gap-2 text-white w-[250px] text-center justify-center transform hover:scale-105"
-                            style={{backgroundImage: `url(${buttonBG})`}}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleStartQuiz();
-                            }}
-                        >
-                           <img src={topicon} alt="" /> Start Quiz
-                        </Button>
-                    </div>
-                )}
+              ))}
             </div>
-        );
+          </div>
+
+          {currentSong.quiz && (
+            <div className="mt-4 pt-4 border-t border-amber-900/20">
+              <button
+                className="quiz-button-mobile"
+                style={{
+                  backgroundImage:`url(${buttonBG})`,
+                  backgroundSize: 'contain',
+                  backgroundRepeat: 'no-repeat'
+              }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleStartQuiz();
+                }}
+              >
+                <img src={topicon} alt="" className="w-5 h-5" />
+                <span>Start Quiz</span>
+              </button>
+            </div>
+          )}
+        </div>
+      );
     }
 
-    return <div className="flex items-center justify-center h-full text-4xl text-gray-300">~</div>;
+    return (
+      <div className="flex items-center justify-center h-full text-2xl text-gray-400">
+        ~
+      </div>
+    );
   };
 
-  if (!currentSong) return <div className="min-h-screen flex items-center justify-center text-amber-100 bg-gray-900">Loading Book...</div>;
+  // Render content for desktop (3D book)
+  const renderDesktopContent = (content, isFront = true) => {
+    if (!content) return null;
+
+    if (content.type === 'cover_art') {
+      return (
+        <div className="h-full flex flex-col items-center justify-center text-center p-4">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif mb-4 font-bold text-white text-shadow-2xl">
+            {content.data.title}
+          </h1>
+          <p className="text-2xl md:text-3xl text-white italic mb-8">
+            {content.data.artist}
+          </p>
+          {content.data.coverUrl && (
+            <img 
+              src={content.data.coverUrl} 
+              className="w-48 h-48 md:w-56 md:h-56 lg:w-60 lg:h-60 object-cover rounded-full border-2 border-black shadow-2xl" 
+              alt="Cover" 
+            />
+          )}
+          <div className="mt-8 md:mt-12 text-amber-400 opacity-50 text-sm animate-pulse">
+            Click to Open
+          </div>
+        </div>
+      );
+    }
+
+    if (content.type === 'dedication') {
+      return (
+        <div className="h-full flex items-center justify-center text-gray-500 italic text-lg">
+          <p>Enjoy the music...</p>
+        </div>
+      );
+    }
+
+    if (content.type === 'lyrics') {
+      return (
+        <div className="flex-1 flex flex-col justify-center p-2 md:p-4">
+          <h3 className="text-xl md:text-2xl font-bold text-amber-900 mb-4 md:mb-6 font-serif opacity-50">
+            Lyrics
+          </h3>
+          <div className="space-y-2 md:space-y-3 overflow-y-auto max-h-[55vh]">
+            {content.lines.map((line, idx) => {
+              const isActive = currentTime >= line.time && currentTime < (content.lines[idx+1]?.time || line.time + 10);
+              return (
+                <div 
+                  key={idx} 
+                  className={`lyric-line ${isActive ? 'active' : ''}`}
+                  onClick={(e) => { e.stopPropagation(); handleSeek(line.time); }}
+                >
+                  <p className="text-sm md:text-base text-gray-500 italic">{line.en}</p>
+                  <p className="text-base md:text-lg text-amber-900 font-serif">{line.target}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    if (content.type === 'vocab') {
+      return (
+        <div className="text-left p-2 md:p-3 h-full flex flex-col">
+          <div className="flex-1 overflow-y-auto custom-scrollbar">
+            <h2 className="font-serif text-xl md:text-2xl lg:text-3xl mb-4 md:mb-5 lg:mb-6 text-center text-amber-900 opacity-70">
+              Vocabulary
+            </h2>
+            {content.words.map((vocab, k) => (
+              <div key={k} className="vocab-card">
+                <span className="font-bold text-amber-900 text-base md:text-lg">
+                  {vocab.word}
+                </span> 
+                <span className="text-sm md:text-base text-gray-600 ml-2">
+                  → {vocab.translation}
+                </span>
+                <p className="text-xs md:text-sm italic mt-1 text-gray-500">
+                  "{vocab.context}"
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {currentSong.quiz && (
+            <div className="mt-4 flex justify-center pb-4 pt-2 border-t border-amber-900/10">
+              <Button 
+                className="text-base md:text-lg font-Merriweather p-6 md:p-8 lg:p-10 flex items-center gap-2 text-white w-full max-w-[200px] md:max-w-[220px] lg:max-w-[250px] text-center justify-center transform hover:scale-105 transition-transform"
+                style={{backgroundImage: `url(${buttonBG})`, backgroundSize: 'contain'}}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleStartQuiz();
+                }}
+              >
+                <img src={topicon} alt="" className="w-4 h-4 md:w-5 md:h-5" />
+                Start Quiz
+              </Button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex items-center justify-center h-full text-3xl md:text-4xl text-gray-300">
+        ~
+      </div>
+    );
+  };
+
+  if (!currentSong) {
+    return (
+      <div className="loading-book">
+        <div className="loading-spinner"></div>
+        <p>Loading Book...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="book-container w-full min-h-screen flex flex-col items-center justify-center relative">
-      
+    <div className="book-container">
       {/* Hidden Audio Element */}
       <audio 
         ref={audioRef} 
@@ -233,36 +336,90 @@ const BookPlayer = () => {
         preload="auto"
       />
 
-      {/* 3D Book Stage */}
-      <div id="book-stage">
-        {sheets.map((sheet, idx) => {
-            // Z-index logic: Earlier pages need higher z-index when stacked on right
-            // When flipped, they need higher z-index on left.
-            const zIndex = idx === currentPageIndex ? 10 : (50 - Math.abs(currentPageIndex - idx));
-            const isFlipped = idx <= currentPageIndex - 1; // If current index is 1, sheet 0 is flipped.
-
-            return (
-                <div 
-                    key={idx} 
-                    className={`page ${isFlipped ? 'flipped' : ''}`}
-                    style={{ zIndex: isFlipped ? idx : 50 - idx }}
-                    onClick={() => flipToSheet(isFlipped ? idx : idx + 1)}
-                >
-                    <div className={`front ${sheet.front.type === 'cover_art' ? 'cover-front' : ''}`}>
-                        {renderContent(sheet.front)}
-                        <div className="absolute bottom-4 right-6 text-gray-400 text-xs italic">{idx * 2 + 1}</div>
-                    </div>
-                    <div className={`back ${sheet.back.type === 'cover_art' ? 'cover-back' : ''}`}>
-                        {renderContent(sheet.back)}
-                        <div className="absolute bottom-4 left-6 text-gray-400 text-xs italic">{idx * 2 + 2}</div>
-                    </div>
-                </div>
-            );
-        })}
-      </div>
-
-      {/* Embedded Player Controls */}
+      {/* Audio Controls - positioned differently for mobile/desktop */}
       <AudioControls audioRef={audioRef} />
+
+      {/* Mobile Interface */}
+      {isMobile ? (
+        <>
+          {/* Page Indicator */}
+          <div className="page-indicator">
+            Page {currentPageIndex + 1} of {sheets.length}
+          </div>
+
+          {/* Navigation Arrows */}
+          <div className="mobile-navigation">
+            {currentPageIndex > 0 && (
+              <button 
+                className="nav-button"
+                onClick={() => flipToSheet(currentPageIndex - 1)}
+                aria-label="Previous page"
+              >
+                ←
+              </button>
+            )}
+            {currentPageIndex < sheets.length - 1 && (
+              <button 
+                className="nav-button"
+                onClick={() => flipToSheet(currentPageIndex + 1)}
+                aria-label="Next page"
+              >
+                →
+              </button>
+            )}
+          </div>
+
+          {/* Swipe Areas for Touch Navigation */}
+          <div 
+            className="swipe-area swipe-left"
+            onClick={() => currentPageIndex > 0 && flipToSheet(currentPageIndex - 1)}
+          />
+          <div 
+            className="swipe-area swipe-right"
+            onClick={() => currentPageIndex < sheets.length - 1 && flipToSheet(currentPageIndex + 1)}
+          />
+
+          {/* Current Page Content */}
+          <div className="page-mobile">
+            {sheets[currentPageIndex] && renderMobileContent(
+              sheets[currentPageIndex].front, 
+              true
+            )}
+          </div>
+        </>
+      ) : (
+        /* Desktop 3D Book Interface */
+        <>
+          <div id="book-stage">
+            {sheets.map((sheet, idx) => {
+              const zIndex = idx === currentPageIndex ? 10 : (50 - Math.abs(currentPageIndex - idx));
+              const isFlipped = idx <= currentPageIndex - 1;
+
+              return (
+                <div 
+                  key={idx} 
+                  className={`page ${isFlipped ? 'flipped' : ''}`}
+                  style={{ zIndex: isFlipped ? idx : 50 - idx }}
+                  onClick={() => flipToSheet(isFlipped ? idx : idx + 1)}
+                >
+                  <div className={`front ${sheet.front.type === 'cover_art' ? 'cover-front' : ''}`}>
+                    {renderDesktopContent(sheet.front, true)}
+                    <div className="page-number right">
+                      {idx * 2 + 1}
+                    </div>
+                  </div>
+                  <div className={`back ${sheet.back.type === 'cover_art' ? 'cover-back' : ''}`}>
+                    {renderDesktopContent(sheet.back, false)}
+                    <div className="page-number left">
+                      {idx * 2 + 2}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 };

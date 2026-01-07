@@ -162,33 +162,34 @@ const Contact = () => {
 
   return (
     <div
-      className="max-w-4xl mx-auto p-8 flex flex-col items-center"
-      style={{ height: "calc(100vh - 81px)" }}
+      className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex flex-col items-center justify-center min-h-[calc(100vh-81px)]"
     >
       {/* Success Message */}
       {isSubmitted && (
         <motion.div
-          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
           <motion.div
-            className="bg-[#755F48] p-8 rounded-lg border-2 border-[#B28769] max-w-md mx-4"
+            className="bg-[#755F48] p-6 sm:p-8 rounded-lg border-2 border-[#B28769] max-w-md w-full mx-4"
             variants={successVariants}
             initial="hidden"
             animate="visible"
           >
             <div className="text-center">
               <motion.div
-                className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4"
+                className="w-16 h-16 sm:w-20 sm:h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4"
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ duration: 0.5 }}
               >
-                <CheckCircle size={40} className="text-white" />
+                <CheckCircle size={32} className="text-white sm:size-10" />
               </motion.div>
-              <h3 className="text-white text-2xl font-OldLondon mb-2">Message Sent!</h3>
-              <p className="text-white/80 font-Merriweather mb-4">
+              <h3 className="text-white text-xl sm:text-2xl font-OldLondon mb-2">
+                Message Sent!
+              </h3>
+              <p className="text-white/80 font-Merriweather text-sm sm:text-base mb-4">
                 Thank you for contacting us. We'll get back to you soon!
               </p>
             </div>
@@ -197,17 +198,17 @@ const Contact = () => {
       )}
 
       <motion.div
-        className="w-full"
+        className="w-full max-w-4xl"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-        <motion.div variants={itemVariants} className="text-center">
-          <h2 className="text-center justify-center text-white text-5xl font-normal font-OldLondon leading-[52.80px] mb-4">
+        <motion.div variants={itemVariants} className="text-center mb-6 sm:mb-8">
+          <h2 className="text-white text-3xl sm:text-4xl lg:text-5xl font-normal font-OldLondon leading-tight sm:leading-[52.80px] mb-3 sm:mb-4">
             Send Us a Message
           </h2>
           <motion.p 
-            className="text-center text-white text-xl font-normal font-Merriweather leading-6"
+            className="text-white text-base sm:text-lg lg:text-xl font-normal font-Merriweather leading-5 sm:leading-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
@@ -219,19 +220,19 @@ const Contact = () => {
         <motion.form
           onSubmit={handleSubmit}
           method="post"
-          className="mt-8"
+          className="w-full"
           variants={formVariants}
         >
           {/* Full Name */}
-          <motion.div variants={itemVariants}>
-            <label className="self-stretch justify-center text-white text-xl font-normal font-Merriweather leading-6">
+          <motion.div variants={itemVariants} className="mb-4 sm:mb-6">
+            <label className="block text-white text-lg sm:text-xl font-normal font-Merriweather leading-5 sm:leading-6 mb-2">
               Full Name <span className="text-red-400">*</span>
             </label>
             <Input
               name="fullName"
               value={formData.fullName}
               onChange={handleChange}
-              className="mt-2"
+              className="w-full"
               placeholder="Enter your Full Name"
               error={errors.fullName}
             />
@@ -239,76 +240,79 @@ const Contact = () => {
               <motion.p
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-red-400 text-sm mt-1 flex items-center gap-1"
+                className="text-red-400 text-xs sm:text-sm mt-1 sm:mt-2 flex items-center gap-1"
               >
-                <AlertCircle size={14} />
+                <AlertCircle size={12} className="sm:size-14" />
                 {errors.fullName}
               </motion.p>
             )}
           </motion.div>
 
-          {/* Email */}
-          <motion.div variants={itemVariants} className="mt-4">
-            <label className="self-stretch justify-center text-white text-xl font-normal font-Merriweather leading-6">
-              Email Address <span className="text-red-400">*</span>
-            </label>
-            <Input
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="mt-2"
-              placeholder="Enter your email"
-              type="email"
-              error={errors.email}
-            />
-            {errors.email && (
-              <motion.p
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-red-400 text-sm mt-1 flex items-center gap-1"
-              >
-                <AlertCircle size={14} />
-                {errors.email}
-              </motion.p>
-            )}
-          </motion.div>
+          {/* Two Column Layout for Email and Phone */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
+            {/* Email */}
+            <motion.div variants={itemVariants}>
+              <label className="block text-white text-lg sm:text-xl font-normal font-Merriweather leading-5 sm:leading-6 mb-2">
+                Email Address <span className="text-red-400">*</span>
+              </label>
+              <Input
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full"
+                placeholder="Enter your email"
+                type="email"
+                error={errors.email}
+              />
+              {errors.email && (
+                <motion.p
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-red-400 text-xs sm:text-sm mt-1 sm:mt-2 flex items-center gap-1"
+                >
+                  <AlertCircle size={12} className="sm:size-14" />
+                  {errors.email}
+                </motion.p>
+              )}
+            </motion.div>
 
-          {/* Phone */}
-          <motion.div variants={itemVariants} className="mt-4">
-            <label className="self-stretch justify-center text-white text-xl font-normal font-Merriweather leading-6">
-              Phone number <span className="text-gray-400 text-sm">(Optional)</span>
-            </label>
-            <Input
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              className="mt-2"
-              placeholder="Phone number"
-              type="tel"
-              error={errors.phone}
-            />
-            {errors.phone && (
-              <motion.p
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-red-400 text-sm mt-1 flex items-center gap-1"
-              >
-                <AlertCircle size={14} />
-                {errors.phone}
-              </motion.p>
-            )}
-          </motion.div>
+            {/* Phone */}
+            <motion.div variants={itemVariants}>
+              <label className="block text-white text-lg sm:text-xl font-normal font-Merriweather leading-5 sm:leading-6 mb-2">
+                Phone number <span className="text-gray-400 text-xs sm:text-sm">(Optional)</span>
+              </label>
+              <Input
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                className="w-full"
+                placeholder="Phone number"
+                type="tel"
+                error={errors.phone}
+              />
+              {errors.phone && (
+                <motion.p
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-red-400 text-xs sm:text-sm mt-1 sm:mt-2 flex items-center gap-1"
+                >
+                  <AlertCircle size={12} className="sm:size-14" />
+                  {errors.phone}
+                </motion.p>
+              )}
+            </motion.div>
+          </div>
 
           {/* Subject */}
-          <motion.div variants={itemVariants} className="mt-4">
-            <label className="self-stretch justify-center text-white text-xl font-normal font-Merriweather leading-6">
+          <motion.div variants={itemVariants} className="mb-4 sm:mb-6">
+            <label className="block text-white text-lg sm:text-xl font-normal font-Merriweather leading-5 sm:leading-6 mb-2">
               Subject <span className="text-red-400">*</span>
             </label>
             <Input
               name="subject"
               value={formData.subject}
               onChange={handleChange}
-              className="mt-2"
+              className="w-full"
               placeholder="Enter your subject"
               error={errors.subject}
             />
@@ -316,19 +320,19 @@ const Contact = () => {
               <motion.p
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-red-400 text-sm mt-1 flex items-center gap-1"
+                className="text-red-400 text-xs sm:text-sm mt-1 sm:mt-2 flex items-center gap-1"
               >
-                <AlertCircle size={14} />
+                <AlertCircle size={12} className="sm:size-14" />
                 {errors.subject}
               </motion.p>
             )}
           </motion.div>
 
-          {/* Message - Fixed spelling */}
-          <motion.div variants={itemVariants} className="mt-4">
-            <label className="self-stretch justify-center text-white text-xl font-normal font-Merriweather leading-6">
+          {/* Message */}
+          <motion.div variants={itemVariants} className="mb-4 sm:mb-6">
+            <label className="block text-white text-lg sm:text-xl font-normal font-Merriweather leading-5 sm:leading-6 mb-2">
               Message <span className="text-red-400">*</span>
-              <span className="text-gray-400 text-sm ml-2">
+              <span className="text-gray-400 text-xs sm:text-sm ml-2">
                 ({formData.message.length}/500 characters)
               </span>
             </label>
@@ -336,9 +340,11 @@ const Contact = () => {
               name="message"
               value={formData.message}
               onChange={handleChange}
-              className="mt-2"
+              className="w-full"
               placeholder="Enter your message"
-              rows={6}
+              rows={4}
+              sm:rows={5}
+              lg:rows={6}
               maxLength={500}
               error={errors.message}
             />
@@ -346,9 +352,9 @@ const Contact = () => {
               <motion.p
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-red-400 text-sm mt-1 flex items-center gap-1"
+                className="text-red-400 text-xs sm:text-sm mt-1 sm:mt-2 flex items-center gap-1"
               >
-                <AlertCircle size={14} />
+                <AlertCircle size={12} className="sm:size-14" />
                 {errors.message}
               </motion.p>
             )}
@@ -359,9 +365,9 @@ const Contact = () => {
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-red-400 text-sm mt-4 p-3 bg-red-400/10 border border-red-400/30 rounded flex items-center gap-2"
+              className="text-red-400 text-xs sm:text-sm mb-4 p-3 bg-red-400/10 border border-red-400/30 rounded flex items-center gap-2"
             >
-              <AlertCircle size={16} />
+              <AlertCircle size={14} className="sm:size-16" />
               {errors.submit}
             </motion.p>
           )}
@@ -371,27 +377,31 @@ const Contact = () => {
             variants={itemVariants}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="mt-6"
+            className="mt-4 sm:mt-6"
           >
             <Button
               type="submit"
-              className={`py-5 text-center justify-center text-orange-100 text-base font-normal font-Merriweather leading-5 w-full mt-4 flex items-center justify-center gap-2`}
-              style={{ backgroundImage: `url(${buttonBG})` }}
+              className={`py-4 sm:py-5 text-center justify-center text-orange-100 text-sm sm:text-base font-normal font-Merriweather leading-5 w-full flex items-center justify-center gap-2`}
+              style={{ 
+                backgroundImage: `url(${buttonBG})`,
+                backgroundSize: 'contain',
+                backgroundPosition: 'center'
+              }}
               disabled={isSubmitting}
             >
               {isSubmitting ? (
                 <>
                   <motion.div
-                    className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                    className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full"
                     animate={{ rotate: 360 }}
                     transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                   />
-                  Sending...
+                  <span className="text-sm sm:text-base">Sending...</span>
                 </>
               ) : (
                 <>
-                  <Send size={18} />
-                  Submit Message
+                  <Send size={16} className="sm:size-4" />
+                  <span className="text-sm sm:text-base">Submit Message</span>
                 </>
               )}
             </Button>
@@ -408,6 +418,21 @@ const Contact = () => {
         }
         .shake {
           animation: shake 0.5s ease-in-out;
+        }
+        
+        /* Responsive form improvements */
+        @media (max-width: 640px) {
+          .form-grid {
+            grid-template-columns: 1fr !important;
+          }
+          
+          .mobile-stack {
+            flex-direction: column !important;
+          }
+          
+          .mobile-full-width {
+            width: 100% !important;
+          }
         }
       `}</style>
     </div>

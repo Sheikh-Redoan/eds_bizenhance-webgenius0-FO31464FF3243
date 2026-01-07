@@ -29,9 +29,9 @@ const Dashboard = () => {
 
   return (
     <div
-      className="max-w-[1200px] mx-auto md:p-8 flex flex-col justify-center gap-10 animate-fade-in"
+      className="max-w-[1200px] mx-auto px-4 py-6 sm:px-6 sm:py-8 md:p-8 flex flex-col justify-center gap-6 sm:gap-8 md:gap-10 animate-fade-in overflow-y-auto"
       style={{ 
-        height: "calc(100vh - 81px)",
+        minHeight: "calc(100vh - 81px)",
         animation: "fadeIn 0.6s ease-out"
       }}
     >
@@ -139,38 +139,81 @@ const Dashboard = () => {
         .counter-animation {
           animation: pulse 2s ease-in-out infinite;
         }
+
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+          .mobile-stack {
+            flex-direction: column !important;
+          }
+          
+          .mobile-full-width {
+            width: 100% !important;
+          }
+          
+          .mobile-center {
+            text-align: center !important;
+          }
+          
+          .mobile-p-4 {
+            padding: 1rem !important;
+          }
+          
+          .mobile-text-lg {
+            font-size: 1.125rem !important;
+            line-height: 1.75rem !important;
+          }
+          
+          .mobile-text-xl {
+            font-size: 1.25rem !important;
+            line-height: 1.75rem !important;
+          }
+          
+          .mobile-text-2xl {
+            font-size: 1.5rem !important;
+            line-height: 2rem !important;
+          }
+          
+          .mobile-text-3xl {
+            font-size: 1.875rem !important;
+            line-height: 2.25rem !important;
+          }
+          
+          .mobile-gap-4 {
+            gap: 1rem !important;
+          }
+        }
       `}</style>
 
       {/* Top Row: Profile & Weekly Stats */}
-      <div className="flex flex-col lg:flex-row gap-10">
+      <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 lg:gap-10">
         {/* Profile Card */}
-        <div className="flex-grow lg:w-[780px] p-8 bg-stone-400/20 backdrop-blur-sm border border-stone-500/30 shadow-xl rounded-xl flex flex-col justify-center gap-8 hover-lift animate-slide-left">
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+        <div className="flex-grow w-full lg:w-[780px] p-6 sm:p-8 bg-stone-400/20 backdrop-blur-sm border border-stone-500/30 shadow-xl rounded-xl flex flex-col justify-center gap-6 sm:gap-8 hover-lift animate-slide-left mobile-full-width">
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
             <img
-              className="w-20 h-20 rounded-full border-2 border-stone-400 shadow-lg object-cover transform transition-transform duration-300 hover:scale-110 hover:rotate-3"
+              className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-stone-400 shadow-lg object-cover transform transition-transform duration-300 hover:scale-110 hover:rotate-3"
               src={userData.avatar}
               alt="Profile"
             />
-            <div className="flex flex-col items-center sm:items-start gap-2">
-              <h1 className="text-white text-4xl font-OldLondon tracking-wide text-shadow-sm">
+            <div className="flex flex-col items-center sm:items-start gap-1 sm:gap-2 mobile-center">
+              <h1 className="text-white text-2xl sm:text-3xl lg:text-4xl font-OldLondon tracking-wide text-shadow-sm">
                 {userData.name}
               </h1>
-              <div className="text-stone-200 text-xl font-Inter tracking-wide">
+              <div className="text-stone-200 text-lg sm:text-xl font-Inter tracking-wide">
                 {userData.title}
               </div>
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 w-full">
-            <div className="flex justify-between items-end text-white font-Inter">
-              <span className="text-lg tracking-wide">
+          <div className="flex flex-col gap-2 sm:gap-3 w-full">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end text-white font-Inter gap-1 sm:gap-0">
+              <span className="text-base sm:text-lg tracking-wide mobile-center sm:text-left">
                 Progress to level 9
               </span>
-              <span className="text-lg font-medium tracking-wide">
+              <span className="text-base sm:text-lg font-medium tracking-wide">
                 {userData.currentXp} / {userData.requiredXp} XP
               </span>
             </div>
-            <div className="w-full h-4 bg-stone-700/50 rounded-full overflow-hidden border border-stone-600/30">
+            <div className="w-full h-3 sm:h-4 bg-stone-700/50 rounded-full overflow-hidden border border-stone-600/30">
               <div
                 className="h-full bg-gradient-to-r from-orange-400 to-amber-200 rounded-full shadow-[0_0_10px_rgba(251,191,36,0.5)] transition-all duration-500 ease-out"
                 style={{ 
@@ -183,21 +226,21 @@ const Dashboard = () => {
         </div>
 
         {/* Weekly Stats Card */}
-        <div className="flex-1 min-w-[300px] p-6 bg-stone-400/20 backdrop-blur-sm border border-stone-500/30 shadow-xl rounded-xl flex flex-col gap-6 hover-lift animate-slide-right">
-          <div className="flex flex-col gap-4">
-            <h2 className="text-white text-3xl font-OldLondon text-center sm:text-left">
+        <div className="w-full lg:flex-1 lg:min-w-[300px] p-4 sm:p-6 bg-stone-400/20 backdrop-blur-sm border border-stone-500/30 shadow-xl rounded-xl flex flex-col gap-4 sm:gap-6 hover-lift animate-slide-right mobile-full-width">
+          <div className="flex flex-col gap-3 sm:gap-4">
+            <h2 className="text-white text-2xl sm:text-3xl font-OldLondon text-center lg:text-left mobile-center">
               This Week
             </h2>
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2 sm:gap-3">
               <div className="flex justify-between items-center text-stone-100 transform transition-transform duration-300 hover:translate-x-2">
-                <span className="text-lg">Quizzes</span>
-                <span className="text-xl font-bold counter-animation">
+                <span className="text-base sm:text-lg">Quizzes</span>
+                <span className="text-lg sm:text-xl font-bold counter-animation">
                   {userData.weekly.quizzes}
                 </span>
               </div>
               <div className="flex justify-between items-center text-stone-100 transform transition-transform duration-300 hover:translate-x-2">
-                <span className="text-lg">XP Earned</span>
-                <span className="text-xl font-bold text-white counter-animation">
+                <span className="text-base sm:text-lg">XP Earned</span>
+                <span className="text-lg sm:text-xl font-bold text-white counter-animation">
                   {userData.weekly.xp}
                 </span>
               </div>
@@ -205,8 +248,8 @@ const Dashboard = () => {
           </div>
 
           <Button 
-            className="flex justify-center items p-[20px] text-white gap-4 text-center text-base font-normal font-Merriweather leading-5 transform transition-all duration-300 hover:scale-105 active:scale-95" 
-            style={{ backgroundImage: `url(${buttonBG})` }}
+            className="flex justify-center items p-4 sm:p-[20px] text-white gap-3 sm:gap-4 text-center text-sm sm:text-base font-normal font-Merriweather leading-5 transform transition-all duration-300 hover:scale-105 active:scale-95 w-full" 
+            style={{ backgroundImage: `url(${buttonBG})`, backgroundSize: 'contain', backgroundPosition: 'center' }}
           >
             Keep it up!
           </Button>
@@ -214,64 +257,66 @@ const Dashboard = () => {
       </div>
 
       {/* Middle Row: Key Stats */}
-      <div className="flex flex-col sm:flex-row gap-6 md:gap-14">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-8 lg:gap-14">
         {/* Quizzes Completed */}
-        <div className="flex-1 p-8 bg-stone-400/20 backdrop-blur-sm border border-stone-500/50 rounded-xl flex flex-col items-center justify-center gap-2 shadow-lg hover:bg-stone-800/40 transition-all duration-300 hover-lift animate-scale animate-delay-200">
-          <div className="text-white text-4xl font-bold font-Inter drop-shadow-lg counter-animation">
+        <div className="p-6 sm:p-8 bg-stone-400/20 backdrop-blur-sm border border-stone-500/50 rounded-xl flex flex-col items-center justify-center gap-2 shadow-lg hover:bg-stone-800/40 transition-all duration-300 hover-lift animate-scale animate-delay-200">
+          <div className="text-white text-3xl sm:text-4xl font-bold font-Inter drop-shadow-lg counter-animation">
             {userData.stats.quizzesCompleted}
           </div>
-          <div className="text-stone-300 text-xl text-center font-light tracking-wider">
+          <div className="text-stone-300 text-lg sm:text-xl text-center font-light tracking-wider">
             Quizzes Completed
           </div>
         </div>
 
         {/* Badges Earned */}
-        <div className="flex-1 p-8 bg-stone-400/20 backdrop-blur-sm border border-stone-500/50 rounded-xl flex flex-col items-center justify-center gap-2 shadow-lg hover:bg-stone-800/40 transition-all duration-300 hover-lift animate-scale animate-delay-300">
-          <div className="text-white text-4xl font-bold font-Inter drop-shadow-lg counter-animation">
+        <div className="p-6 sm:p-8 bg-stone-400/20 backdrop-blur-sm border border-stone-500/50 rounded-xl flex flex-col items-center justify-center gap-2 shadow-lg hover:bg-stone-800/40 transition-all duration-300 hover-lift animate-scale animate-delay-300">
+          <div className="text-white text-3xl sm:text-4xl font-bold font-Inter drop-shadow-lg counter-animation">
             {userData.stats.badgesEarned}
           </div>
-          <div className="text-stone-300 text-xl text-center font-light tracking-wider">
+          <div className="text-stone-300 text-lg sm:text-xl text-center font-light tracking-wider">
             Badges Earned
           </div>
         </div>
       </div>
 
       {/* Bottom Row: Achievements */}
-      <div className="flex flex-col gap-6">
-        <h2 className="text-white text-3xl font-Medieval animate-scale">Achievements</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="flex flex-col gap-4 sm:gap-6">
+        <h2 className="text-white text-2xl sm:text-3xl font-Medieval animate-scale mobile-center sm:text-left">
+          Achievements
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
           {/* Bronze Listener */}
-          <div className="h-44 p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl flex flex-col justify-center items-center gap-4 hover:transform hover:scale-105 transition-all duration-300 shadow-lg group animate-scale animate-delay-200">
+          <div className="h-auto min-h-[180px] sm:h-44 p-4 sm:p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl flex flex-col justify-center items-center gap-3 sm:gap-4 hover:transform hover:scale-105 transition-all duration-300 shadow-lg group animate-scale animate-delay-200">
             <img 
               src={Bronze} 
               alt="Bronze Medal" 
-              className="transform transition-transform duration-300 group-hover:rotate-12"
+              className="w-16 h-16 sm:w-20 sm:h-20 transform transition-transform duration-300 group-hover:rotate-12"
             />
-            <div className="text-white text-2xl font-bold font-Inter tracking-wide text-center group-hover:text-amber-100 transition-colors">
+            <div className="text-white text-xl sm:text-2xl font-bold font-Inter tracking-wide text-center group-hover:text-amber-100 transition-colors">
               Bronze Listener
             </div>
           </div>
 
           {/* Silver Singer */}
-          <div className="h-44 p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl flex flex-col justify-center items-center gap-4 hover:transform hover:scale-105 transition-all duration-300 shadow-lg group animate-scale animate-delay-300">
+          <div className="h-auto min-h-[180px] sm:h-44 p-4 sm:p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl flex flex-col justify-center items-center gap-3 sm:gap-4 hover:transform hover:scale-105 transition-all duration-300 shadow-lg group animate-scale animate-delay-300">
             <img 
               src={Silver} 
               alt="Silver Medal"
-              className="transform transition-transform duration-300 group-hover:rotate-12"
+              className="w-16 h-16 sm:w-20 sm:h-20 transform transition-transform duration-300 group-hover:rotate-12"
             />
-            <div className="text-white text-2xl font-bold font-Inter tracking-wide text-center group-hover:text-amber-100 transition-colors">
+            <div className="text-white text-xl sm:text-2xl font-bold font-Inter tracking-wide text-center group-hover:text-amber-100 transition-colors">
               Silver Singer
             </div>
           </div>
 
           {/* Gold Performer */}
-          <div className="h-44 p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl flex flex-col justify-center items-center gap-4 hover:transform hover:scale-105 transition-all duration-300 shadow-lg group animate-scale animate-delay-400">
+          <div className="h-auto min-h-[180px] sm:h-44 p-4 sm:p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl flex flex-col justify-center items-center gap-3 sm:gap-4 hover:transform hover:scale-105 transition-all duration-300 shadow-lg group animate-scale animate-delay-400">
             <img 
               src={Gold} 
               alt="Gold Medal"
-              className="transform transition-transform duration-300 group-hover:rotate-12"
+              className="w-16 h-16 sm:w-20 sm:h-20 transform transition-transform duration-300 group-hover:rotate-12"
             />
-            <div className="text-white text-2xl font-bold font-Inter tracking-wide text-center group-hover:text-amber-100 transition-colors">
+            <div className="text-white text-xl sm:text-2xl font-bold font-Inter tracking-wide text-center group-hover:text-amber-100 transition-colors">
               Gold Performer
             </div>
           </div>

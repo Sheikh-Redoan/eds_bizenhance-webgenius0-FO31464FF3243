@@ -323,9 +323,9 @@ const ForgotPassword = () => {
   ];
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{ height: "calc(100vh - 81px)" }}>
+    <div className="min-h-[calc(100vh-81px)] flex items-center justify-center px-4 py-6 sm:p-4">
       <motion.div
-        className="max-w-lg w-full"
+        className="max-w-lg w-full mx-auto"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
@@ -333,53 +333,53 @@ const ForgotPassword = () => {
         {/* Decorative background elements */}
         <div className="absolute inset-0 overflow-hidden -z-10">
           <motion.div
-            className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-yellow-500/10 blur-3xl"
+            className="absolute top-1/4 left-1/4 w-48 h-48 sm:w-64 sm:h-64 rounded-full bg-yellow-500/10 blur-3xl"
             animate={floatingAnimation}
           />
           <motion.div
-            className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full bg-amber-500/10 blur-3xl"
+            className="absolute bottom-1/4 right-1/4 w-64 h-64 sm:w-80 sm:h-80 rounded-full bg-amber-500/10 blur-3xl"
             animate={{ ...floatingAnimation, transition: { ...floatingAnimation.transition, delay: 1 } }}
           />
         </div>
 
         <motion.div
-          className="bg-[#522E0C]/90 shadow-2xl rounded-lg p-8 border border-[#B28769] backdrop-blur-sm"
+          className="bg-[#522E0C]/90 shadow-2xl rounded-lg p-6 sm:p-8 border border-[#B28769] backdrop-blur-sm"
           variants={formVariants}
         >
           {/* Back button */}
           <motion.button
             onClick={handleBackToLogin}
-            className="flex items-center gap-2 text-[#D4A76A] hover:text-yellow-300 transition-colors mb-6 group"
+            className="flex items-center gap-2 text-[#D4A76A] hover:text-yellow-300 transition-colors mb-4 sm:mb-6 group"
             whileHover={{ x: -3 }}
             transition={{ duration: 0.2 }}
             variants={itemVariants}
           >
-            <ArrowLeft size={20} />
-            <span className="font-Merriweather">Back to Login</span>
+            <ArrowLeft size={18} sm:size-20 />
+            <span className="font-Merriweather text-sm sm:text-base">Back to Login</span>
           </motion.button>
 
           {/* Header */}
-          <motion.div className="text-center mb-8" variants={itemVariants}>
+          <motion.div className="text-center mb-6 sm:mb-8" variants={itemVariants}>
             <motion.div
-              className="inline-block mb-4"
+              className="inline-block mb-3 sm:mb-4"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
             >
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#B28769] to-[#8B5E3C] flex items-center justify-center mx-auto shadow-lg">
-                {step === 1 && <Mail className="text-white" size={32} />}
-                {step === 2 && <KeyRound className="text-white" size={32} />}
-                {step === 3 && <RefreshCw className="text-white" size={32} />}
-                {step === 4 && <CheckCircle className="text-white" size={32} />}
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-[#B28769] to-[#8B5E3C] flex items-center justify-center mx-auto shadow-lg">
+                {step === 1 && <Mail className="text-white" size={24} sm:size-32 />}
+                {step === 2 && <KeyRound className="text-white" size={24} sm:size-32 />}
+                {step === 3 && <RefreshCw className="text-white" size={24} sm:size-32 />}
+                {step === 4 && <CheckCircle className="text-white" size={24} sm:size-32 />}
               </div>
             </motion.div>
             
-            <h1 className="text-center text-white text-3xl font-normal font-Merriweather mb-2">
+            <h1 className="text-white text-2xl sm:text-3xl font-normal font-Merriweather mb-2">
               {step === 1 && "Reset Your Password"}
               {step === 2 && "Verify OTP"}
               {step === 3 && "Create New Password"}
               {step === 4 && "Password Reset!"}
             </h1>
-            <p className="text-center justify-center text-white/80 text-xl font-normal font-Merriweather leading-6">
+            <p className="text-white/80 text-base sm:text-xl font-normal font-Merriweather leading-5 sm:leading-6">
               {step === 1 && "Enter your email to receive a reset code"}
               {step === 2 && "Enter the 6-digit code sent to your email"}
               {step === 3 && "Create a strong new password for your account"}
@@ -389,14 +389,14 @@ const ForgotPassword = () => {
 
           {/* Step Indicator */}
           <motion.div 
-            className="flex justify-between items-center mb-8 relative"
+            className="flex justify-between items-center mb-6 sm:mb-8 relative"
             variants={itemVariants}
           >
             {steps.map((stepItem, index) => (
               <React.Fragment key={stepItem.number}>
                 <div className="flex flex-col items-center z-10">
                   <motion.div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${
+                    className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center mb-2 ${
                       step >= stepItem.number
                         ? 'bg-[#D4A76A] text-white'
                         : 'bg-[#B28769]/30 text-white/50'
@@ -404,9 +404,9 @@ const ForgotPassword = () => {
                     variants={stepIndicatorVariants}
                   >
                     {step > stepItem.number ? (
-                      <CheckCircle size={20} />
+                      <CheckCircle size={16} sm:size-20 />
                     ) : (
-                      <stepItem.icon size={20} />
+                      <stepItem.icon size={16} sm:size-20 />
                     )}
                   </motion.div>
                   <span className={`text-xs font-Merriweather ${
@@ -418,7 +418,7 @@ const ForgotPassword = () => {
                 
                 {/* Connection line */}
                 {index < steps.length - 1 && (
-                  <div className="flex-1 h-px mx-2 relative -top-5">
+                  <div className="flex-1 h-px mx-1 sm:mx-2 relative -top-4 sm:-top-5">
                     <div className={`h-full ${
                       step > stepItem.number ? 'bg-[#D4A76A]' : 'bg-[#B28769]/30'
                     }`}></div>
@@ -434,7 +434,7 @@ const ForgotPassword = () => {
               <motion.form
                 key="step1"
                 onSubmit={handleSendOtp}
-                className="space-y-6"
+                className="space-y-4 sm:space-y-6"
                 variants={stepVariants}
                 initial="hidden"
                 animate="visible"
@@ -442,8 +442,8 @@ const ForgotPassword = () => {
               >
                 <motion.div variants={itemVariants}>
                   <div className="flex items-center gap-2 mb-2">
-                    <Mail className="text-[#B28769]" size={20} />
-                    <label className="text-white text-lg font-normal font-Merriweather">
+                    <Mail className="text-[#B28769]" size={18} sm:size-20 />
+                    <label className="text-white text-base sm:text-lg font-normal font-Merriweather">
                       Email Address
                     </label>
                   </div>
@@ -453,16 +453,16 @@ const ForgotPassword = () => {
                     onChange={handleChange}
                     placeholder="Enter your registered email"
                     type="email"
-                    icon={<Mail className="text-[#B28769]/50" size={20} />}
+                    icon={<Mail className="text-[#B28769]/50" size={18} sm:size-20 />}
                     error={errors.email}
                   />
                   {errors.email && (
                     <motion.p
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
-                      className="text-red-400 text-sm mt-2 flex items-center gap-1"
+                      className="text-red-400 text-xs sm:text-sm mt-1 sm:mt-2 flex items-center gap-1"
                     >
-                      <AlertCircle size={14} />
+                      <AlertCircle size={12} sm:size-14 />
                       {errors.email}
                     </motion.p>
                   )}
@@ -475,8 +475,8 @@ const ForgotPassword = () => {
                     animate={{ opacity: 1, y: 0 }}
                     className="p-3 bg-red-400/10 border border-red-400/30 rounded"
                   >
-                    <p className="text-red-400 text-sm flex items-center gap-2">
-                      <AlertCircle size={16} />
+                    <p className="text-red-400 text-xs sm:text-sm flex items-center gap-2">
+                      <AlertCircle size={14} sm:size-16 />
                       {errors.submit}
                     </p>
                   </motion.div>
@@ -489,23 +489,27 @@ const ForgotPassword = () => {
                 >
                   <Button
                     type="submit"
-                    className="py-5 text-center justify-center text-orange-100 text-base font-normal font-Merriweather leading-5 w-full flex items-center justify-center gap-2 group"
-                    style={{ backgroundImage: `url(${buttonBG})` }}
+                    className="py-4 sm:py-5 text-center justify-center text-orange-100 text-sm sm:text-base font-normal font-Merriweather leading-5 w-full flex items-center justify-center gap-2 group"
+                    style={{ 
+                      backgroundImage: `url(${buttonBG})`,
+                      backgroundSize: 'contain',
+                      backgroundPosition: 'center'
+                    }}
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (
                       <>
                         <motion.div
-                          className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                          className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full"
                           animate={{ rotate: 360 }}
                           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                         />
-                        Sending OTP...
+                        <span className="text-sm sm:text-base">Sending OTP...</span>
                       </>
                     ) : (
                       <>
-                        <Mail size={18} />
-                        Send Reset Code
+                        <Mail size={16} className="sm:size-4" />
+                        <span className="text-sm sm:text-base">Send Reset Code</span>
                       </>
                     )}
                   </Button>
@@ -518,26 +522,26 @@ const ForgotPassword = () => {
               <motion.form
                 key="step2"
                 onSubmit={handleVerifyOtp}
-                className="space-y-6"
+                className="space-y-4 sm:space-y-6"
                 variants={stepVariants}
                 initial="hidden"
                 animate="visible"
                 exit="exit"
               >
                 <motion.div variants={itemVariants}>
-                  <p className="text-white/80 text-center font-Merriweather mb-4">
-                    We've sent a 6-digit code to <span className="text-[#D4A76A]">{formData.email}</span>
+                  <p className="text-white/80 text-center font-Merriweather text-sm sm:text-base mb-4">
+                    We've sent a 6-digit code to <span className="text-[#D4A76A] break-all">{formData.email}</span>
                   </p>
                   
                   <div className="flex items-center gap-2 mb-2">
-                    <KeyRound className="text-[#B28769]" size={20} />
-                    <label className="text-white text-lg font-normal font-Merriweather">
+                    <KeyRound className="text-[#B28769]" size={18} sm:size-20 />
+                    <label className="text-white text-base sm:text-lg font-normal font-Merriweather">
                       Enter OTP
                     </label>
                   </div>
                   
                   {/* OTP Input */}
-                  <div className="flex justify-center gap-3 mb-4">
+                  <div className="flex justify-center gap-2 sm:gap-3 mb-4">
                     {[...Array(6)].map((_, index) => (
                       <input
                         key={index}
@@ -547,8 +551,8 @@ const ForgotPassword = () => {
                         value={formData.otp[index]}
                         onChange={(e) => handleOtpChange(index, e.target.value)}
                         onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                        className="w-14 h-14 text-center text-2xl font-bold font-Merriweather bg-[#B28769]/30 border-2 border-[#B49267] rounded-lg text-white focus:border-[#D4A76A] focus:outline-none transition-colors"
-                        style={{ opacity: 1 }} // Force opacity
+                        className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 text-center text-xl sm:text-2xl font-bold font-Merriweather bg-[#B28769]/30 border-2 border-[#B49267] rounded-lg text-white focus:border-[#D4A76A] focus:outline-none transition-colors"
+                        style={{ opacity: 1 }}
                       />
                     ))}
                   </div>
@@ -557,16 +561,16 @@ const ForgotPassword = () => {
                     <motion.p
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
-                      className="text-red-400 text-sm mt-2 flex items-center gap-1 justify-center"
+                      className="text-red-400 text-xs sm:text-sm mt-2 flex items-center gap-1 justify-center"
                     >
-                      <AlertCircle size={14} />
+                      <AlertCircle size={12} sm:size-14 />
                       {errors.otp}
                     </motion.p>
                   )}
                   
                   {/* Resend OTP */}
                   <div className="text-center mt-4">
-                    <p className="text-white/60 text-sm font-Merriweather">
+                    <p className="text-white/60 text-xs sm:text-sm font-Merriweather">
                       Didn't receive the code?{" "}
                       <button
                         type="button"
@@ -591,25 +595,29 @@ const ForgotPassword = () => {
                     animate={{ opacity: 1, y: 0 }}
                     className="p-3 bg-red-400/10 border border-red-400/30 rounded"
                   >
-                    <p className="text-red-400 text-sm flex items-center gap-2">
-                      <AlertCircle size={16} />
+                    <p className="text-red-400 text-xs sm:text-sm flex items-center gap-2">
+                      <AlertCircle size={14} sm:size-16 />
                       {errors.submit}
                     </p>
                   </motion.div>
                 )}
 
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                   <motion.div
                     variants={itemVariants}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="flex-1"
+                    className="w-full sm:flex-1"
                   >
                     <Button
                       type="button"
                       onClick={() => setStep(1)}
-                      className="p-5 text-center justify-center text-orange-100 text-base font-normal font-Merriweather leading-5 w-full"
-                      style={{ backgroundImage: `url(${buttonBG})` }}
+                      className="py-4 sm:py-5 text-center justify-center text-orange-100 text-sm sm:text-base font-normal font-Merriweather leading-5 w-full"
+                      style={{ 
+                        backgroundImage: `url(${buttonBG})`,
+                        backgroundSize: 'contain',
+                        backgroundPosition: 'center'
+                      }}
                     >
                       Back
                     </Button>
@@ -619,27 +627,31 @@ const ForgotPassword = () => {
                     variants={itemVariants}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="flex-1"
+                    className="w-full sm:flex-1"
                   >
                     <Button
                       type="submit"
-                      className="p-5 text-center justify-center text-orange-100 text-base font-normal font-Merriweather leading-5 w-full flex items-center justify-center gap-2 group"
-                      style={{ backgroundImage: `url(${buttonBG})` }}
+                      className="py-4 sm:py-5 text-center justify-center text-orange-100 text-sm sm:text-base font-normal font-Merriweather leading-5 w-full flex items-center justify-center gap-2 group"
+                      style={{ 
+                        backgroundImage: `url(${buttonBG})`,
+                        backgroundSize: 'contain',
+                        backgroundPosition: 'center'
+                      }}
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? (
                         <>
                           <motion.div
-                            className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                            className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full"
                             animate={{ rotate: 360 }}
                             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                           />
-                          Verifying...
+                          <span className="text-sm sm:text-base">Verifying...</span>
                         </>
                       ) : (
                         <>
-                          <KeyRound size={18} />
-                          Verify & Continue
+                          <KeyRound size={16} sm:size-18 />
+                          <span className="text-sm sm:text-base">Verify & Continue</span>
                         </>
                       )}
                     </Button>
@@ -653,7 +665,7 @@ const ForgotPassword = () => {
               <motion.form
                 key="step3"
                 onSubmit={handleResetPassword}
-                className="space-y-6"
+                className="space-y-4 sm:space-y-6"
                 variants={stepVariants}
                 initial="hidden"
                 animate="visible"
@@ -661,8 +673,8 @@ const ForgotPassword = () => {
               >
                 <motion.div variants={itemVariants}>
                   <div className="flex items-center gap-2 mb-2">
-                    <RefreshCw className="text-[#B28769]" size={20} />
-                    <label className="text-white text-lg font-normal font-Merriweather">
+                    <RefreshCw className="text-[#B28769]" size={18} sm:size-20 />
+                    <label className="text-white text-base sm:text-lg font-normal font-Merriweather">
                       New Password
                     </label>
                   </div>
@@ -673,13 +685,13 @@ const ForgotPassword = () => {
                       onChange={handleChange}
                       placeholder="Create a strong new password"
                       type={showPassword ? "text" : "password"}
-                      icon={<KeyRound className="text-[#B28769]/50" size={20} />}
+                      icon={<KeyRound className="text-[#B28769]/50" size={18} sm:size-20 />}
                       error={errors.newPassword}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#B28769] hover:text-[#D4A76A] transition-colors"
+                      className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-[#B28769] hover:text-[#D4A76A] transition-colors text-sm sm:text-base"
                     >
                       {showPassword ? 'Hide' : 'Show'}
                     </button>
@@ -688,9 +700,9 @@ const ForgotPassword = () => {
                     <motion.p
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
-                      className="text-red-400 text-sm mt-2 flex items-center gap-1"
+                      className="text-red-400 text-xs sm:text-sm mt-1 sm:mt-2 flex items-center gap-1"
                     >
-                      <AlertCircle size={14} />
+                      <AlertCircle size={12} sm:size-14 />
                       {errors.newPassword}
                     </motion.p>
                   )}
@@ -701,8 +713,8 @@ const ForgotPassword = () => {
 
                 <motion.div variants={itemVariants}>
                   <div className="flex items-center gap-2 mb-2">
-                    <KeyRound className="text-[#B28769]" size={20} />
-                    <label className="text-white text-lg font-normal font-Merriweather">
+                    <KeyRound className="text-[#B28769]" size={18} sm:size-20 />
+                    <label className="text-white text-base sm:text-lg font-normal font-Merriweather">
                       Confirm Password
                     </label>
                   </div>
@@ -712,16 +724,16 @@ const ForgotPassword = () => {
                     onChange={handleChange}
                     placeholder="Confirm your new password"
                     type="password"
-                    icon={<KeyRound className="text-[#B28769]/50" size={20} />}
+                    icon={<KeyRound className="text-[#B28769]/50" size={18} sm:size-20 />}
                     error={errors.confirmPassword}
                   />
                   {errors.confirmPassword && (
                     <motion.p
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
-                      className="text-red-400 text-sm mt-2 flex items-center gap-1"
+                      className="text-red-400 text-xs sm:text-sm mt-1 sm:mt-2 flex items-center gap-1"
                     >
-                      <AlertCircle size={14} />
+                      <AlertCircle size={12} sm:size-14 />
                       {errors.confirmPassword}
                     </motion.p>
                   )}
@@ -734,25 +746,29 @@ const ForgotPassword = () => {
                     animate={{ opacity: 1, y: 0 }}
                     className="p-3 bg-red-400/10 border border-red-400/30 rounded"
                   >
-                    <p className="text-red-400 text-sm flex items-center gap-2">
-                      <AlertCircle size={16} />
+                    <p className="text-red-400 text-xs sm:text-sm flex items-center gap-2">
+                      <AlertCircle size={14} sm:size-16 />
                       {errors.submit}
                     </p>
                   </motion.div>
                 )}
 
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                   <motion.div
                     variants={itemVariants}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="flex-1"
+                    className="w-full sm:flex-1"
                   >
                     <Button
                       type="button"
                       onClick={() => setStep(2)}
-                      className="py-5 text-center justify-center text-orange-100 text-base font-normal font-Merriweather leading-5 w-full bg-transparent"
-                      style={{ backgroundImage: `url(${buttonBG})` }}
+                      className="py-4 sm:py-5 text-center justify-center text-orange-100 text-sm sm:text-base font-normal font-Merriweather leading-5 w-full bg-transparent"
+                      style={{ 
+                        backgroundImage: `url(${buttonBG})`,
+                        backgroundSize: 'contain',
+                        backgroundPosition: 'center'
+                      }}
                     >
                       Back
                     </Button>
@@ -762,27 +778,31 @@ const ForgotPassword = () => {
                     variants={itemVariants}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="flex-1"
+                    className="w-full sm:flex-1"
                   >
                     <Button
                       type="submit"
-                      className="py-5 text-center justify-center text-orange-100 text-base font-normal font-Merriweather leading-5 w-full flex items-center justify-center gap-2 group"
-                      style={{ backgroundImage: `url(${buttonBG})` }}
+                      className="py-4 sm:py-5 text-center justify-center text-orange-100 text-sm sm:text-base font-normal font-Merriweather leading-5 w-full flex items-center justify-center gap-2 group"
+                      style={{ 
+                        backgroundImage: `url(${buttonBG})`,
+                        backgroundSize: 'contain',
+                        backgroundPosition: 'center'
+                      }}
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? (
                         <>
                           <motion.div
-                            className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                            className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full"
                             animate={{ rotate: 360 }}
                             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                           />
-                          Resetting...
+                          <span className="text-sm sm:text-base">Resetting...</span>
                         </>
                       ) : (
                         <>
-                          <RefreshCw size={18} />
-                          Reset Password
+                          <RefreshCw size={16} sm:size-18 />
+                          <span className="text-sm sm:text-base">Reset Password</span>
                         </>
                       )}
                     </Button>
@@ -795,22 +815,22 @@ const ForgotPassword = () => {
             {step === 4 && (
               <motion.div
                 key="step4"
-                className="text-center space-y-6"
+                className="text-center space-y-4 sm:space-y-6"
                 variants={stepVariants}
                 initial="hidden"
                 animate="visible"
                 exit="exit"
               >
                 <motion.div
-                  className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4"
+                  className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4"
                   animate={{ scale: [1, 1.2, 1] }}
                   transition={{ duration: 0.5 }}
                 >
-                  <CheckCircle size={48} className="text-white" />
+                  <CheckCircle size={32} sm:size-40 md:size-48 className="text-white" />
                 </motion.div>
                 
-                <h3 className="text-white text-3xl font-OldLondon mb-2">Password Reset Successful!</h3>
-                <p className="text-white/80 font-Merriweather mb-6">
+                <h3 className="text-white text-2xl sm:text-3xl font-OldLondon mb-2">Password Reset Successful!</h3>
+                <p className="text-white/80 font-Merriweather text-sm sm:text-base mb-4 sm:mb-6">
                   Your password has been reset successfully. You can now log in with your new password.
                 </p>
                 
@@ -820,21 +840,25 @@ const ForgotPassword = () => {
                 >
                   <Button
                     onClick={handleBackToLogin}
-                    className="py-5 text-center justify-center text-orange-100 text-base font-normal font-Merriweather leading-5 w-full flex items-center justify-center gap-2 group"
-                    style={{ backgroundImage: `url(${buttonBG})` }}
+                    className="py-4 sm:py-5 text-center justify-center text-orange-100 text-sm sm:text-base font-normal font-Merriweather leading-5 w-full flex items-center justify-center gap-2 group"
+                    style={{ 
+                      backgroundImage: `url(${buttonBG})`,
+                      backgroundSize: 'contain',
+                      backgroundPosition: 'center'
+                    }}
                   >
                     <motion.span
                       whileHover={{ x: 5 }}
                       transition={{ duration: 0.2 }}
                       className="inline-flex items-center gap-2"
                     >
-                      <ArrowLeft size={18} className="rotate-180" />
-                      Back to Login
+                      <ArrowLeft size={16} sm:size-18 className="rotate-180" />
+                      <span className="text-sm sm:text-base">Back to Login</span>
                     </motion.span>
                   </Button>
                 </motion.div>
                 
-                <p className="text-white/60 text-sm font-Merriweather">
+                <p className="text-white/60 text-xs sm:text-sm font-Merriweather">
                   Redirecting to login page in <span className="text-[#D4A76A]">5 seconds</span>...
                 </p>
               </motion.div>
@@ -845,7 +869,7 @@ const ForgotPassword = () => {
 
         {/* Footer note */}
         <motion.p 
-          className="text-center text-white/40 text-sm font-Merriweather mt-6"
+          className="text-center text-white/40 text-xs sm:text-sm font-Merriweather mt-4 sm:mt-6"
           variants={itemVariants}
         >
           Need help?{" "}

@@ -11,6 +11,7 @@ import buttonBG from "../../assets/images/QuizButtonBG.png";
 import resultBg from '../../assets/images/resultbord.png';
 import dashboardButton from '../../assets/images/DashboardbuttonBG.png'
 import moresongbgbutton from '../../assets/images/moreSongs.png'
+
 const Quiz = () => {
   const { songId } = useParams();
   const dispatch = useDispatch();
@@ -48,43 +49,44 @@ const Quiz = () => {
       <motion.div 
         initial={{ opacity: 0 }} 
         animate={{ opacity: 1 }} 
-        className="flex justify-center items-center"
-        style={{height: 'calc(100vh - 82px)'}}
+        className="flex justify-center items-center p-4"
+        style={{minHeight: 'calc(100vh - 82px)'}}
       >
-        <div className="w-[524px] h-[670px] relative bg-transparent scale-90 sm:scale-100">
-          <div className="left-[65.50px] top-0 absolute inline-flex flex-col justify-start items-center gap-4 w-[393px]">
-            <div className="self-stretch text-center justify-center text-white text-5xl font-normal font-OldLondon leading-[52.80px]">
+        <div className="w-full max-w-[524px] h-auto min-h-[670px] relative bg-transparent results-container">
+          <div className="w-full px-4 mt-4 results-content">
+            <div className="text-center text-white text-3xl md:text-4xl font-bold font-Merriweather leading-10 complete-message-responsive">
+              Quiz Complete!
+            </div>
+          </div>
+
+          <div className="w-full px-4 mt-4 results-content">
+            <div className="self-stretch text-center justify-center text-white title-responsive font-normal font-OldLondon">
               {songData?.title}
             </div>
-            <div className="justify-center text-white text-xl font-normal font-Merriweather leading-6 text-center">
+            <div className="justify-center text-white description-responsive font-normal font-Merriweather leading-6 text-center mt-2">
               {songData?.description}
             </div>
           </div>
 
-          {/* <img className="w-[524px] h-[541px] left-0 top-[129px] absolute rounded-xl object-cover opacity-20 bg-black" src={songData?.coverUrl}  alt="Background" /> */}
-          <div className="w-[524px] h-[541px] left-0 top-[129px] absolute " style={{backgroundImage: `url(${resultBg})`}} />
-
-          <div className="w-full text-center top-[159px] absolute justify-center text-white text-3xl font-bold font-Merriweather leading-10 z-10">
-            Quiz Complete!
-          </div>
-
-          <div className="w-56 left-[149px] top-[267px] absolute inline-flex flex-col justify-start items-center gap-6 z-10">
-            <div className="self-stretch text-center justify-center text-white text-8xl font-bold font-Merriweather">
-              {score}/{questions.length}
-            </div>
-            <div className="self-stretch text-center justify-center text-white text-3xl font-normal font-Merriweather leading-10 w-max">
-              {score === questions.length ? "Perfect!" : "Keep Practicing!"}
+          <div className="w-full px-4 mt-4 results-bg flex justify-center items-center" style={{backgroundImage: `url(${resultBg})`}}>
+            <div className="w-56 md:w-64 mx-auto mt-8 md:mt-12 inline-flex flex-col justify-start items-center gap-4 md:gap-6 z-10">
+              <div className="self-stretch text-center justify-center text-white score-display-responsive font-bold font-Merriweather">
+                {score}/{questions.length}
+              </div>
+              <div className="self-stretch text-center justify-center text-white score-message-responsive font-normal font-Merriweather leading-8 md:leading-10">
+                {score === questions.length ? "Perfect!" : "Keep Practicing!"}
+              </div>
             </div>
           </div>
 
-          <div className="w-96 left-[65px] top-[527px] absolute inline-flex justify-start items-center gap-6 z-20">
+          <div className="w-full max-w-[384px] mx-auto mt-8 px-4 flex flex-col sm:flex-row justify-center items-center gap-4 results-buttons-container">
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="flex-1 h-20 relative overflow-hidden cursor-pointer group"
+              className="w-full max-w-[280px] sm:flex-1 h-20 md:h-24 relative overflow-hidden cursor-pointer group results-button"
               onClick={() => navigate('/dashboard')}
             >
-              <div className="absolute inset-0 flex items-center justify-center text-center text-white text-base font-normal font-Merriweather leading-4" style={{backgroundImage: `url(${dashboardButton})`}}>
+              <div className="absolute inset-0 flex items-center justify-center text-center text-white dashboard-button-text font-normal font-Merriweather leading-4" style={{backgroundImage: `url(${dashboardButton})`, backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat'}}>
                 View Dashboard
               </div>
             </motion.div>
@@ -92,7 +94,7 @@ const Quiz = () => {
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="flex-1 h-20 relative overflow-hidden cursor-pointer group"
+              className="w-full max-w-[280px] sm:flex-1 h-20 md:h-24 relative overflow-hidden cursor-pointer group results-button"
               onClick={() => {
                 const song = ENHANCED_SONGS.find(s => s.id === songId);
                 dispatch(resetQuiz());
@@ -101,7 +103,7 @@ const Quiz = () => {
                 }
               }}
             >
-              <div className="absolute inset-0 flex items-center justify-center text-center text-stone-800 text-base font-normal font-Merriweather leading-4" style={{ backgroundImage:`url(${moresongbgbutton})`}}>
+              <div className="absolute inset-0 flex items-center justify-center text-center text-stone-800 dashboard-button-text font-normal font-Merriweather leading-4" style={{ backgroundImage:`url(${moresongbgbutton})`, backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat'}}>
                 Try Again
               </div>
             </motion.div>
@@ -113,25 +115,25 @@ const Quiz = () => {
 
   // --- QUESTION VIEW ---
   return (
-    <div className="flex flex-col justify-start items-center pt-20 gap-7 overflow-x-hidden" style={{height: 'calc(100vh - 82px)'}}>
+    <div className="flex flex-col justify-start items-center pt-4 md:pt-20 gap-4 md:gap-7 overflow-x-hidden"
+      style={{minHeight: 'calc(100vh - 82px)'}}>
       
       {/* Header Info */}
-      <div className="flex flex-col justify-start items-center gap-4 z-10">
-        <div className="self-stretch text-center justify-center text-white text-5xl font-normal font-OldLondon leading-[52.80px]">
+      <div className="flex flex-col justify-start items-center gap-2 md:gap-4 z-10 quiz-header">
+        <div className="self-stretch text-center justify-center text-white title-responsive font-normal font-OldLondon">
           {songData?.title}
         </div>
-        <div className="justify-center text-white text-xl font-normal font-Merriweather leading-6">
+        <div className="justify-center text-white description-responsive font-normal font-Merriweather leading-5 md:leading-6 text-center px-4">
           {songData?.description}
         </div>
       </div>
 
       {/* Progress Bar & Stats */}
-      <div className="w-[900px] flex flex-col justify-start items-start gap-2.5 z-10">
+      <div className="w-[95vw] max-w-[900px] flex flex-col justify-start items-start gap-2.5 z-10 progress-container">
         <div className="self-stretch inline-flex justify-between items-center">
-          {/* Using a thick green progress bar as seen in the image */}
-          <div className="w-full h-4 bg-stone-700/50 relative overflow-hidden">
+          <div className="w-full h-3 md:h-4 bg-stone-700/50 relative overflow-hidden rounded-full">
              <motion.div 
-               className="h-full bg-[#4CAF50]"
+               className="h-full bg-[#4CAF50] rounded-full"
                initial={{ width: 0 }}
                animate={{ width: `${((currentQuestionIndex + (isAnswered ? 1 : 0)) / questions.length) * 100}%` }}
                transition={{ duration: 0.5, ease: "easeInOut" }}
@@ -141,7 +143,7 @@ const Quiz = () => {
       </div>
 
       {/* Question Content */}
-      <div className="w-[900px] relative min-h-[400px]">
+      <div className="w-[95vw] max-w-[900px] relative min-h-[300px] md:min-h-[400px] question-container">
         <AnimatePresence mode='wait'>
           <motion.div
             key={currentQuestionIndex}
@@ -152,37 +154,32 @@ const Quiz = () => {
             className="flex flex-col justify-start items-start gap-5 w-full"
           >
             {/* Question Text */}
-            <div className={`self-stretch justify-center text-white text-4xl font-normal leading-10 ${isAnswered ? "font-['Crimes_Times_Six']" : "font-MetalMania"}`}>
+            <div className={`self-stretch justify-center text-white text-2xl md:text-4xl font-normal leading-8 md:leading-10 question-text-responsive font-MetalMania`}>
               {currentQuestion.question}
             </div>
 
             {/* Options List */}
-            <div className="self-stretch flex flex-col justify-start items-start gap-4">
+            <div className="self-stretch flex flex-col justify-start items-start gap-3 md:gap-4 options-container">
               {currentQuestion.options.map((option, idx) => {
                 const isSelected = selectedAnswerIndex === idx;
                 const isCorrectOption = idx === currentQuestion.correctAnswer;
                 
-                // --- Color Logic matching the designs ---
-                // Default: Gray bg, Gray text
                 let containerStyle = "bg-[#F5F5F5] hover:bg-stone-200";
-                let letterBoxStyle = "bg-[#E0E0E0] text-[#8B7355]"; // Beige/Gray letter box
-                let textStyle = "text-[#6B5B4E]"; // Brownish gray text
+                let letterBoxStyle = "bg-[#E0E0E0] text-[#8B7355]";
+                let textStyle = "text-[#6B5B4E]";
                 
                 if (isAnswered) {
                   if (isSelected) {
                     if (isCorrect) {
-                      // CORRECT STATE (Image 2): Gold/Brown background
                       containerStyle = "bg-[#A98057] shadow-lg"; 
-                      letterBoxStyle = "bg-[#C4A480] text-white"; // Lighter brown box
+                      letterBoxStyle = "bg-[#C4A480] text-white";
                       textStyle = "text-white font-bold";
                     } else {
-                      // WRONG STATE (Image 1): Terracotta/Orange background
                       containerStyle = "bg-[#C05F3C] shadow-lg"; 
-                      letterBoxStyle = "bg-[#D27A5B] text-white"; // Lighter orange box
+                      letterBoxStyle = "bg-[#D27A5B] text-white";
                       textStyle = "text-white font-bold";
                     }
                   } else {
-                    // Not selected, result shown -> dim it
                     containerStyle = "bg-[#F5F5F5] opacity-50"; 
                   }
                 }
@@ -195,38 +192,38 @@ const Quiz = () => {
                     transition={{ delay: idx * 0.1 }}
                     onClick={() => !isAnswered && dispatch(selectAnswer(idx))}
                     className={`
-                      relative w-full h-[72px] flex justify-between items-center 
-                      cursor-pointer transition-colors duration-300 overflow-hidden
+                      relative w-full min-h-[56px] md:h-[72px] flex justify-between items-center 
+                      cursor-pointer transition-colors duration-300 overflow-hidden option-item
                       ${containerStyle}
                     `}
                   >
-                    <div className="flex items-center gap-4 h-full pl-3">
+                    <div className="flex items-center gap-3 md:gap-4 h-full pl-3 md:pl-4">
                       {/* Letter Box */}
                       <div className={`
-                        size-12 flex justify-center items-center 
-                        text-xl font-bold font-Inter transition-colors duration-300
+                        size-8 md:size-12 flex justify-center items-center letter-box
+                        text-base md:text-xl font-bold font-Inter transition-colors duration-300
                         ${letterBoxStyle}
                       `}>
                         {getLetter(idx)}
                       </div>
 
                       {/* Text */}
-                      <div className={`text-lg font-semibold font-Inter transition-colors duration-300 ${textStyle}`}>
+                      <div className={`text-sm md:text-lg font-semibold font-Inter transition-colors duration-300 option-text ${textStyle}`}>
                         {option}
                       </div>
                     </div>
 
-                    {/* Right Side Status Icon Box (The Square on the right) */}
+                    {/* Right Side Status Icon Box */}
                     {isAnswered && isSelected && (
                       <motion.div 
                         initial={{ scale: 0, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         className={`
-                          h-full w-[72px] flex justify-center items-center
+                          h-full w-[50px] md:w-[72px] flex justify-center items-center status-icon-box
                           border-l-2 border-white/20
                         `}
                       >
-                         {isCorrect ? <Check size={40} className="text-white" /> : <X size={40} className="text-white" />}
+                         {isCorrect ? <Check size={32} md:size={40} className="text-white" /> : <X size={32} md:size={40} className="text-white" />}
                       </motion.div>
                     )}
                   </motion.div>
@@ -238,25 +235,24 @@ const Quiz = () => {
       </div>
 
       {/* Next Question Button */}
-      <div className="h-24 w-full flex justify-center items-center mt-4">
+      <div className="h-20 md:h-24 w-full flex justify-center items-center mt-2 md:mt-4">
         <AnimatePresence>
           {isAnswered && (
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className="w-[900px] flex justify-center items-center"
+              className="w-[95vw] max-w-[900px] flex justify-center items-center next-button-container"
             >
               <div
-                className="w-80 h-14 relative cursor-pointer group"
+                className="w-full max-w-[280px] md:w-80 h-12 md:h-14 relative cursor-pointer group next-button"
                 onClick={() => dispatch(nextQuestion())}
               >
-                {/* Custom Image Background Button */}
                 <div 
                   className="absolute inset-0 flex justify-center items-center z-10 bg-contain bg-no-repeat bg-center transition-transform duration-300 group-hover:scale-105" 
-                  style={{ backgroundImage: `url(${buttonBG})` }}
+                  style={{ backgroundImage: `url(${buttonBG})`, backgroundSize: '100% 100%' }}
                 >
-                  <span className="text-orange-100 text-lg font-normal font-Merriweather pt-1">
+                  <span className="text-orange-100 text-base md:text-lg font-normal font-Merriweather pt-1">
                     {currentQuestionIndex === questions.length - 1 ? "Finish Quiz" : "Next Question"}
                   </span>
                 </div>

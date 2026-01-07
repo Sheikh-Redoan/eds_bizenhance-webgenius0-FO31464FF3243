@@ -1,5 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Inter:wght@400;500;600;700&display=swap");
-@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Metal+Mania&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Metal+Mania&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Playfair+Display:ital,wght@0,700;1,700&display=swap");
 @import "tailwindcss";
 
@@ -7,31 +7,55 @@
   --font-OldLondon: "OldLondon", sans-serif;
 }
 
-/* 2. Define the font face */
 @font-face {
   font-family: "OldLondon";
-  /* Use 'truetype' instead of 'ttf' for better browser support */
   src: url("./assets/fonts/OldLondon.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
 
-/* Responsive adjustments */
+:root {
+  --book-width: 550px;
+  --book-height: 700px;
+  --anim-speed: 0.8s;
+}
+
+/* Tablet Landscape and smaller desktops */
+@media (max-width: 1200px) {
+  :root {
+    --book-width: 450px;
+    --book-height: 600px;
+  }
+}
+
+/* Tablet Portrait */
 @media (max-width: 1000px) {
   :root {
     --book-width: 350px;
     --book-height: 500px;
   }
 }
+
+/* Mobile Landscape */
 @media (max-width: 768px) {
   :root {
-    --book-width: 90vw;
-    --book-height: 60vh;
+    --book-width: 280px;
+    --book-height: 400px;
   }
+
   #book-stage {
     width: var(--book-width);
   }
 }
+
+/* Mobile Portrait */
+@media (max-width: 480px) {
+  :root {
+    --book-width: 160px;
+    --book-height: 240px;
+  }
+}
+
 body {
   margin: 0;
   font-family: "Inter", sans-serif;
@@ -55,7 +79,6 @@ body {
   box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
-/* Add these to your global CSS */
 .transform-style-3d {
   transform-style: preserve-3d;
 }
@@ -64,7 +87,6 @@ body {
   perspective: 1000px;
 }
 
-/* Optional: Add a subtle glow effect when hovering */
 .card {
   position: relative;
 }
@@ -88,13 +110,6 @@ body {
   opacity: 1;
 }
 
-
-:root {
-  --book-width: 550px;
-  --book-height: 700px;
-  --anim-speed: 0.8s;
-}
-
 .book-container {
   perspective: 2500px;
   font-family: "Crimson Text", serif;
@@ -103,13 +118,29 @@ body {
   padding: 2rem;
 }
 
+@media (max-width: 768px) {
+  .book-container {
+    padding: 1rem;
+    min-height: calc(100vh - 70px);
+    perspective: 1500px;
+  }
+}
+
+@media (max-width: 480px) {
+  .book-container {
+    padding: 0.5rem;
+    min-height: calc(100vh - 60px);
+    perspective: 1000px;
+  }
+}
+
 #book-stage {
   width: calc(var(--book-width) * 2);
   height: var(--book-height);
   position: relative;
   transform-style: preserve-3d;
   transition: transform 0.5s ease;
-  margin: 0 auto;
+  margin: 20px auto 0;
 }
 
 .page {
@@ -135,14 +166,9 @@ body {
   position: absolute;
   width: 100%;
   height: 100%;
-  /* Fixed background image */
-  background: 
-    /* Paper texture overlay */
-    url("./assets/images/pageBG.png") no-repeat center center / cover,
-    /* Fallback parchment color */
-    linear-gradient(to bottom, #fdfbf700 0%rgba(245, 241, 232, 0)e8 100%);
+  background: url("./assets/images/pageBG.png") no-repeat center center / cover;
   backface-visibility: hidden;
-
+  -webkit-backface-visibility: hidden;
   display: flex;
   flex-direction: column;
   padding: 40px;
@@ -151,31 +177,40 @@ body {
   border-radius: 2px;
 }
 
+@media (max-width: 768px) {
+  .front,
+  .back {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .front,
+  .back {
+    padding: 12px;
+  }
+}
+
 .front {
   z-index: 2;
   border-radius: 0 5px 5px 0;
-  background: 
-    url("./assets/images/pageBGrevarce.png") no-repeat center center / cover,
-    linear-gradient(to right, #e3dccb00 0%, #f5f1e800 10%);
-  
+  background: url("./assets/images/pageBGrevarce.png") no-repeat center center /
+    cover;
 }
 
 .back {
   transform: rotateY(180deg);
   z-index: 1;
   border-radius: 5px 0 0 5px;
-  background: 
-    url("./assets/images/pageBG.png") no-repeat center center / cover,
-    linear-gradient(to left, #e3dccb00 0%, #f5f1e800 10%);
+  background: url("./assets/images/pageBG.png") no-repeat center center / cover;
 }
 
-/* Cover pages override the background */
-.cover-front{
-  background: 
-    url("./assets/images/pageBGCover2.png") no-repeat center center / cover,
-    linear-gradient(to left, #e3dccb00 0%, #f5f1e800 10%);
-    background-position-x: -15px;
+.cover-front {
+  background: url("./assets/images/pageBGCover2.png") no-repeat center center /
+    cover;
+  background-position-x: -15px;
 }
+
 .cover-back {
   background: #4a3b2a !important;
   color: #d4af37;
@@ -193,6 +228,24 @@ body {
   font-size: 1.25rem;
 }
 
+@media (max-width: 768px) {
+  .lyric-line {
+    padding: 6px 8px;
+    margin-bottom: 6px;
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+}
+
+@media (max-width: 480px) {
+  .lyric-line {
+    padding: 4px 6px;
+    margin-bottom: 4px;
+    font-size: 0.75rem;
+    line-height: 1.3;
+  }
+}
+
 .lyric-line:hover {
   background: rgba(0, 0, 0, 0.05);
   opacity: 1;
@@ -206,6 +259,12 @@ body {
   opacity: 1;
   background: rgba(139, 69, 19, 0.08);
   border-left: 3px solid #8b4513;
+}
+
+@media (max-width: 480px) {
+  .lyric-line.active {
+    border-left-width: 2px;
+  }
 }
 
 /* Custom range input styling */
@@ -244,7 +303,6 @@ input[type="range"]::-moz-range-thumb {
   cursor: pointer;
 }
 
-/* Add to existing CSS */
 .transform-style-3d {
   transform-style: preserve-3d;
 }
@@ -253,14 +311,13 @@ input[type="range"]::-moz-range-thumb {
   perspective: 1000px;
 }
 
-/* 3D Card specific styles */
 .card-3d {
   transform-style: preserve-3d;
   will-change: transform;
   backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
-/* Responsive height adjustments */
 @media (min-width: 640px) {
   .card-container {
     height: 350px;
@@ -273,18 +330,623 @@ input[type="range"]::-moz-range-thumb {
   }
 }
 
-/* Improve font rendering */
 .font-OldLondon {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
   letter-spacing: 1px;
 }
 
-/* Smooth transitions */
 * {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Prevent text selection during animation */
+.no-select {
+  user-select: none;
+}
+
+/* Custom scrollbar for mobile */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #8b7355 transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #8b7355;
+  border-radius: 3px;
+}
+
+@media (max-width: 480px) {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+}
+
+/* BOOK PLAYER RESPONSIVE CSS */
+
+/* Reset and base styles for book */
+.book-container * {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Mobile-first responsive design */
+@media (max-width: 1023px) {
+  /* Mobile flat view styles */
+
+  .book-container {
+    width: 100%;
+    min-height: calc(100vh - 70px);
+    padding: 1rem;
+    position: relative;
+    overflow-y: auto;
+    font-family: "Merriweather", serif;
+  }
+
+  #book-stage {
+    width: 100%;
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  /* Mobile flat page */
+  .page-mobile {
+    width: 90%;
+    max-width: 400px;
+    min-height: 500px;
+    background: url("./assets/images/pageBG.png") no-repeat center center /
+      cover;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 6rem auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow-y: auto;
+  }
+
+  /* Mobile lyrics styling */
+  .lyric-line-mobile {
+    padding: 12px 10px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+    background: rgba(255, 255, 255, 0.7);
+  }
+
+  .lyric-line-mobile.active {
+    background: rgba(139, 69, 19, 0.15);
+    border-left-color: #8b4513;
+    transform: translateX(4px);
+  }
+
+  .lyric-line-mobile .english {
+    font-size: 0.9rem;
+    color: #5a4a42;
+    margin-bottom: 4px;
+    font-style: italic;
+  }
+
+  .lyric-line-mobile .target {
+    font-size: 1.1rem;
+    color: #3d291f;
+    font-weight: 500;
+  }
+
+  /* Mobile vocabulary */
+  .vocab-card-mobile {
+    background: rgba(255, 248, 225, 0.9);
+    padding: 12px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    border-left: 4px solid #8b7355;
+  }
+
+  .vocab-word {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #5a3d2e;
+  }
+
+  .vocab-translation {
+    font-size: 0.95rem;
+    color: #7d5c43;
+    margin: 4px 0;
+  }
+
+  .vocab-context {
+    font-size: 0.85rem;
+    color: #9c8168;
+    font-style: italic;
+    margin-top: 6px;
+  }
+
+  /* Mobile navigation */
+  .mobile-navigation {
+    position: fixed;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
+    padding: 0 1rem;
+    z-index: 100;
+    pointer-events: none;
+  }
+
+  .nav-button {
+    pointer-events: auto;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(90, 74, 66, 0.9);
+    border: 2px solid #8b7355;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease;
+  }
+
+  .nav-button:active {
+    transform: scale(0.95);
+    background: rgba(70, 54, 46, 0.9);
+  }
+
+  /* Page indicator */
+  .page-indicator {
+    position: fixed;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    z-index: 100;
+    backdrop-filter: blur(4px);
+  }
+
+  /* Mobile cover styling */
+  .cover-mobile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .cover-title-mobile {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #3d291f;
+    margin-bottom: 1rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .cover-artist-mobile {
+    font-size: 1.2rem;
+    color: #5a4a42;
+    font-style: italic;
+    margin-bottom: 2rem;
+  }
+
+  .cover-image-mobile {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #8b7355;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    margin-bottom: 2rem;
+  }
+
+  /* Mobile quiz button */
+  .quiz-button-mobile {
+    width: 100%;
+    max-width: 250px;
+    padding: 14px;
+    background: linear-gradient(135deg, #8b7355, #5a4a42);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(139, 115, 85, 0.4);
+    transition: all 0.3s ease;
+    margin: 1rem auto;
+  }
+
+  .quiz-button-mobile:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(139, 115, 85, 0.4);
+  }
+}
+
+/* ======================== */
+/* DESKTOP BOOK STYLES */
+/* ======================== */
+
+@media (min-width: 1024px) {
+  /* Desktop 3D book */
+
+  :root {
+    --book-width: 550px;
+    --book-height: 700px;
+    --anim-speed: 0.8s;
+  }
+
+  .book-container {
+    perspective: 2500px;
+    font-family: "Crimson Text", serif;
+    overflow: hidden;
+    min-height: calc(100vh - 90px);
+    padding: 2rem;
+    position: relative;
+  }
+
+  #book-stage {
+    width: calc(var(--book-width) * 2);
+    height: var(--book-height);
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.5s ease;
+    margin: 70px auto 0;
+  }
+
+  .page {
+    position: absolute;
+    width: var(--book-width);
+    height: var(--book-height);
+    top: 0;
+    right: 0;
+    transform-origin: 0% 50%;
+    transform-style: preserve-3d;
+    transition: transform var(--anim-speed) cubic-bezier(0.645, 0.045, 0.355, 1);
+    cursor: pointer;
+    z-index: 1;
+    backface-visibility: visible;
+  }
+
+  /* Fixed page reflection issue */
+  .page.flipped {
+    transform: rotateY(-180deg);
+    z-index: 2;
+  }
+
+  .front,
+  .back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: url("./assets/images/pageBG.png") no-repeat center center /
+      cover;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 40px;
+    box-sizing: border-box;
+    overflow: hidden;
+    border-radius: 2px;
+    /* Solid background to prevent transparency/reflections */
+  }
+
+  /* Specific backgrounds to prevent reflections */
+  .front {
+    z-index: 2;
+    border-radius: 0 5px 5px 0;
+    background: url("./assets/images/pageBGrevarce.png") no-repeat center center /
+      cover;
+    /* Visual separation between pages */
+    border-left: 1px solid rgba(139, 115, 85, 0.2);
+  }
+
+  .back {
+    transform: rotateY(180deg);
+    z-index: 1;
+    border-radius: 5px 0 0 5px;
+    background: url("./assets/images/pageBG.png") no-repeat center center /
+      cover;
+    /* Visual separation between pages */
+    border-right: 1px solid rgba(139, 115, 85, 0.2);
+  }
+
+  /* Cover pages */
+  .cover-front {
+    background: url("./assets/images/pageBGCover2.png") no-repeat center center /
+      cover;
+    background-position-x: -15px;
+  }
+
+  .cover-back {
+    background: #4a3b2a !important;
+    color: #d4af37;
+    border: 2px solid #3e3223;
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Desktop lyrics styling */
+  .lyric-line {
+    padding: 10px 12px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+    opacity: 0.8;
+    line-height: 1.6;
+    font-size: 1.2rem;
+    background: rgba(255, 255, 255, 0.7);
+  }
+
+  .lyric-line:hover {
+    background: rgba(0, 0, 0, 0.05);
+    opacity: 1;
+    cursor: pointer;
+  }
+
+  .lyric-line.active {
+    color: #8b4513;
+    font-weight: 600;
+    transform: scale(1.02);
+    opacity: 1;
+    background: rgba(139, 69, 19, 0.1);
+    border-left: 3px solid #8b4513;
+  }
+
+  /* Desktop vocabulary */
+  .vocab-card {
+    background: rgba(255, 248, 225, 0.95);
+    padding: 14px;
+    margin-bottom: 14px;
+    border-radius: 6px;
+    border-left: 4px solid #8b7355;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* ======================== */
+/* RESPONSIVE TYPOGRAPHY */
+/* ======================== */
+
+@media (max-width: 768px) {
+  .cover-title-mobile {
+    font-size: 1.8rem;
+  }
+
+  .cover-artist-mobile {
+    font-size: 1.1rem;
+  }
+
+  .lyric-line-mobile .english {
+    font-size: 0.85rem;
+  }
+
+  .lyric-line-mobile .target {
+    font-size: 1rem;
+  }
+
+  .vocab-word {
+    font-size: 1rem;
+  }
+
+  .vocab-translation {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .book-container {
+    padding: 0.5rem;
+    min-height: calc(100vh - 60px);
+  }
+
+  .page-mobile {
+    width: 95%;
+    min-height: 450px;
+    padding: 1rem;
+  }
+
+  .cover-title-mobile {
+    font-size: 1.5rem;
+  }
+
+  .cover-artist-mobile {
+    font-size: 1rem;
+  }
+
+  .cover-image-mobile {
+    width: 140px;
+    height: 140px;
+  }
+
+  .lyric-line-mobile {
+    padding: 10px 8px;
+  }
+
+  .lyric-line-mobile .english {
+    font-size: 0.8rem;
+  }
+
+  .lyric-line-mobile .target {
+    font-size: 0.95rem;
+  }
+
+  .nav-button {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+}
+
+/* ======================== */
+/* CUSTOM SCROLLBAR */
+/* ======================== */
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #8b7355 transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #8b7355;
+  border-radius: 3px;
+}
+
+@media (max-width: 768px) {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+}
+
+/* ======================== */
+/* MOBILE SWIPE AREAS */
+/* ======================== */
+
+.swipe-area {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 20%;
+  z-index: 50;
+  opacity: 0;
+}
+
+.swipe-left {
+  left: 0;
+}
+
+.swipe-right {
+  right: 0;
+}
+
+/* ======================== */
+/* LOADING STATES */
+/* ======================== */
+
+.loading-book {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  color: #d4af37;
+  font-size: 1.2rem;
+  font-family: "Merriweather", serif;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(212, 175, 55, 0.3);
+  border-radius: 50%;
+  border-top-color: #d4af37;
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ======================== */
+/* INSTRUCTION TEXT */
+/* ======================== */
+
+.instructions {
+  position: fixed;
+  bottom: 5rem;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  padding: 0 1rem;
+  z-index: 60;
+  font-family: "Merriweather", serif;
+}
+
+@media (min-width: 1024px) {
+  .instructions {
+    display: none;
+  }
+}
+
+/* ======================== */
+/* PAGE NUMBERS */
+/* ======================== */
+
+.page-number {
+  position: absolute;
+  bottom: 10px;
+  color: rgba(139, 115, 85, 0.5);
+  font-size: 0.75rem;
+  font-style: italic;
+  font-family: "Merriweather", serif;
+}
+
+.page-number.right {
+  right: 10px;
+}
+
+.page-number.left {
+  left: 10px;
+}
+
+/* ======================== */
+/* iOS SAFARI FIX */
+/* ======================== */
+
+@supports (-webkit-touch-callout: none) {
+  .book-container {
+    height: -webkit-fill-available;
+  }
+}
+
+/* ======================== */
+/* UTILITY CLASSES */
+/* ======================== */
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.perspective {
+  perspective: 1000px;
+}
+
 .no-select {
   user-select: none;
 }

@@ -46,7 +46,7 @@ const subscriptionPlans = [
   },
   {
     id: "donation",
-    icon: HandCoins ,
+    icon: HandCoins,
     title: "Supporter Donate",
     price: "Custom Amount",
     description: "Support future development, language content, and creative community projects.",
@@ -221,17 +221,17 @@ const Membership = () => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative min-h-screen">
       {/* Success Message Overlay */}
       {paymentSuccess && (
         <motion.div
-          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
           <motion.div
-            className="bg-[#755F48] p-8 rounded-lg border-2 border-[#B28769] max-w-md mx-4"
+            className="bg-[#755F48] p-6 md:p-8 rounded-lg border-2 border-[#B28769] max-w-md w-full mx-auto"
             variants={successVariants}
             initial="hidden"
             animate="visible"
@@ -239,19 +239,19 @@ const Membership = () => {
           >
             <div className="text-center">
               <motion.div
-                className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4"
+                className="w-16 h-16 md:w-20 md:h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4"
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ duration: 0.5 }}
               >
-                <Check size={40} className="text-white" />
+                <Check size={32} className="text-white md:size-40" />
               </motion.div>
-              <h3 className="text-white text-2xl font-OldLondon mb-2">Success!</h3>
-              <p className="text-white/80 font-Merriweather mb-4">
+              <h3 className="text-white text-xl md:text-2xl font-OldLondon mb-2">Success!</h3>
+              <p className="text-white/80 font-Merriweather mb-4 text-sm md:text-base">
                 {selectedPlan === "donation" 
                   ? `Thank you for your $${donationAmount} donation!` 
                   : "Your subscription has been activated successfully!"}
               </p>
-              <p className="text-yellow-200 text-sm">
+              <p className="text-yellow-200 text-xs md:text-sm">
                 You will receive a confirmation email shortly.
               </p>
             </div>
@@ -261,7 +261,7 @@ const Membership = () => {
 
       {/* Popular Badge for Lifetime Plan */}
       <motion.div
-        className="absolute left-1/2 transform -translate-x-1/2 top-4 z-10"
+        className="absolute left-1/2 transform -translate-x-1/2 top-4 z-10 hidden lg:block"
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.5, duration: 0.6 }}
@@ -273,8 +273,7 @@ const Membership = () => {
       </motion.div>
 
       <motion.div
-        className="max-w-6xl mx-auto p-8 flex justify-between items-center gap-2 relative"
-        style={{ height: "calc(100vh - 81px)" }}
+        className="max-w-6xl mx-auto px-4 py-8 lg:p-8 flex flex-col lg:flex-row justify-center lg:justify-between items-center gap-6 lg:gap-2 relative min-h-[calc(100vh-81px)]"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -287,15 +286,35 @@ const Membership = () => {
           return (
             <motion.div
               key={plan.id}
-              className={`relative border border-[#B28769] w-1/3 h-[700px] p-[24px] flex flex-col items-center justify-center ${isPopular ? 'border-2 border-yellow-400' : ''}`}
+              className={`relative border border-[#B28769] w-full lg:w-1/3 max-w-md lg:max-w-none h-auto lg:h-[700px] p-6 lg:p-[24px] flex flex-col items-center justify-center ${
+                isPopular ? 'border-2 border-yellow-400' : ''
+              }`}
               variants={cardVariants}
               whileHover="hover"
               custom={index}
             >
-              {/* Popular badge */}
+              {/* Mobile Popular badge - only for lifetime plan */}
+              {isPopular && (
+                <>
+                  <motion.div
+                    className="lg:hidden absolute -top-3 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-4 py-1 rounded-full text-sm font-Merriweather font-bold"
+                    animate={pulseAnimation}
+                  >
+                    RECOMMENDED
+                  </motion.div>
+                  <div className="lg:hidden mb-4 text-center">
+                    <div className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-4 py-1 rounded-full font-Merriweather font-bold flex items-center justify-center gap-2 text-sm">
+                      <Crown size={14} />
+                      <span>Most Popular Choice</span>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Desktop Popular badge */}
               {isPopular && (
                 <motion.div
-                  className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-4 py-1 rounded-full text-sm font-Merriweather font-bold"
+                  className="hidden lg:block absolute -top-3 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-4 py-1 rounded-full text-sm font-Merriweather font-bold"
                   animate={pulseAnimation}
                 >
                   RECOMMENDED
@@ -303,27 +322,32 @@ const Membership = () => {
               )}
 
               <motion.div
-                className={`bg-[#B28769]/20 w-[100px] h-[100px] rounded-full flex justify-center items-center mx-auto mb-[24px] ${isPopular ? 'bg-yellow-500/20' : ''}`}
+                className={`bg-[#B28769]/20 w-20 h-20 lg:w-[100px] lg:h-[100px] rounded-full flex justify-center items-center mx-auto mb-4 lg:mb-[24px] ${
+                  isPopular ? 'bg-yellow-500/20' : ''
+                }`}
                 variants={iconVariants}
                 whileHover="hover"
               >
-                <IconComponent className={isPopular ? "text-yellow-300" : "text-white"} size={28} />
+                <IconComponent
+                  className={isPopular ? "text-yellow-300" : "text-white"}
+                  size={28}
+                />
               </motion.div>
 
               <div className="w-full">
-                <h3 className="justify-center text-white text-4xl font-normal font-OldLondon text-center max-w-[266px] mx-auto">
+                <h3 className="text-white text-2xl lg:text-4xl font-normal font-OldLondon text-center max-w-[266px] mx-auto">
                   {plan.title}
                 </h3>
                 
                 <motion.p 
-                  className="justify-center text-white/80 text-xl font-bold font-Merriweather mx-auto max-w-[180px] mb-[24px] text-center"
+                  className="text-white/80 text-lg lg:text-xl font-bold font-Merriweather mx-auto max-w-[180px] mb-4 lg:mb-[24px] text-center"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 + 0.3 }}
                 >
                   {plan.price}
                   {!isDonation && (
-                    <span className="block text-sm font-normal text-yellow-200 mt-1">
+                    <span className="block text-xs lg:text-sm font-normal text-yellow-200 mt-1">
                       {plan.description}
                     </span>
                   )}
@@ -331,7 +355,7 @@ const Membership = () => {
 
                 {isDonation ? (
                   <>
-                    <p className="text-center justify-center text-white/80 text-xl font-normal font-Merriweather leading-8 mx-auto max-w-[343px] mb-[24px] mt-[24px]">
+                    <p className="text-center text-white/80 text-base lg:text-xl font-normal font-Merriweather leading-6 lg:leading-8 mx-auto max-w-[343px] mb-4 lg:mb-[24px] mt-4 lg:mt-[24px]">
                       {plan.description}
                     </p>
 
@@ -346,10 +370,11 @@ const Membership = () => {
                         onChange={(e) => setDonationAmount(e.target.value)}
                         type="number"
                         min="1"
+                        className="text-base lg:text-lg"
                       />
                       
                       {/* Quick amount selection */}
-                      <div className="flex gap-2 mt-3 justify-center">
+                      <div className="flex flex-wrap gap-2 mt-3 justify-center">
                         {[10, 25, 50, 100].map((amount) => (
                           <motion.button
                             key={amount}
@@ -365,11 +390,11 @@ const Membership = () => {
                     </motion.div>
                   </>
                 ) : (
-                  <ul className="flex flex-col justify-center items-start gap-4">
+                  <ul className="flex flex-col justify-center items-start gap-3 lg:gap-4 mb-6 lg:mb-0">
                     {plan.features.map((feature, idx) => (
                       <motion.li
                         key={idx}
-                        className="flex items-center text-white text-base font-normal font-Merriweather gap-3"
+                        className="flex items-center text-white text-sm lg:text-base font-normal font-Merriweather gap-3"
                         variants={featureItemVariants}
                         custom={idx}
                         initial="hidden"
@@ -380,7 +405,7 @@ const Membership = () => {
                           whileHover={{ scale: 1.2 }}
                           whileTap={{ scale: 0.9 }}
                         >
-                          <Check className="text-[#b49267]" size={24} />
+                          <Check className="text-[#b49267]" size={20} lg:size={24} />
                         </motion.div>
                         <span>{feature}</span>
                       </motion.li>
@@ -389,11 +414,13 @@ const Membership = () => {
                 )}
 
                 <motion.div
-                  className="mt-[41px]"
+                  className="mt-6 lg:mt-[41px]"
                   variants={buttonVariants}
                 >
                   <Button
-                    className={`py-5 text-center justify-center text-orange-100 text-base font-normal font-Merriweather leading-5 w-full ${isPopular ? 'bg-gradient-to-r from-yellow-600 to-amber-700' : ''}`}
+                    className={`py-4 lg:py-5 text-center text-orange-100 text-sm lg:text-base font-normal font-Merriweather leading-5 w-full ${
+                      isPopular ? 'bg-gradient-to-r from-yellow-600 to-amber-700' : ''
+                    }`}
                     style={{ backgroundImage: `url(${buttonBG})`, width: "100%" }}
                     onClick={() => isDonation ? handleDonation() : handleSubscribe(plan.id)}
                     disabled={isProcessing && selectedPlan === plan.id}
@@ -415,7 +442,7 @@ const Membership = () => {
                   {/* Price breakdown for lifetime */}
                   {plan.id === "lifetime" && !isProcessing && (
                     <motion.p
-                      className="text-center text-yellow-200/70 text-sm mt-2"
+                      className="text-center text-yellow-200/70 text-xs lg:text-sm mt-2"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 1 }}
@@ -427,7 +454,7 @@ const Membership = () => {
                   {/* Monthly equivalent for donation */}
                   {plan.id === "donation" && (
                     <motion.p
-                      className="text-center text-yellow-200/70 text-sm mt-2"
+                      className="text-center text-yellow-200/70 text-xs lg:text-sm mt-2"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 1 }}
@@ -453,7 +480,7 @@ const Membership = () => {
 
         {/* Background decorative elements */}
         <motion.div
-          className="absolute -z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96"
+          className="absolute -z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 lg:w-96 lg:h-96"
           animate={{
             rotate: 360,
             scale: [1, 1.1, 1],
