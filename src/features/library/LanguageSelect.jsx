@@ -4,32 +4,34 @@ import { ChevronRight, Music } from "lucide-react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { useNavigate } from "react-router-dom";
-
+import  Japaneseimg  from "../../assets/images/languageImages/Japnasse.png";
+import  korianimg  from "../../assets/images/languageImages/Korean.png";
+import  spanishimg  from "../../assets/images/languageImages/Spanish.png";
 const languages = [
   {
     id: "Spanish",
     name: "Spanish",
-    imagesrc: "src/assets/images/languageImages/Japnasse.png",
+    imagesrc: Japaneseimg,
   },
   {
     id: "French",
     name: "French",
-    imagesrc: "src/assets/images/languageImages/Korean.png",
+    imagesrc: korianimg,
   },
   {
     id: "Portuguese",
     name: "Portuguese",
-    imagesrc: "src/assets/images/languageImages/Spanish.png",
+    imagesrc: spanishimg,
   },
   {
     id: "Russian",
     name: "Russian",
-    imagesrc: "src/assets/images/languageImages/Japnasse.png",
+    imagesrc: Japaneseimg,
   },
   {
     id: "Japanese",
     name: "Japanese",
-    imagesrc: "src/assets/images/languageImages/Korean.png",
+    imagesrc: korianimg,
   },
 ];
 
