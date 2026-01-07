@@ -29,8 +29,8 @@ const Quiz = () => {
 
   useEffect(() => {
     const song = ENHANCED_SONGS.find(s => s.id === songId);
-    if (song && song.quiz) {
-      dispatch(startQuiz(song.quiz));
+    if (song && song.exercise) {
+      dispatch(startQuiz(song.exercise));
     } else {
       navigate('/dashboard');
     }
@@ -55,7 +55,7 @@ const Quiz = () => {
         <div className="w-full max-w-[524px] h-auto min-h-[670px] relative bg-transparent results-container">
           <div className="w-full px-4 mt-4 results-content">
             <div className="text-center text-white text-3xl md:text-4xl font-bold font-Merriweather leading-10 complete-message-responsive">
-              Quiz Complete!
+              Exercise Complete!
             </div>
           </div>
 
@@ -253,7 +253,7 @@ const Quiz = () => {
                   style={{ backgroundImage: `url(${buttonBG})`, backgroundSize: '100% 100%' }}
                 >
                   <span className="text-orange-100 text-base md:text-lg font-normal font-Merriweather pt-1">
-                    {currentQuestionIndex === questions.length - 1 ? "Finish Quiz" : "Next Question"}
+                    {currentQuestionIndex === questions.length - 1 ? "Finish Exercise" : "Next Question"}
                   </span>
                 </div>
               </div>

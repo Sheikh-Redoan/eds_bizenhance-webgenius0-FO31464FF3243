@@ -46,8 +46,8 @@ function App() {
           
           <Route path="/listen/:songId" element={<BookPlayer />} />
           
-          <Route path="/quiz/:songId" element={<Quiz />} />
-          <Route path="/quiz/:songId/results" element={<QuizResults />} />
+          <Route path="/exercise/:songId" element={<Quiz />} />
+          <Route path="/exercise/:songId/results" element={<QuizResults />} />
         </Routes>
       </main>
     </div>

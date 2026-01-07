@@ -11,7 +11,7 @@ export const ENHANCED_SONGS = [
     description: "A timeless classic about peace and unity",
     genre: "Pop",
     difficulty: "beginner",
-    quiz: [
+    exercise: [
       {
         question: "How do you say 'Hello' in French?",
         options: ["Au revoir", "Bonjour", "Merci", "S'il vous plait"],
@@ -144,6 +144,15 @@ export const ENHANCED_SONGS = [
             context: "A flat surface, also used in expressions like 'lay it on the table'" 
           }
         ]
+      },
+      {
+        pageIndex: 5,
+        type: "exercise_prompt",
+        content: {
+          title: "Ready to Test Your Knowledge?",
+          description: "You've learned the lyrics and vocabulary. Now let's see how much you remember!",
+          buttonText: "Start Exercise"
+        }
       }
     ]
   },
@@ -157,7 +166,7 @@ export const ENHANCED_SONGS = [
     description: "A romantic bolero that has captured hearts worldwide",
     genre: "Bolero",
     difficulty: "intermediate",
-    quiz: [
+    exercise: [
       {
         question: "What does 'Bésame' mean?",
         options: ["Hug me", "Kiss me", "Love me", "Hold me"],
@@ -228,6 +237,15 @@ export const ENHANCED_SONGS = [
             context: "Adverb meaning 'very much' or 'a lot'" 
           }
         ]
+      },
+      {
+        pageIndex: 4,
+        type: "exercise_prompt",
+        content: {
+          title: "Ready to Test Your Knowledge?",
+          description: "You've learned the lyrics and vocabulary. Now let's see how much you remember!",
+          buttonText: "Start Exercise"
+        }
       }
     ]
   }

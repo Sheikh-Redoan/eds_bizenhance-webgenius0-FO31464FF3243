@@ -31,7 +31,7 @@ const QuizResults = () => {
             {songData.title}
           </div>
           <div className="justify-center text-white text-xl font-normal font-Merriweather leading-6 text-center">
-            Quiz Results
+            Exercise Results
           </div>
         </div>
 
