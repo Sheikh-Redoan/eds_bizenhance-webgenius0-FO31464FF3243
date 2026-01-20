@@ -6,6 +6,7 @@ import bannerImage from "../../assets/images/bannerImage.png";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   const cardRef = useRef(null);
@@ -17,11 +18,11 @@ const Home = () => {
     const checkDesktop = () => {
       setIsDesktop(window.innerWidth >= 1024);
     };
-    
+
     checkDesktop();
-    window.addEventListener('resize', checkDesktop);
-    
-    return () => window.removeEventListener('resize', checkDesktop);
+    window.addEventListener("resize", checkDesktop);
+
+    return () => window.removeEventListener("resize", checkDesktop);
   }, []);
 
   // GSAP 3D tilt effect
@@ -35,7 +36,7 @@ const Home = () => {
       const rect = container.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
-      
+
       // Calculate rotation with reduced sensitivity
       const mouseX = ((event.clientX - centerX) / rect.width) * 25; // Reduced from 30
       const mouseY = ((event.clientY - centerY) / rect.height) * 15; // Reduced from 20
@@ -167,16 +168,18 @@ const Home = () => {
           className="flex flex-col sm:flex-row items-center gap-4 mt-4 lg:mt-6 w-full max-w-md"
           variants={itemVariants}
         >
-          <motion.div 
-            className="w-full sm:w-auto" 
-            variants={buttonVariants} 
-            whileHover="hover" 
+          <motion.div
+            className="w-full sm:w-auto"
+            variants={buttonVariants}
+            whileHover="hover"
             whileTap="tap"
           >
-            <Button className="sm:w-auto px-6 py-6 lg:px-7 lg:py-7 flex justify-center items-center text-white text-sm sm:text-base font-normal font-Merriweather leading-4 gap-2 mx-auto">
-              <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" /> 
-              <span className="text-[14px]">Explore Languages</span>
-            </Button>
+            <Link to="/languages">
+              <Button className="sm:w-auto px-6 py-6 lg:px-7 lg:py-7 flex justify-center items-center text-white text-sm sm:text-base font-normal font-Merriweather leading-4 gap-2 mx-auto">
+                <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="text-[14px]">Explore Languages</span>
+              </Button>
+            </Link>
           </motion.div>
 
           <motion.div
@@ -185,12 +188,12 @@ const Home = () => {
             whileHover="hover"
             whileTap="tap"
           >
-            <Button
-              className="sm:w-auto px-6 py-6 lg:px-7 lg:py-7 flex justify-center items-center text-white text-sm sm:text-base font-normal font-Merriweather leading-4 gap-2 mx-auto"
-            >
-              <Star className="w-4 h-4 sm:w-5 sm:h-5" /> 
-              <span className="text-[14px]">Become a Member</span>
-            </Button>
+            <Link to="/membership">
+              <Button className="sm:w-auto px-6 py-6 lg:px-7 lg:py-7 flex justify-center items-center text-white text-sm sm:text-base font-normal font-Merriweather leading-4 gap-2 mx-auto">
+                <Star className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="text-[14px]">Become a Member</span>
+              </Button>
+            </Link>
           </motion.div>
         </motion.div>
       </div>
@@ -224,10 +227,10 @@ const Home = () => {
               transform: "translateZ(0px)",
             }}
           />
-          
+
           {/* Overlay Glow Effect */}
           <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          
+
           {/* Edge Glow - Desktop only */}
           {isDesktop && (
             <div
@@ -240,7 +243,7 @@ const Home = () => {
             />
           )}
         </div>
-        
+
         {/* Subtle border */}
         <div className="absolute inset-0 rounded-2xl border border-white/10 pointer-events-none" />
       </motion.div>

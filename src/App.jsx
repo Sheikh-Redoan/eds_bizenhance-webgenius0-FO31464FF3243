@@ -18,16 +18,22 @@ import { setSong } from "./features/player/playerSlice";
 import { ENHANCED_SONGS } from "./data/mockSongs";
 import main_bg from "./assets/main-bg1.png";
 
+// 1. Import the MouseEffect component
+import MouseEffect from "./components/ui/MouseEffect";
+
 function App() {
   const dispatch = useDispatch();
 
-  // Initialize with first song
   useEffect(() => {
     dispatch(setSong(ENHANCED_SONGS[0]));
   }, [dispatch]);
 
   return (
-    <div className="min-h-screen bg-wood-dark font-sans text-paper-light bg-[#E4C395] bg-cover bg-no-repeat">
+    <div className="min-h-screen bg-wood-dark font-sans text-paper-light bg-[#E4C395] bg-cover bg-no-repeat relative">
+      
+      {/* 2. Add the MouseEffect component here */}
+      <MouseEffect />
+
       <Navbar />
       <main
         className="bg-no-repeat bg-center bg-contain min-h-screen pt-20.25 max-[1024px]:bg-cover"
