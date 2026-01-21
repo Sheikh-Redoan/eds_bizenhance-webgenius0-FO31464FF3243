@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useRegisterMutation } from "../../redux/endpoints/authApi";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import Textarea from "../../components/ui/Textarea";
@@ -10,6 +11,7 @@ import { User, Mail, Lock, UserPlus, Eye, EyeOff, AlertCircle, Users, UserCheck 
 
 const Signup = () => {
   const navigate = useNavigate();
+  const [register, { isLoading }] = useRegisterMutation();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -81,16 +83,20 @@ const Signup = () => {
     setIsSubmitting(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        password_confirmation: formData.confirmPassword,
+      }).unwrap();
       
-      // Mock successful registration
-      console.log("Registration successful:", formData);
-      navigate("/login"); // Redirect to login
+      console.log("Registration successful");
+      navigate("/login");
       
     } catch (error) {
       console.error("Registration error:", error);
-      setErrors({ submit: "Registration failed. Please try again." });
+      const msg = error?.data?.message || "Registration failed. Please try again.";
+      setErrors({ submit: msg });
     } finally {
       setIsSubmitting(false);
     }
@@ -348,7 +354,7 @@ const Signup = () => {
                 type="submit"
                 className="py-5 text-center justify-center text-orange-100 text-base font-normal font-Merriweather leading-5 w-full flex items-center justify-center gap-2 group"
                 style={{ backgroundImage: `url(${buttonBG})` }}
-                disabled={isSubmitting}
+                disabled={isLoading || isSubmitting}
               >
                 {isSubmitting ? (
                   <>

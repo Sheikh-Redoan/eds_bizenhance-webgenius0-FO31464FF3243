@@ -1,4 +1,6 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectIsAuthenticated } from "./redux/slices/authSlice";
 import Navbar from "./components/layout/Navbar";
 import Dashboard from "./features/dashboard/Dashboard";
 import LanguageSelect from "./features/library/LanguageSelect";
@@ -21,6 +23,15 @@ import main_bg from "./assets/main-bg1.png";
 // 1. Import the MouseEffect component
 import MouseEffect from "./components/ui/MouseEffect";
 
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+};
+
 function App() {
   const dispatch = useDispatch();
 
@@ -41,7 +52,6 @@ function App() {
       >
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/languages" element={<LanguageSelect />} />
           <Route path="/languages/:languageId" element={<LanguageSongs />} />
           <Route path="/membership" element={<Membership />} />
@@ -50,10 +60,24 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
+          
           <Route path="/listen/:songId" element={<BookPlayer />} />
           
-          <Route path="/exercise/:songId" element={<Quiz />} />
-          <Route path="/exercise/:songId/results" element={<QuizResults />} />
+          <Route path="/exercise/:songId" element={
+            <ProtectedRoute>
+              <Quiz />
+            </ProtectedRoute>
+          } />
+          <Route path="/exercise/:songId/results" element={
+            <ProtectedRoute>
+              <QuizResults />
+            </ProtectedRoute>
+          } />
         </Routes>
       </main>
     </div>

@@ -3,7 +3,9 @@
 /* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Play, ChevronRight, Music, Filter, Search, X } from "lucide-react";
+import { useSelector } from "react-redux";
+import { selectIsAuthenticated } from "../../redux/slices/authSlice";
+import { Play, ChevronRight, Music, Filter, Search, X, Lock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import SearchInput from "../../components/ui/SearchInput";
 import Select from "../../components/ui/Select";
@@ -73,7 +75,7 @@ const WaveformVisual = ({ isPlaying = false }) => {
 };
 
 // Responsive SongCard
-const SongCard = ({ song, onClick, index }) => {
+const SongCard = ({ song, onClick, index, isLocked }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const cardVariants = {
@@ -114,9 +116,20 @@ const SongCard = ({ song, onClick, index }) => {
       variants={cardVariants}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
-      className="relative w-full cursor-pointer"
-      onClick={onClick}
+      className={`relative w-full ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+      onClick={isLocked ? null : onClick}
     >
+      {/* LOCKED OVERLAY */}
+      {isLocked && (
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/60 backdrop-blur-[2px] rounded-lg border-[10px] sm:border-[14px] lg:border-[20px] border-transparent">
+          <div className="bg-[#3F291B] p-4 rounded-full border-2 border-[#8B7355] shadow-2xl">
+            <Lock className="w-8 h-8 text-[#D4B483]" />
+          </div>
+          <p className="mt-3 text-[#EFEFEF] font-Merriweather font-bold text-sm bg-black/60 px-3 py-1 rounded">
+            Members Only
+          </p>
+        </div>
+      )}
       {/* Frame Container */}
       <div
         className="border-[10px] sm:border-[14px] lg:border-[20px] border-[#5d4037] rounded-lg shadow-lg relative overflow-hidden bg-transparent w-full"
@@ -190,13 +203,20 @@ const SongCard = ({ song, onClick, index }) => {
               {/* Action Button Area */}
               <div className="flex items-center justify-between w-full mt-0.5 sm:mt-1">
                 <Button 
-                  className='py-2 sm:py-3 px-3 sm:px-4 w-full mx-auto group'
+                  className={`py-2 sm:py-3 px-3 sm:px-4 w-full mx-auto group ${isLocked ? 'opacity-50' : ''}`}
                   style={{ backgroundImage: `url(${buttonBG})`, backgroundSize: 'contain' }}
                 >
-                  <span className="text-[#3F291B] text-[10px] xs:text-xs sm:text-xs font-Merriweather font-bold group-hover:text-[#8B7355] transition-colors flex items-center justify-center gap-0.5 sm:gap-1">
-                    <span className="truncate">Open Song</span>
-                    <ChevronRight size={10} smSize={14} className="w-2 h-2 sm:w-3 sm:h-3 flex-shrink-0" />
-                  </span>
+                  {isLocked ? (
+                    <span className="text-[#3F291B] text-[10px] xs:text-xs sm:text-xs font-Merriweather font-bold flex items-center justify-center gap-1">
+                      <Lock size={10} className="w-2 h-2 sm:w-3 sm:h-3" />
+                      <span className="truncate">Locked</span>
+                    </span>
+                  ) : (
+                    <span className="text-[#3F291B] text-[10px] xs:text-xs sm:text-xs font-Merriweather font-bold group-hover:text-[#8B7355] transition-colors flex items-center justify-center gap-0.5 sm:gap-1">
+                      <span className="truncate">Open Song</span>
+                      <ChevronRight size={10} smSize={14} className="w-2 h-2 sm:w-3 sm:h-3 flex-shrink-0" />
+                    </span>
+                  )}
                 </Button>
               </div>
             </div>
@@ -210,6 +230,7 @@ const SongCard = ({ song, onClick, index }) => {
 const LanguageSongs = () => {
   const { languageId } = useParams();
   const navigate = useNavigate();
+  const isAuthenticated = useSelector(selectIsAuthenticated);
   
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState(null);
@@ -367,15 +388,26 @@ const LanguageSongs = () => {
         animate="visible"
       >
         {filteredSongs.length > 0 ? (
-          filteredSongs.map((song, index) => (
-            <div key={song.id} className="w-full max-w-xs sm:max-w-sm lg:max-w-full">
-              <SongCard
-                song={song}
-                index={index}
-                onClick={() => navigate(`/listen/${song.id}`)}
-              />
-            </div>
-          ))
+          filteredSongs.map((song, index) => {
+            const isLocked = !isAuthenticated && index > 0;
+            
+            return (
+              <div key={song.id} className="w-full max-w-xs sm:max-w-sm lg:max-w-full">
+                <SongCard
+                  song={song}
+                  index={index}
+                  isLocked={isLocked}
+                  onClick={() => {
+                    if (!isLocked) {
+                      navigate(`/listen/${song.id}`);
+                    } else {
+                      navigate('/membership');
+                    }
+                  }}
+                />
+              </div>
+            );
+          })
         ) : (
           <div className="col-span-full text-center py-8 sm:py-12 md:py-16 px-4">
             <Music size={32} smSize={40} mdSize={48} className="text-white/40 mx-auto mb-3 sm:mb-4" />

@@ -103,7 +103,7 @@ const MouseEffect = () => {
         left: 0,
         width: '100%',
         height: '100%',
-        pointerEvents: 'none', // Allows clicks to pass through
+        pointerEvents: 'none', 
         zIndex: 50
       }}
     />

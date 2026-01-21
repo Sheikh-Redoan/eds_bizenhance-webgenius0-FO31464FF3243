@@ -2,7 +2,8 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import React, { useRef, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { selectIsAuthenticated } from '../../redux/slices/authSlice';
 import { setPage, setCurrentTime, setDuration, setIsPlaying } from './playerSlice';
 import AudioControls from './AudioControls';
 import Button from '../../components/ui/Button';
@@ -12,10 +13,19 @@ import topicon from "../../assets/icons/top-icon.png"
 const BookPlayer = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { songId } = useParams();
+  const isAuthenticated = useSelector(selectIsAuthenticated);
   const { currentSong, isPlaying, currentTime, currentPageIndex } = useSelector((state) => state.player);
   const audioRef = useRef(null);
   const [sheets, setSheets] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
+
+  // Protect songs for non-authenticated users
+  useEffect(() => {
+    if (!isAuthenticated && parseInt(songId) !== 1) {
+      navigate('/membership');
+    }
+  }, [songId, isAuthenticated, navigate]);
 
   // Check if mobile on mount and resize
   useEffect(() => {

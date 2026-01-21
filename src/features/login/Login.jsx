@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useLoginMutation } from "../../redux/endpoints/authApi";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import buttonBG from "../../assets/images/Buttonbordersecoundary.png";
@@ -9,6 +10,7 @@ import { Mail, Lock, LogIn, Eye, EyeOff, AlertCircle } from "lucide-react";
 
 const Login = () => {
   const navigate = useNavigate();
+  const [login, { isLoading }] = useLoginMutation();
   const [formData, setFormData] = useState({
     email: "",
     password: ""
@@ -62,16 +64,18 @@ const Login = () => {
     setIsSubmitting(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await login({ 
+        email: formData.email, 
+        password: formData.password 
+      }).unwrap();
       
-      // Mock successful login
-      console.log("Login successful:", formData);
-      navigate("/dashboard"); // Redirect to dashboard
+      console.log("Login successful");
+      navigate("/dashboard");
       
     } catch (error) {
       console.error("Login error:", error);
-      setErrors({ submit: "Invalid email or password. Please try again." });
+      const msg = error?.data?.message || "Invalid email or password. Please try again.";
+      setErrors({ submit: msg });
     } finally {
       setIsSubmitting(false);
     }
@@ -269,7 +273,7 @@ const Login = () => {
                 type="submit"
                 className="py-5 text-center justify-center text-orange-100 text-base font-normal font-Merriweather leading-5 w-full flex items-center justify-center gap-2 group"
                 style={{ backgroundImage: `url(${buttonBG})` }}
-                disabled={isSubmitting}
+                disabled={isLoading || isSubmitting}
               >
                 {isSubmitting ? (
                   <>

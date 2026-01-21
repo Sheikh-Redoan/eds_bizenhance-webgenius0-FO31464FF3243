@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useForgotPasswordMutation, useVerifyOtpMutation, useResetPasswordMutation, useResendOtpMutation } from "../../redux/endpoints/authApi";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import buttonBG from "../../assets/images/Buttonbordersecoundary.png";
@@ -9,6 +10,10 @@ import { Mail, ArrowLeft, CheckCircle, AlertCircle, KeyRound, RefreshCw } from "
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
+  const [forgotPassword, { isLoading: isSendingOtp }] = useForgotPasswordMutation();
+  const [verifyOtp, { isLoading: isVerifyingOtp }] = useVerifyOtpMutation();
+  const [resetPassword, { isLoading: isResettingPassword }] = useResetPasswordMutation();
+  const [resendOtp, { isLoading: isResendingOtp }] = useResendOtpMutation();
   const [step, setStep] = useState(1); // 1: Email input, 2: OTP input, 3: New password, 4: Success
   const [formData, setFormData] = useState({
     email: "",
@@ -134,10 +139,8 @@ const ForgotPassword = () => {
     setIsSubmitting(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await forgotPassword({ email: formData.email }).unwrap();
       
-      // Mock OTP sent
       setOtpSent(true);
       startOtpTimer();
       setStep(2);
@@ -147,7 +150,8 @@ const ForgotPassword = () => {
       
     } catch (error) {
       console.error("OTP send error:", error);
-      setErrors({ submit: "Failed to send OTP. Please try again." });
+      const msg = error?.data?.message || "Failed to send OTP. Please try again.";
+      setErrors({ submit: msg });
     } finally {
       setIsSubmitting(false);
     }
@@ -165,21 +169,16 @@ const ForgotPassword = () => {
     setIsSubmitting(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Mock OTP verification
       const otpString = formData.otp.join("");
-      if (otpString === "123456") { // Mock valid OTP
-        setStep(3);
-        setErrors({});
-      } else {
-        setErrors({ otp: "Invalid OTP. Please try again." });
-      }
+      await verifyOtp({ email: formData.email, otp: otpString }).unwrap();
+      
+      setStep(3);
+      setErrors({});
       
     } catch (error) {
       console.error("OTP verification error:", error);
-      setErrors({ submit: "Verification failed. Please try again." });
+      const msg = error?.data?.message || "Invalid OTP. Please try again.";
+      setErrors({ otp: msg });
     } finally {
       setIsSubmitting(false);
     }
@@ -197,26 +196,39 @@ const ForgotPassword = () => {
     setIsSubmitting(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await resetPassword({
+        email: formData.email,
+        password: formData.newPassword,
+        password_confirmation: formData.confirmPassword,
+      }).unwrap();
       
-      // Mock password reset
       setStep(4);
       setErrors({});
       
+      setTimeout(() => {
+        navigate("/login");
+      }, 5000);
+      
     } catch (error) {
       console.error("Password reset error:", error);
-      setErrors({ submit: "Failed to reset password. Please try again." });
+      const msg = error?.data?.message || "Failed to reset password. Please try again.";
+      setErrors({ submit: msg });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleResendOtp = () => {
+  const handleResendOtp = async () => {
     if (otpTimer === 0) {
-      startOtpTimer();
-      setOtpSent(false);
-      handleSendOtp();
+      try {
+        await resendOtp({ email: formData.email }).unwrap();
+        startOtpTimer();
+        setOtpSent(false);
+      } catch (error) {
+        console.error("Resend OTP error:", error);
+        const msg = error?.data?.message || "Failed to resend OTP.";
+        setErrors({ submit: msg });
+      }
     }
   };
 
