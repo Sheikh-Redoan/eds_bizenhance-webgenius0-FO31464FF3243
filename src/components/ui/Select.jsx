@@ -53,7 +53,7 @@ const Select = ({ options = [], placeholder, value, onChange, className }) => {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-full z-50">
+        <div className="absolute top-full left-0 mt-2 w-full z-60">
           <div className="p-6 bg-[#B28769] outline outline-2 outline-offset-[-2px] outline-[#B28769] flex flex-col gap-2.5 shadow-2xl">
             {/* "All" Option (Reset) */}
             <div
@@ -67,7 +67,7 @@ const Select = ({ options = [], placeholder, value, onChange, className }) => {
                 {placeholder || "All"}
               </span>
             </div>
-
+            
             {/* Options List */}
             {options.map((option) => (
               <div

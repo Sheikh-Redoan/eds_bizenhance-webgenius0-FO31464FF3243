@@ -40,46 +40,55 @@ function App() {
   }, [dispatch]);
 
   return (
-    <div className="min-h-screen bg-wood-dark font-sans text-paper-light bg-[#E4C395] bg-cover bg-no-repeat relative">
+    <div className="min-h-screen font-sans text-paper-light relative overflow-hidden">
+      
+      {/* Background Image - Made Fixed/Sticky */}
+      <div 
+        className="fixed inset-0 bg-contain bg-center bg-no-repeat z-0 max-[500px]:bg-cover"
+        style={{ 
+          backgroundImage: `url(${main_bg})`,
+          backgroundColor: '#E4C395'
+        }}
+      ></div>
       
       {/* 2. Add the MouseEffect component here */}
       <MouseEffect />
 
-      <Navbar />
-      <main
-        className="bg-no-repeat bg-center bg-contain min-h-screen pt-20.25 max-[1024px]:bg-cover"
-        style={{ backgroundImage: `url(${main_bg})` }}
-      >
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/languages" element={<LanguageSelect />} />
-          <Route path="/languages/:languageId" element={<LanguageSongs />} />
-          <Route path="/membership" element={<Membership />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          
-          <Route path="/dashboard" element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/listen/:songId" element={<BookPlayer />} />
-          
-          <Route path="/exercise/:songId" element={
-            <ProtectedRoute>
-              <Quiz />
-            </ProtectedRoute>
-          } />
-          <Route path="/exercise/:songId/results" element={
-            <ProtectedRoute>
-              <QuizResults />
-            </ProtectedRoute>
-          } />
-        </Routes>
-      </main>
+      {/* Content Wrapper */}
+      <div className="relative z-10 min-h-screen">
+        <Navbar />
+        <main className="pt-20.25 min-h-screen">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/languages" element={<LanguageSelect />} />
+            <Route path="/languages/:languageId" element={<LanguageSongs />} />
+            <Route path="/membership" element={<Membership />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/listen/:songId" element={<BookPlayer />} />
+            
+            <Route path="/exercise/:songId" element={
+              <ProtectedRoute>
+                <Quiz />
+              </ProtectedRoute>
+            } />
+            <Route path="/exercise/:songId/results" element={
+              <ProtectedRoute>
+                <QuizResults />
+              </ProtectedRoute>
+            } />
+          </Routes>
+        </main>
+      </div>
     </div>
   );
 }
