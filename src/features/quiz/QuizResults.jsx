@@ -1,17 +1,18 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ENHANCED_SONGS } from '../../data/mockSongs';
+import { useGetSongDetailsQuery } from '../../redux/api/contentApi';
 
 const QuizResults = () => {
   const { songId } = useParams();
   const navigate = useNavigate();
   const { score, questions } = useSelector((state) => state.quiz);
   
-  const songData = ENHANCED_SONGS.find(s => s.id === songId);
+  const { data: songDetails } = useGetSongDetailsQuery(songId);
+  const songData = songDetails?.data;
   
   if (!songData) {
-    return <div className="text-white text-center mt-20">Song not found</div>;
+    return <div className="text-white text-center mt-20">Loading Results...</div>;
   }
 
   const percentage = Math.round((score / questions.length) * 100);
@@ -38,7 +39,7 @@ const QuizResults = () => {
         {/* Background */}
         <img 
           className="w-[524px] h-[541px] left-0 top-[129px] absolute rounded-xl object-cover opacity-20 bg-black" 
-          src={songData.coverUrl} 
+          src={songData.image} 
           alt="Background" 
         />
         <div className="w-[524px] h-[541px] left-0 top-[129px] absolute rounded-xl bg-gradient-to-b from-black/80 to-stone-900/90 border-2 border-stone-600" />

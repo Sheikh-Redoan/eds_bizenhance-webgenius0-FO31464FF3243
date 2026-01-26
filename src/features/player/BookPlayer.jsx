@@ -4,7 +4,8 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { selectIsAuthenticated } from '../../redux/slices/authSlice';
-import { setPage, setCurrentTime, setDuration, setIsPlaying } from './playerSlice';
+import { setSong, setPage, setCurrentTime, setDuration, setIsPlaying } from './playerSlice';
+import { useGetSongDetailsQuery } from '../../redux/api/contentApi';
 import AudioControls from './AudioControls';
 import Button from '../../components/ui/Button';
 import buttonBG from "../../assets/images/QuizButtonBG.png"
@@ -19,6 +20,69 @@ const BookPlayer = () => {
   const audioRef = useRef(null);
   const [sheets, setSheets] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
+
+  const { data: songDetails, isLoading } = useGetSongDetailsQuery(songId);
+
+  // Transform API data to song format
+  useEffect(() => {
+    if (songDetails?.data) {
+      const apiData = songDetails.data;
+
+      const formattedLyrics = (apiData.lyrics || []).map(l => ({
+        time: parseFloat(l.duration?.start_time || 0),
+        en: l.eng_lang,
+        target: l.other_lang
+      })).sort((a, b) => a.time - b.time);
+
+      const formattedVocab = (apiData.vocabularies || []).map(v => ({
+        word: v.word,
+        translation: v.meaning,
+        context: v.example
+      }));
+
+      const pages = [];
+      const LINES_PER_PAGE = 8;
+      
+      for (let i = 0; i < formattedLyrics.length; i += LINES_PER_PAGE) {
+        pages.push({
+          type: 'lyrics',
+          lines: formattedLyrics.slice(i, i + LINES_PER_PAGE)
+        });
+      }
+
+      const WORDS_PER_PAGE = 6;
+      for (let i = 0; i < formattedVocab.length; i += WORDS_PER_PAGE) {
+        pages.push({
+          type: 'vocab',
+          words: formattedVocab.slice(i, i + WORDS_PER_PAGE)
+        });
+      }
+
+      if (apiData.quiz_questions && apiData.quiz_questions.length > 0) {
+        pages.push({
+          type: 'exercise_prompt',
+          content: {
+            title: "Test Your Knowledge",
+            description: "Ready to check what you've learned?",
+            buttonText: "Start Quiz"
+          }
+        });
+      }
+
+      const fullSongObject = {
+        id: apiData.id.toString(),
+        title: apiData.title,
+        artist: apiData.artist?.name,
+        audioUrl: apiData.audio,
+        coverUrl: apiData.image,
+        pages: pages,
+        exercise: apiData.quiz_questions && apiData.quiz_questions.length > 0,
+        quiz: apiData.quiz_questions
+      };
+
+      dispatch(setSong(fullSongObject));
+    }
+  }, [songDetails, dispatch]);
 
   // Protect songs for non-authenticated users
   useEffect(() => {
@@ -346,11 +410,11 @@ const BookPlayer = () => {
     );
   };
 
-  if (!currentSong) {
+  if (isLoading || !currentSong) {
     return (
       <div className="loading-book">
         <div className="loading-spinner"></div>
-        <p>Loading Book...</p>
+        <p>Loading Book & Audio...</p>
       </div>
     );
   }

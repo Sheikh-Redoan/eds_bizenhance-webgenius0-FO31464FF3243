@@ -5,8 +5,10 @@ const initialState = {
   isPlaying: false,
   currentTime: 0,
   duration: 0,
-  currentPageIndex: 0, // Represents the sheet index in 3D book
+  currentPageIndex: 0,
   autoFlip: true,
+  volume: 1,
+  isMuted: false,
 };
 
 export const playerSlice = createSlice({

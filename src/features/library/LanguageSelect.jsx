@@ -4,39 +4,18 @@ import { ChevronRight, Music } from "lucide-react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { useNavigate } from "react-router-dom";
-import  Japaneseimg  from "../../assets/images/languageImages/Japnasse.png";
-import  korianimg  from "../../assets/images/languageImages/Korean.png";
-import  spanishimg  from "../../assets/images/languageImages/Spanish.png";
-const languages = [
-  {
-    id: "Spanish",
-    name: "Spanish",
-    imagesrc: Japaneseimg,
-  },
-  {
-    id: "French",
-    name: "French",
-    imagesrc: korianimg,
-  },
-  {
-    id: "Portuguese",
-    name: "Portuguese",
-    imagesrc: spanishimg,
-  },
-  {
-    id: "Russian",
-    name: "Russian",
-    imagesrc: Japaneseimg,
-  },
-  {
-    id: "Japanese",
-    name: "Japanese",
-    imagesrc: korianimg,
-  },
-];
+import { useGetLanguagesQuery } from "../../redux/api/contentApi";
 
 const LanguageSelect = () => {
   const navigate = useNavigate();
+  const { data: languageData, isLoading } = useGetLanguagesQuery();
+  
+  const languages = languageData?.data?.map(lang => ({
+    id: lang.name,
+    dbId: lang.id,
+    name: lang.name,
+    imagesrc: lang.image
+  })) || [];
   
   const [titleRef, titleInView] = useInView({
     triggerOnce: true,
@@ -196,7 +175,10 @@ const LanguageSelect = () => {
           className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 mt-6 lg:mt-10 xl:mt-12"
           variants={containerVariants}
         >
-          {languages.map((lang, index) => (
+          {isLoading ? (
+            <div className="text-white col-span-full text-center">Loading languages...</div>
+          ) : (
+            languages.map((lang, index) => (
             <motion.div
               key={lang.id}
               className="relative mx-auto w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-full"
@@ -295,7 +277,8 @@ const LanguageSelect = () => {
                 />
               </div>
             </motion.div>
-          ))}
+          ))
+          )}
         </motion.div>
 
         {/* Subtle background animation */}

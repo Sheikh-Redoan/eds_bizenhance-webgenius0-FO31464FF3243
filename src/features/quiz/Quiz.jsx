@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import { startQuiz, selectAnswer, nextQuestion, resetQuiz } from './quizSlice';
-import { ENHANCED_SONGS } from '../../data/mockSongs';
+import { useGetSongDetailsQuery } from '../../redux/api/contentApi';
 import './Quiz.css';
 import { Check, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -17,6 +17,8 @@ const Quiz = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const { data: songDetails } = useGetSongDetailsQuery(songId);
+
   const {
     questions,
     currentQuestionIndex,
@@ -28,16 +30,31 @@ const Quiz = () => {
   } = useSelector((state) => state.quiz);
 
   useEffect(() => {
-    const song = ENHANCED_SONGS.find(s => s.id === songId);
-    if (song && song.exercise) {
-      dispatch(startQuiz(song.exercise));
-    } else {
-      navigate('/dashboard');
+    if (songDetails?.data?.quiz_questions && questions.length === 0) {
+      const apiQuestions = songDetails.data.quiz_questions;
+
+      const formattedQuestions = apiQuestions.map(q => {
+        const correctIndex = q.quiz_options.findIndex(opt => opt.is_correct);
+        
+        return {
+          id: q.id,
+          question: q.question,
+          options: q.quiz_options.map(opt => opt.option_text),
+          correctAnswer: correctIndex
+        };
+      });
+
+      if (formattedQuestions.length > 0) {
+        dispatch(startQuiz(formattedQuestions));
+      }
     }
-  }, [songId, dispatch, navigate]);
+  }, [songDetails, dispatch, questions.length]);
 
   const currentQuestion = questions[currentQuestionIndex];
-  const songData = ENHANCED_SONGS.find(s => s.id === songId);
+  const songData = songDetails?.data ? {
+    title: songDetails.data.title,
+    description: songDetails.data.short_description
+  } : null;
 
   const getLetter = (index) => String.fromCharCode(65 + index);
 
@@ -96,10 +113,19 @@ const Quiz = () => {
               whileTap={{ scale: 0.95 }}
               className="w-full max-w-[280px] sm:flex-1 h-20 md:h-24 relative overflow-hidden cursor-pointer group results-button"
               onClick={() => {
-                const song = ENHANCED_SONGS.find(s => s.id === songId);
                 dispatch(resetQuiz());
-                if (song && song.quiz) {
-                  dispatch(startQuiz(song.quiz));
+                if (songDetails?.data?.quiz_questions) {
+                  const apiQuestions = songDetails.data.quiz_questions;
+                  const formattedQuestions = apiQuestions.map(q => {
+                    const correctIndex = q.quiz_options.findIndex(opt => opt.is_correct);
+                    return {
+                      id: q.id,
+                      question: q.question,
+                      options: q.quiz_options.map(opt => opt.option_text),
+                      correctAnswer: correctIndex
+                    };
+                  });
+                  dispatch(startQuiz(formattedQuestions));
                 }
               }}
             >

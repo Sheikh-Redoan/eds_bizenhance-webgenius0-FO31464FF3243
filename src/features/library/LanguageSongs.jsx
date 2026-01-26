@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { selectIsAuthenticated } from "../../redux/slices/authSlice";
+import { useGetSongsQuery, useGetSongCategoriesQuery } from "../../redux/api/contentApi";
 import { Play, ChevronRight, Music, Filter, Search, X, Lock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import SearchInput from "../../components/ui/SearchInput";
@@ -12,50 +13,6 @@ import Select from "../../components/ui/Select";
 import Button from "../../components/ui/Button";
 import cardBg from "../../assets/images/cardFreame.png";
 import buttonBG from "../../assets/images/Buttonbordersecoundary.png";
-
-// Use placeholder images or local paths
-const SONGS_DATA = [
-  {
-    id: 1,
-    title: "Imagine",
-    artist: "John Lennon",
-    description: "A timeless classic about peace and unity",
-    genre: "Pop",
-    difficulty: "beginner",
-    image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=200&fit=crop",
-    coverColor: "from-orange-200/20 to-emerald-200/20",
-  },
-  {
-    id: 2,
-    title: "Bésame Mucho",
-    artist: "Consuelo Velázquez",
-    description: "A romantic bolero that has captured hearts worldwide",
-    genre: "Bolero",
-    difficulty: "intermediate",
-    image: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=300&h=200&fit=crop",
-    coverColor: "from-orange-200/20 to-emerald-200/20",
-  },
-  {
-    id: 3,
-    title: "La Vie en Rose",
-    artist: "Édith Piaf",
-    description: "An iconic French love song",
-    genre: "Chanson",
-    difficulty: "intermediate",
-    image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300&h=200&fit=crop",
-    coverColor: "from-orange-200/20 to-emerald-200/20",
-  },
-  {
-    id: 4,
-    title: "Yesterday",
-    artist: "The Beatles",
-    description: "A nostalgic song about lost love",
-    genre: "Pop",
-    difficulty: "beginner",
-    image: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=300&h=200&fit=crop",
-    coverColor: "from-orange-200/20 to-emerald-200/20",
-  },
-];
 
 // Simplified WaveformVisual
 const WaveformVisual = ({ isPlaying = false }) => {
@@ -232,27 +189,72 @@ const LanguageSongs = () => {
   const navigate = useNavigate();
   const isAuthenticated = useSelector(selectIsAuthenticated);
   
+  const { data: songsData, isLoading: songsLoading } = useGetSongsQuery();
+  const { data: categoriesData } = useGetSongCategoriesQuery();
+
+  const allSongs = songsData?.data || [];
+  const categories = categoriesData?.data || [];
+
+  const genres = categories.map(cat => ({
+    value: cat.name,
+    label: cat.name
+  }));
+  
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState(null);
   const [selectedGenre, setSelectedGenre] = useState(null);
-  const [filteredSongs, setFilteredSongs] = useState(SONGS_DATA);
+  const [filteredSongs, setFilteredSongs] = useState([]);
 
   const languageName = languageId
     ? languageId.charAt(0).toUpperCase() + languageId.slice(1)
     : "Japanese";
 
   const difficulties = [
-    { value: "beginner", label: "Beginner" },
-    { value: "intermediate", label: "Intermediate" },
-    { value: "advanced", label: "Advanced" },
+    { value: "Beginner", label: "Beginner" },
+    { value: "Intermediate", label: "Intermediate" },
+    { value: "Advanced", label: "Advanced" },
   ];
 
-  const genres = [
-    { value: "Pop", label: "Pop" },
-    { value: "Bolero", label: "Bolero" },
-    { value: "Chanson", label: "Chanson" },
-    { value: "Rock", label: "Rock" },
-  ];
+  // Filter function
+  useEffect(() => {
+    if (!allSongs.length) return;
+
+    const filtered = allSongs.filter((song) => {
+      const isCorrectLanguage = !languageId || 
+        (song.language?.name?.toLowerCase() === languageId.toLowerCase());
+
+      const matchesSearch = song.title.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchesDiff = selectedDifficulty 
+        ? song.difficult === selectedDifficulty 
+        : true;
+        
+      const matchesGenre = selectedGenre 
+        ? song.category?.name === selectedGenre 
+        : true;
+
+      return isCorrectLanguage && matchesSearch && matchesDiff && matchesGenre;
+    });
+    
+    const normalizedSongs = filtered.map(song => ({
+      id: song.id,
+      title: song.title,
+      artist: song.artist?.name || "Unknown",
+      description: song.short_description,
+      genre: song.category?.name,
+      difficulty: song.difficult.toLowerCase(),
+      image: song.image,
+      coverColor: "from-orange-200/20 to-emerald-200/20",
+    }));
+
+    setFilteredSongs(normalizedSongs);
+  }, [searchQuery, selectedDifficulty, selectedGenre, allSongs, languageId]);
+
+  const clearFilters = () => {
+    setSearchQuery("");
+    setSelectedDifficulty(null);
+    setSelectedGenre(null);
+  };
 
   // Animation variants
   const containerVariants = {
@@ -285,24 +287,6 @@ const LanguageSongs = () => {
         delayChildren: 0.3,
       }
     }
-  };
-
-  // Filter function
-  useEffect(() => {
-    const filtered = SONGS_DATA.filter((song) => {
-      const matchesSearch = song.title.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesDiff = selectedDifficulty ? song.difficulty === selectedDifficulty : true;
-      const matchesGenre = selectedGenre ? song.genre === selectedGenre : true;
-      return matchesSearch && matchesDiff && matchesGenre;
-    });
-    
-    setFilteredSongs(filtered);
-  }, [searchQuery, selectedDifficulty, selectedGenre]);
-
-  const clearFilters = () => {
-    setSearchQuery("");
-    setSelectedDifficulty(null);
-    setSelectedGenre(null);
   };
 
   return (
@@ -417,12 +401,12 @@ const LanguageSongs = () => {
             <p className="text-white/40 font-Merriweather text-sm sm:text-base mb-4 sm:mb-6 max-w-md mx-auto">
               Try adjusting your search or filters
             </p>
-            <Button
+            {/* <Button
               onClick={clearFilters}
               className="px-4 sm:px-6 py-2 sm:py-2 bg-transparent border border-[#B28769] text-white hover:bg-[#B28769]/20 text-sm sm:text-base"
             >
               Clear All Filters
-            </Button>
+            </Button> */}
           </div>
         )}
       </motion.div>

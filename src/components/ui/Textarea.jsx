@@ -1,4 +1,3 @@
-import React from 'react';
 import { clsx } from 'clsx';
 
 const Textarea = ({ className, rows = 4, resize = 'none', ...props }) => {
