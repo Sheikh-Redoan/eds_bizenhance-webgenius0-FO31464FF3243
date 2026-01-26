@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import { startQuiz, selectAnswer, nextQuestion, resetQuiz } from './quizSlice';
 import { useGetSongDetailsQuery } from '../../redux/api/contentApi';
+import { useSubmitQuizMutation } from '../../redux/api/userApi';
 import './Quiz.css';
 import { Check, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -18,6 +19,7 @@ const Quiz = () => {
   const navigate = useNavigate();
 
   const { data: songDetails } = useGetSongDetailsQuery(songId);
+  const [submitQuiz] = useSubmitQuizMutation();
 
   const {
     questions,
@@ -39,7 +41,10 @@ const Quiz = () => {
         return {
           id: q.id,
           question: q.question,
-          options: q.quiz_options.map(opt => opt.option_text),
+          options: q.quiz_options.map(opt => ({
+            id: opt.id,
+            text: opt.option_text
+          })),
           correctAnswer: correctIndex
         };
       });
@@ -55,6 +60,24 @@ const Quiz = () => {
     title: songDetails.data.title,
     description: songDetails.data.short_description
   } : null;
+
+  const handleAnswerSelect = (index) => {
+    if (!isAnswered) {
+      dispatch(selectAnswer(index));
+
+      const selectedOption = currentQuestion.options[index];
+      const payload = {
+        song_id: songId,
+        quiz_question_id: currentQuestion.id,
+        quiz_option_id: selectedOption.id
+      };
+
+      submitQuiz(payload)
+        .unwrap()
+        .then((res) => console.log("Quiz submitted", res))
+        .catch((err) => console.error("Quiz submission failed", err));
+    }
+  };
 
   const getLetter = (index) => String.fromCharCode(65 + index);
 
@@ -114,19 +137,6 @@ const Quiz = () => {
               className="w-full max-w-[280px] sm:flex-1 h-20 md:h-24 relative overflow-hidden cursor-pointer group results-button"
               onClick={() => {
                 dispatch(resetQuiz());
-                if (songDetails?.data?.quiz_questions) {
-                  const apiQuestions = songDetails.data.quiz_questions;
-                  const formattedQuestions = apiQuestions.map(q => {
-                    const correctIndex = q.quiz_options.findIndex(opt => opt.is_correct);
-                    return {
-                      id: q.id,
-                      question: q.question,
-                      options: q.quiz_options.map(opt => opt.option_text),
-                      correctAnswer: correctIndex
-                    };
-                  });
-                  dispatch(startQuiz(formattedQuestions));
-                }
               }}
             >
               <div className="absolute inset-0 flex items-center justify-center text-center text-stone-800 dashboard-button-text font-normal font-Merriweather leading-4" style={{ backgroundImage:`url(${moresongbgbutton})`, backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat'}}>
@@ -216,7 +226,7 @@ const Quiz = () => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.1 }}
-                    onClick={() => !isAnswered && dispatch(selectAnswer(idx))}
+                    onClick={() => handleAnswerSelect(idx)}
                     className={`
                       relative w-full min-h-[56px] md:h-[72px] flex justify-between items-center 
                       cursor-pointer transition-colors duration-300 overflow-hidden option-item
@@ -235,7 +245,7 @@ const Quiz = () => {
 
                       {/* Text */}
                       <div className={`text-sm md:text-lg font-semibold font-Inter transition-colors duration-300 option-text ${textStyle}`}>
-                        {option}
+                        {option.text}
                       </div>
                     </div>
 

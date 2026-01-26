@@ -4,80 +4,58 @@ import Button from "../../components/ui/Button";
 import buttonBG from "../../assets/images/Buttonbordersecoundary.png";
 import Input from "../../components/ui/Input";
 import { motion } from "framer-motion";
-import { useState } from "react";
-
-// Mock subscription data
-const subscriptionPlans = [
-  {
-    id: "monthly",
-    icon: Crown,
-    title: "Guild Membership",
-    price: "$1.00 per month",
-    priceValue: 1,
-    description: "Monthly subscription",
-    features: [
-      "Access to all learning pages",
-      "Access to all quiz games",
-      "Submit original song lyrics",
-      "Submit artwork (covers, badges)",
-      "Full voting rights",
-      "Early community participation"
-    ],
-    buttonText: "Join Monthly — $1",
-    popular: false,
-  },
-  {
-    id: "lifetime",
-    icon: Hourglass,
-    title: "Lifetime Member",
-    price: "$250",
-    priceValue: 250,
-    description: "One-time payment",
-    features: [
-      "Permanent access to everything",
-      "Submit lyrics & artwork",
-      "Full voting rights forever",
-      "Priority feature access",
-      "Early access to beta tools",
-      "Founding supporter badge"
-    ],
-    buttonText: "Unlock Lifetime — $250",
-    popular: true,
-  },
-  {
-    id: "donation",
-    icon: HandCoins,
-    title: "Supporter Donate",
-    price: "Custom Amount",
-    description: "Support future development, language content, and creative community projects.",
-    buttonText: "Donation",
-    isDonation: true,
-    popular: false,
-  }
-];
+import { useState, useEffect } from "react";
+import { useGetPlansQuery, usePaypalDonateMutation, useCreateSubscriptionMutation } from "../../redux/api/paymentApi";
 
 const Membership = () => {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [donationAmount, setDonationAmount] = useState("25");
-  const [isProcessing, setIsProcessing] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
 
-  // Mock payment processing
-  const handleSubscribe = async (planId) => {
-    setIsProcessing(true);
-    setSelectedPlan(planId);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setIsProcessing(false);
-    setPaymentSuccess(true);
-    
-    // Reset success message after 3 seconds
-    setTimeout(() => {
-      setPaymentSuccess(false);
+  const { data: plansData, isLoading: isLoadingPlans } = useGetPlansQuery();
+  const [donate, { isLoading: isDonating }] = usePaypalDonateMutation();
+  const [subscribe, { isLoading: isSubscribing }] = useCreateSubscriptionMutation();
+
+  const subscriptionPlans = [
+    ...(plansData?.data?.map(plan => ({
+      id: plan.id,
+      icon: plan.name.toLowerCase().includes('lifetime') ? Hourglass : Crown,
+      title: plan.name,
+      price: `$${plan.price} ${plan.interval === 'MONTH' ? 'per month' : ''}`,
+      priceValue: parseFloat(plan.price),
+      description: plan.name.toLowerCase().includes('lifetime') ? "One-time payment" : "Monthly subscription",
+      features: plan.plan_features.map(f => f.feature),
+      buttonText: plan.name.toLowerCase().includes('lifetime') ? `Unlock Lifetime — $${parseInt(plan.price)}` : `Join Monthly — $${parseInt(plan.price)}`,
+      popular: plan.name.toLowerCase().includes('lifetime'),
+      isDonation: false,
+      type: plan.type
+    })) || []),
+    {
+      id: "donation",
+      icon: HandCoins,
+      title: "Supporter Donate",
+      price: "Custom Amount",
+      description: "Support future development, language content, and creative community projects.",
+      buttonText: "Donation",
+      isDonation: true,
+      popular: false,
+    }
+  ];
+
+  const handleSubscribe = async (plan) => {
+    setSelectedPlan(plan.id);
+    try {
+      const res = await subscribe({ plan_id: plan.id }).unwrap();
+      
+      if (res?.data?.approve_url) {
+        window.location.href = res.data.approve_url;
+      }
+    } catch (err) {
+      console.error("Subscription failed", err);
+      alert("Failed to initiate subscription. Please try again.");
+    } finally {
       setSelectedPlan(null);
-    }, 3000);
+    }
   };
 
   const handleDonation = async () => {
@@ -87,22 +65,23 @@ const Membership = () => {
       return;
     }
     
-    setIsProcessing(true);
     setSelectedPlan("donation");
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setIsProcessing(false);
-    setPaymentSuccess(true);
-    
-    // Reset success message after 3 seconds
-    setTimeout(() => {
-      setPaymentSuccess(false);
+    try {
+      const res = await donate({ amount }).unwrap();
+      if (res?.data?.approve_url) {
+        window.location.href = res.data.approve_url;
+      }
+    } catch (err) {
+      console.error("Donation failed", err);
+      alert("Failed to process donation. Please try again.");
+    } finally {
       setSelectedPlan(null);
-      setDonationAmount("25");
-    }, 3000);
+    }
   };
+
+  if (isLoadingPlans) {
+    return <div className="text-white text-center mt-20">Loading Plans...</div>;
+  }
 
   // Animation variants
   const containerVariants = {
@@ -422,10 +401,10 @@ const Membership = () => {
                       isPopular ? 'bg-gradient-to-r from-yellow-600 to-amber-700' : ''
                     }`}
                     style={{ backgroundImage: `url(${buttonBG})`, width: "100%" }}
-                    onClick={() => isDonation ? handleDonation() : handleSubscribe(plan.id)}
-                    disabled={isProcessing && selectedPlan === plan.id}
+                    onClick={() => isDonation ? handleDonation() : handleSubscribe(plan)}
+                    disabled={(isSubscribing || isDonating) && selectedPlan === plan.id}
                   >
-                    {isProcessing && selectedPlan === plan.id ? (
+                    {(isSubscribing || isDonating) && selectedPlan === plan.id ? (
                       <span className="flex items-center justify-center gap-2">
                         <motion.div
                           className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
@@ -440,7 +419,7 @@ const Membership = () => {
                   </Button>
 
                   {/* Price breakdown for lifetime */}
-                  {plan.id === "lifetime" && !isProcessing && (
+                  {plan.id === "lifetime" && !(isSubscribing || isDonating) && (
                     <motion.p
                       className="text-center text-yellow-200/70 text-xs lg:text-sm mt-2"
                       initial={{ opacity: 0 }}

@@ -4,23 +4,39 @@ import profile from "../../assets/images/Ellipse 6.jpg";
 import Bronze from "../../assets/images/Bronze.png";
 import Silver from "../../assets/images/Silver.png";
 import Gold from "../../assets/images/Gold.png";
+import { useGetUserDashboardQuery } from "../../redux/api/userApi";
 
 const Dashboard = () => {
+  const { data: dashboardData, isLoading, isError } = useGetUserDashboardQuery();
+  
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center text-white">Loading Dashboard...</div>;
+  }
+
+  if (isError) {
+    return <div className="min-h-screen flex items-center justify-center text-white">Failed to load dashboard data.</div>;
+  }
+
+  const apiData = dashboardData?.data;
+  const user = apiData?.user;
+  const requiredXp = 1500;
+  const currentXp = apiData?.total_xp || 0;
+  
   const userData = {
-    name: "Language Learner",
-    title: "Level 8 Explorer",
-    avatar: profile,
-    currentXp: 1250,
-    requiredXp: 1500,
+    name: user?.name || "Language Learner",
+    title: user?.role === "User" ? "Explorer" : user?.role,
+    avatar: user?.avatar || profile,
+    currentXp: currentXp,
+    requiredXp: requiredXp,
     stats: {
-      quizzesCompleted: 18,
-      badgesEarned: 8,
-      songsCompleted: 8,
-      achievements: 3,
+      quizzesCompleted: apiData?.total_complete_quiz || 0,
+      badgesEarned: apiData?.total_badge_earned || 0,
+      songsCompleted: 0,
+      achievements: apiData?.achievement?.length || 0,
     },
     weekly: {
-      quizzes: 7,
-      xp: 630,
+      quizzes: apiData?.total_this_week_quiz || 0,
+      xp: apiData?.total_xp_earned || 0,
       activity: [40, 60, 30, 80, 50, 90, 70],
     },
   };
@@ -207,7 +223,7 @@ const Dashboard = () => {
           <div className="flex flex-col gap-2 sm:gap-3 w-full">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end text-white font-Inter gap-1 sm:gap-0">
               <span className="text-base sm:text-lg tracking-wide mobile-center sm:text-left">
-                Progress to level 9
+                Progress to next level
               </span>
               <span className="text-base sm:text-lg font-medium tracking-wide">
                 {userData.currentXp} / {userData.requiredXp} XP

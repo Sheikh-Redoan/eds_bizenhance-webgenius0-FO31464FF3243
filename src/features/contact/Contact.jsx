@@ -7,6 +7,7 @@ import Button from "../../components/ui/Button";
 import buttonBG from "../../assets/images/Buttonbordersecoundary.png";
 import { motion } from "framer-motion";
 import { Send, CheckCircle, AlertCircle } from "lucide-react";
+import { useSubmitContactMutation } from "../../redux/api/userApi";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -20,6 +21,7 @@ const Contact = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitContact, { isLoading: isApiLoading }] = useSubmitContactMutation();
 
   const validateForm = () => {
     const newErrors = {};
@@ -74,7 +76,6 @@ const Contact = () => {
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       
-      // Shake animation for error
       const form = e.target;
       form.classList.add("shake");
       setTimeout(() => form.classList.remove("shake"), 500);
@@ -84,11 +85,17 @@ const Contact = () => {
     
     setIsSubmitting(true);
     
-    // Simulate API call
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const payload = {
+        name: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        subject: formData.subject,
+        message: formData.message
+      };
+
+      await submitContact(payload).unwrap();
       
-      // Success!
       setIsSubmitted(true);
       setFormData({
         fullName: "",
@@ -98,14 +105,13 @@ const Contact = () => {
         message: ""
       });
       
-      // Reset form after 3 seconds
       setTimeout(() => {
         setIsSubmitted(false);
       }, 3000);
       
     } catch (error) {
       console.error("Form submission error:", error);
-      setErrors({ submit: "Failed to send message. Please try again." });
+      setErrors({ submit: error?.data?.message || "Failed to send message. Please try again." });
     } finally {
       setIsSubmitting(false);
     }
@@ -387,7 +393,7 @@ const Contact = () => {
                 backgroundSize: 'contain',
                 backgroundPosition: 'center'
               }}
-              disabled={isSubmitting}
+              disabled={isSubmitting || isApiLoading}
             >
               {isSubmitting ? (
                 <>
