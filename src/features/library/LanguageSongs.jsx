@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { selectIsAuthenticated } from "../../redux/slices/authSlice";
+import { selectIsAuthenticated, selectCurrentUser } from "../../redux/slices/authSlice";
 import { useGetSongsQuery, useGetSongCategoriesQuery } from "../../redux/api/contentApi";
 import { Play, ChevronRight, Music, Filter, Search, X, Lock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -188,6 +188,7 @@ const LanguageSongs = () => {
   const { languageId } = useParams();
   const navigate = useNavigate();
   const isAuthenticated = useSelector(selectIsAuthenticated);
+  const user = useSelector(selectCurrentUser);
   
   const { data: songsData, isLoading: songsLoading } = useGetSongsQuery();
   const { data: categoriesData } = useGetSongCategoriesQuery();
@@ -373,7 +374,18 @@ const LanguageSongs = () => {
       >
         {filteredSongs.length > 0 ? (
           filteredSongs.map((song, index) => {
-            const isLocked = !isAuthenticated && index > 0;
+            let isLocked = true;
+
+            if (!isAuthenticated) {
+              // Unregistered: Only the 1st song (index 0) is unlocked
+              if (index === 0) isLocked = false;
+            } else if (user?.is_premium) {
+              // Premium User: All songs unlocked
+              isLocked = false;
+            } else {
+              // Registered Non-Premium: First 2 songs (index 0 and 1) unlocked
+              if (index < 2) isLocked = false;
+            }
             
             return (
               <div key={song.id} className="w-full max-w-xs sm:max-w-sm lg:max-w-full">
@@ -385,7 +397,11 @@ const LanguageSongs = () => {
                     if (!isLocked) {
                       navigate(`/listen/${song.id}`);
                     } else {
-                      navigate('/membership');
+                      if (!isAuthenticated) {
+                        navigate('/login');
+                      } else {
+                        navigate('/membership');
+                      }
                     }
                   }}
                 />

@@ -1,12 +1,16 @@
+import { useState } from "react";
 import Button from "../../components/ui/Button";
 import buttonBG from "../../assets/images/ButtonBgSecoundary.png";
 import profile from "../../assets/images/Ellipse 6.jpg";
 import Bronze from "../../assets/images/Bronze.png";
 import Silver from "../../assets/images/Silver.png";
 import Gold from "../../assets/images/Gold.png";
+import { Edit2 } from 'lucide-react';
 import { useGetUserDashboardQuery } from "../../redux/api/userApi";
+import EditProfileModal from './EditProfileModal';
 
 const Dashboard = () => {
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { data: dashboardData, isLoading, isError } = useGetUserDashboardQuery();
   
   if (isLoading) {
@@ -200,10 +204,25 @@ const Dashboard = () => {
         }
       `}</style>
 
+      {/* Edit Profile Modal */}
+      {isEditModalOpen && (
+        <EditProfileModal 
+          user={user} 
+          onClose={() => setIsEditModalOpen(false)} 
+        />
+      )}
+
       {/* Top Row: Profile & Weekly Stats */}
       <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 lg:gap-10">
         {/* Profile Card */}
-        <div className="flex-grow w-full lg:w-[780px] p-6 sm:p-8 bg-stone-400/20 backdrop-blur-sm border border-stone-500/30 shadow-xl rounded-xl flex flex-col justify-center gap-6 sm:gap-8 hover-lift animate-slide-left mobile-full-width">
+        <div className="flex-grow w-full lg:w-[780px] p-6 sm:p-8 bg-stone-400/20 backdrop-blur-sm border border-stone-500/30 shadow-xl rounded-xl flex flex-col justify-center gap-6 sm:gap-8 hover-lift animate-slide-left mobile-full-width relative">
+          <button 
+            onClick={() => setIsEditModalOpen(true)}
+            className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors backdrop-blur-sm border border-white/20"
+            title="Edit Profile"
+          >
+            <Edit2 size={18} />
+          </button>
           <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
             <img
               className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-stone-400 shadow-lg object-cover transform transition-transform duration-300 hover:scale-110 hover:rotate-3"

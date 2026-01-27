@@ -30,6 +30,7 @@ const BookPlayer = () => {
 
       const formattedLyrics = (apiData.lyrics || []).map(l => ({
         time: parseFloat(l.duration?.start_time || 0),
+        endTime: parseFloat(l.duration?.end_time || 0),
         en: l.eng_lang,
         target: l.other_lang
       })).sort((a, b) => a.time - b.time);
@@ -41,12 +42,18 @@ const BookPlayer = () => {
       }));
 
       const pages = [];
-      const LINES_PER_PAGE = 8;
+      const LINES_PER_PAGE = 6;
       
       for (let i = 0; i < formattedLyrics.length; i += LINES_PER_PAGE) {
+        const pageLines = formattedLyrics.slice(i, i + LINES_PER_PAGE);
+        const lastLine = pageLines[pageLines.length - 1];
+        const firstLine = pageLines[0];
+        
         pages.push({
           type: 'lyrics',
-          lines: formattedLyrics.slice(i, i + LINES_PER_PAGE)
+          lines: pageLines,
+          startTime: firstLine ? firstLine.time : 0,
+          endTime: lastLine ? lastLine.endTime : 0
         });
       }
 
@@ -58,7 +65,7 @@ const BookPlayer = () => {
         });
       }
 
-      if (apiData.quiz_questions && apiData.quiz_questions.length > 0) {
+      if (isAuthenticated && apiData.quiz_questions && apiData.quiz_questions.length > 0) {
         pages.push({
           type: 'exercise_prompt',
           content: {
@@ -177,6 +184,35 @@ const BookPlayer = () => {
     navigate(`/exercise/${currentSong.id}`);
   };
 
+  // Auto-flip pages based on current time
+  useEffect(() => {
+    if (!currentSong || !isPlaying || isMobile || !sheets.length) return;
+
+    for (let i = 1; i < sheets.length; i++) {
+      const sheet = sheets[i];
+
+      // Check Front Page of Sheet i (Visible when pageIndex = i)
+      if (sheet.front.type === 'lyrics' && sheet.front.startTime !== undefined) {
+        if (currentTime >= sheet.front.startTime && currentTime <= sheet.front.endTime) {
+          if (currentPageIndex !== i) {
+            dispatch(setPage(i));
+          }
+          return;
+        }
+      }
+
+      // Check Back Page of Sheet i (Visible when pageIndex = i + 1)
+      if (sheet.back.type === 'lyrics' && sheet.back.startTime !== undefined) {
+        if (currentTime >= sheet.back.startTime && currentTime <= sheet.back.endTime) {
+          if (currentPageIndex !== i + 1) {
+            dispatch(setPage(i + 1));
+          }
+          return;
+        }
+      }
+    }
+  }, [currentTime, isPlaying, sheets, currentPageIndex, dispatch, isMobile, currentSong]);
+
   // Render content for mobile
   const renderMobileContent = (content, isFront = true) => {
     if (!content) return null;
@@ -216,7 +252,7 @@ const BookPlayer = () => {
           </h3>
           <div className="space-y-3 overflow-y-auto flex-1">
             {content.lines.map((line, idx) => {
-              const isActive = currentTime >= line.time && currentTime < (content.lines[idx+1]?.time || line.time + 10);
+              const isActive = currentTime >= line.time && currentTime < (content.lines[idx+1]?.time || line.endTime + 1);
               return (
                 <div 
                   key={idx} 
@@ -324,7 +360,7 @@ const BookPlayer = () => {
           </h3>
           <div className="space-y-2 md:space-y-3 overflow-y-auto max-h-[55vh]">
             {content.lines.map((line, idx) => {
-              const isActive = currentTime >= line.time && currentTime < (content.lines[idx+1]?.time || line.time + 10);
+              const isActive = currentTime >= line.time && currentTime < (content.lines[idx+1]?.time || line.endTime + 1);
               return (
                 <div 
                   key={idx} 

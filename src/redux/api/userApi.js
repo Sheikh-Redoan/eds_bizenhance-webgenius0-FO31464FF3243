@@ -25,12 +25,20 @@ export const userApi = baseApi.injectEndpoints({
     }),
 
     updateProfile: builder.mutation({
-      query: (data) => ({
+      query: (formData) => ({
         url: "/profile-update",
         method: "POST",
-        body: data,
+        body: formData,
       }),
-      invalidatesTags: ["Dashboard", "User"],
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          if (data?.data) {
+            dispatch({ type: 'auth/updateUser', payload: data.data });
+          }
+        } catch {}
+      },
+      invalidatesTags: ["Dashboard"],
     }),
   }),
 });
