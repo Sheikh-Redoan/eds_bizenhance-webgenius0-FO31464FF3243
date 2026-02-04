@@ -399,21 +399,6 @@ const BookPlayer = () => {
             ))}
           </div>
 
-          {currentSong.exercise && (
-            <div className="mt-4 flex justify-center pb-4 pt-2 border-t border-amber-900/10">
-              <Button 
-                className="text-base md:text-lg font-Merriweather p-6 md:p-8 lg:p-10 flex items-center gap-2 text-white w-full max-w-[200px] md:max-w-[220px] lg:max-w-[250px] text-center justify-center transform hover:scale-105 transition-transform"
-                style={{backgroundImage: `url(${buttonBG})`, backgroundSize: 'contain'}}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleStartExercise();
-                }}
-              >
-                <img src={topicon} alt="" className="w-4 h-4 md:w-5 md:h-5" />
-                Start Exercise
-              </Button>
-            </div>
-          )}
         </div>
       );
     }
@@ -425,16 +410,18 @@ const BookPlayer = () => {
                     <h2 className="text-4xl font-serif text-amber-900 mb-4">{content.content.title}</h2>
                     <p className="text-xl text-stone-700 font-serif italic">{content.content.description}</p>
                 </div>
-                <Button 
-                    variant="gold" 
-                    className="text-xl px-12 py-4 shadow-xl hover:scale-105 transition-transform"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        handleStartExercise();
-                    }}
-                >
-                    {content.content.buttonText}
-                </Button>
+
+                 <Button 
+                className="text-base md:text-lg font-Merriweather p-6 md:p-8 lg:p-10 flex items-center gap-2 text-white w-full max-w-[200px] md:max-w-[220px] lg:max-w-[250px] text-center justify-center transform hover:scale-105 transition-transform"
+                style={{backgroundImage: `url(${buttonBG})`, backgroundSize: 'contain'}}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleStartExercise();
+                }}
+              >
+                <img src={topicon} alt="" className="w-4 h-4 md:w-5 md:h-5" />
+                {content.content.buttonText}
+              </Button>
             </div>
         );
     }

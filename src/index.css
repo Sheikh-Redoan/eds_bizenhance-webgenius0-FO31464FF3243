@@ -594,7 +594,7 @@ input[type="range"]::-moz-range-thumb {
 
   :root {
     --book-width: 550px;
-    --book-height: 700px;
+    --book-height: calc(100vh - 220px);
     --anim-speed: 0.8s;
   }
 
