@@ -116,6 +116,8 @@ body {
   overflow: hidden;
   min-height: calc(100vh - 90px);
   padding: 2rem;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
 }
 
 @media (max-width: 768px) {
@@ -139,6 +141,7 @@ body {
   height: var(--book-height);
   position: relative;
   transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
   transition: transform 0.5s ease;
   margin: 20px auto 0;
 }
@@ -151,6 +154,7 @@ body {
   right: 0;
   transform-origin: 0% 50%;
   transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
   transition: transform var(--anim-speed) cubic-bezier(0.645, 0.045, 0.355, 1);
   cursor: pointer;
   z-index: 1;
@@ -166,15 +170,18 @@ body {
   position: absolute;
   width: 100%;
   height: 100%;
-  background: url("./assets/images/pageBG.png") no-repeat center center / cover;
+  background: white;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
   display: flex;
   flex-direction: column;
   padding: 40px;
   box-sizing: border-box;
   overflow: hidden;
   border-radius: 2px;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
 }
 
 @media (max-width: 768px) {
@@ -194,20 +201,15 @@ body {
 .front {
   z-index: 2;
   border-radius: 0 5px 5px 0;
-  background: url("./assets/images/pageBGrevarce.png") no-repeat center center /
-    cover;
 }
 
 .back {
   transform: rotateY(180deg);
   z-index: 1;
   border-radius: 5px 0 0 5px;
-  background: url("./assets/images/pageBG.png") no-repeat center center / cover;
 }
 
 .cover-front {
-  background: url("./assets/images/pageBGCover2.png") no-repeat center center /
-    cover;
   background-position-x: -15px;
 }
 
@@ -403,15 +405,16 @@ input[type="range"]::-moz-range-thumb {
   .page-mobile {
     width: 90%;
     max-width: 400px;
-    min-height: 500px;
-    background: url("./assets/images/pageBG.png") no-repeat center center /
-      cover;
+    height: 550px;
+    background: white;
     border-radius: 8px;
     padding: 1.5rem;
     margin: 6rem auto;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     position: relative;
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
 
   /* Mobile lyrics styling */
@@ -605,6 +608,8 @@ input[type="range"]::-moz-range-thumb {
     min-height: calc(100vh - 90px);
     padding: 2rem;
     position: relative;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
   }
 
   #book-stage {
@@ -612,6 +617,7 @@ input[type="range"]::-moz-range-thumb {
     height: var(--book-height);
     position: relative;
     transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
     transition: transform 0.5s ease;
     margin: 70px auto 0;
   }
@@ -624,6 +630,7 @@ input[type="range"]::-moz-range-thumb {
     right: 0;
     transform-origin: 0% 50%;
     transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
     transition: transform var(--anim-speed) cubic-bezier(0.645, 0.045, 0.355, 1);
     cursor: pointer;
     z-index: 1;
@@ -641,26 +648,23 @@ input[type="range"]::-moz-range-thumb {
     position: absolute;
     width: 100%;
     height: 100%;
-    background: url("./assets/images/pageBG.png") no-repeat center center /
-      cover;
+    background: white;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
     display: flex;
     flex-direction: column;
     padding: 40px;
     box-sizing: border-box;
     overflow: hidden;
     border-radius: 2px;
-    /* Solid background to prevent transparency/reflections */
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
   }
 
-  /* Specific backgrounds to prevent reflections */
   .front {
     z-index: 2;
     border-radius: 0 5px 5px 0;
-    background: url("./assets/images/pageBGrevarce.png") no-repeat center center /
-      cover;
-    /* Visual separation between pages */
     border-left: 1px solid rgba(139, 115, 85, 0.2);
   }
 
@@ -668,16 +672,10 @@ input[type="range"]::-moz-range-thumb {
     transform: rotateY(180deg);
     z-index: 1;
     border-radius: 5px 0 0 5px;
-    background: url("./assets/images/pageBG.png") no-repeat center center /
-      cover;
-    /* Visual separation between pages */
     border-right: 1px solid rgba(139, 115, 85, 0.2);
   }
 
-  /* Cover pages */
   .cover-front {
-    background: url("./assets/images/pageBGCover2.png") no-repeat center center /
-      cover;
     background-position-x: -15px;
   }
 

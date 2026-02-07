@@ -10,6 +10,9 @@ import AudioControls from './AudioControls';
 import Button from '../../components/ui/Button';
 import buttonBG from "../../assets/images/QuizButtonBG.png"
 import topicon from "../../assets/icons/top-icon.png"
+import pageBG from "../../assets/images/pageBG.png"
+import pageBGreverse from "../../assets/images/pageBGrevarce.png"
+import pageBGCover from "../../assets/images/pageBGCover2.png"
 
 const BookPlayer = () => {
   const dispatch = useDispatch();
@@ -19,6 +22,7 @@ const BookPlayer = () => {
   const { currentSong, isPlaying, currentTime, currentPageIndex } = useSelector((state) => state.player);
   const audioRef = useRef(null);
   const [sheets, setSheets] = useState([]);
+  const [mobilePages, setMobilePages] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
 
   const { data: songDetails, isLoading } = useGetSongDetailsQuery(songId);
@@ -135,6 +139,13 @@ const BookPlayer = () => {
     }
 
     setSheets(generatedSheets);
+
+    // Create Linear Mobile Pages
+    const generatedMobilePages = [];
+    generatedMobilePages.push({ type: 'cover_art', data: currentSong });
+    generatedMobilePages.push({ type: 'dedication', data: null });
+    generatedMobilePages.push(...contentPages);
+    setMobilePages(generatedMobilePages);
   }, [currentSong]);
 
   // Handle Audio Playback
@@ -174,7 +185,8 @@ const BookPlayer = () => {
   };
 
   const flipToSheet = (index) => {
-    if (index >= 0 && index < sheets.length) {
+    const maxIndex = isMobile ? mobilePages.length : sheets.length;
+    if (index >= 0 && index < maxIndex) {
       dispatch(setPage(index));
     }
   };
@@ -186,32 +198,47 @@ const BookPlayer = () => {
 
   // Auto-flip pages based on current time
   useEffect(() => {
-    if (!currentSong || !isPlaying || isMobile || !sheets.length) return;
+    if (!currentSong || !isPlaying) return;
 
-    for (let i = 1; i < sheets.length; i++) {
-      const sheet = sheets[i];
+    if (isMobile) {
+      if (!mobilePages.length) return;
 
-      // Check Front Page of Sheet i (Visible when pageIndex = i)
-      if (sheet.front.type === 'lyrics' && sheet.front.startTime !== undefined) {
-        if (currentTime >= sheet.front.startTime && currentTime <= sheet.front.endTime) {
-          if (currentPageIndex !== i) {
-            dispatch(setPage(i));
-          }
-          return;
-        }
+      const activeMobileIndex = mobilePages.findIndex(page => 
+        page.type === 'lyrics' && 
+        page.startTime !== undefined &&
+        currentTime >= page.startTime && 
+        currentTime <= page.endTime
+      );
+
+      if (activeMobileIndex !== -1 && activeMobileIndex !== currentPageIndex) {
+        dispatch(setPage(activeMobileIndex));
       }
+    } else {
+      if (!sheets.length) return;
 
-      // Check Back Page of Sheet i (Visible when pageIndex = i + 1)
-      if (sheet.back.type === 'lyrics' && sheet.back.startTime !== undefined) {
-        if (currentTime >= sheet.back.startTime && currentTime <= sheet.back.endTime) {
-          if (currentPageIndex !== i + 1) {
-            dispatch(setPage(i + 1));
+      for (let i = 1; i < sheets.length; i++) {
+        const sheet = sheets[i];
+
+        if (sheet.front.type === 'lyrics' && sheet.front.startTime !== undefined) {
+          if (currentTime >= sheet.front.startTime && currentTime <= sheet.front.endTime) {
+            if (currentPageIndex !== i) {
+              dispatch(setPage(i));
+            }
+            return;
           }
-          return;
+        }
+
+        if (sheet.back.type === 'lyrics' && sheet.back.startTime !== undefined) {
+          if (currentTime >= sheet.back.startTime && currentTime <= sheet.back.endTime) {
+            if (currentPageIndex !== i + 1) {
+              dispatch(setPage(i + 1));
+            }
+            return;
+          }
         }
       }
     }
-  }, [currentTime, isPlaying, sheets, currentPageIndex, dispatch, isMobile, currentSong]);
+  }, [currentTime, isPlaying, sheets, mobilePages, currentPageIndex, dispatch, isMobile, currentSong]);
 
   // Render content for mobile
   const renderMobileContent = (content, isFront = true) => {
@@ -219,7 +246,7 @@ const BookPlayer = () => {
 
     if (content.type === 'cover_art') {
       return (
-        <div className="cover-mobile">
+        <div className="cover-mobile flex flex-col items-center justify-center h-full w-full">
           <h1 className="cover-title-mobile">{content.data.title}</h1>
           <p className="cover-artist-mobile">{content.data.artist}</p>
           {content.data.coverUrl && (
@@ -229,7 +256,7 @@ const BookPlayer = () => {
               alt="Cover" 
             />
           )}
-          <div className="text-amber-600 mt-4 text-sm animate-pulse">
+          <div className="text-amber-600 mt-auto text-sm animate-pulse pb-4">
             Swipe or use arrows to navigate
           </div>
         </div>
@@ -246,24 +273,26 @@ const BookPlayer = () => {
 
     if (content.type === 'lyrics') {
       return (
-        <div className="flex-1 flex flex-col p-2">
-          <h3 className="text-xl font-bold text-amber-900 mb-4 font-serif text-center">
+        <div className="flex flex-col h-full w-full">
+          <h3 className="text-xl font-bold text-amber-900 mb-4 font-serif text-center shrink-0">
             Lyrics
           </h3>
-          <div className="space-y-3 overflow-y-auto flex-1">
-            {content.lines.map((line, idx) => {
-              const isActive = currentTime >= line.time && currentTime < (content.lines[idx+1]?.time || line.endTime + 1);
-              return (
-                <div 
-                  key={idx} 
-                  className={`lyric-line-mobile ${isActive ? 'active' : ''}`}
-                  onClick={(e) => { e.stopPropagation(); handleSeek(line.time); }}
-                >
-                  <div className="english">{line.en}</div>
-                  <div className="target">{line.target}</div>
-                </div>
-              );
-            })}
+          <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
+            <div className="space-y-4 pb-4">
+              {content.lines.map((line, idx) => {
+                const isActive = currentTime >= line.time && currentTime < (content.lines[idx+1]?.time || line.endTime + 1);
+                return (
+                  <div 
+                    key={idx} 
+                    className={`lyric-line-mobile ${isActive ? 'active' : ''}`}
+                    onClick={(e) => { e.stopPropagation(); handleSeek(line.time); }}
+                  >
+                    <div className="english">{line.en}</div>
+                    <div className="target">{line.target}</div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       );
@@ -271,12 +300,13 @@ const BookPlayer = () => {
 
     if (content.type === 'vocab') {
       return (
-        <div className="flex flex-col h-full">
-          <div className="flex-1 overflow-y-auto">
-            <h2 className="text-xl font-bold text-amber-900 mb-4 text-center">
-              Vocabulary
-            </h2>
-            <div className="space-y-3">
+        <div className="flex flex-col h-full w-full">
+          <h2 className="text-xl font-bold text-amber-900 mb-4 text-center shrink-0">
+            Vocabulary
+          </h2>
+          
+          <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
+            <div className="space-y-3 pb-4">
               {content.words.map((vocab, k) => (
                 <div key={k} className="vocab-card-mobile">
                   <div className="vocab-word">{vocab.word}</div>
@@ -287,15 +317,15 @@ const BookPlayer = () => {
             </div>
           </div>
 
-            {currentSong.exercise && (
-            <div className="mt-4 pt-4 border-t border-amber-900/20">
+          {currentSong.exercise && (
+            <div className="mt-4 pt-4 border-t border-amber-900/20 shrink-0">
               <button
                 className="quiz-button-mobile"
                 style={{
                   backgroundImage:`url(${buttonBG})`,
                   backgroundSize: 'contain',
                   backgroundRepeat: 'no-repeat'
-              }}
+                }}
                 onClick={(e) => {
                   e.stopPropagation();
                   handleStartExercise();
@@ -462,7 +492,7 @@ const BookPlayer = () => {
         <>
           {/* Page Indicator */}
           <div className="page-indicator">
-            Page {currentPageIndex + 1} of {sheets.length}
+            Page {currentPageIndex + 1} of {mobilePages.length}
           </div>
 
           {/* Navigation Arrows */}
@@ -476,7 +506,7 @@ const BookPlayer = () => {
                 ←
               </button>
             )}
-            {currentPageIndex < sheets.length - 1 && (
+            {currentPageIndex < mobilePages.length - 1 && (
               <button 
                 className="nav-button"
                 onClick={() => flipToSheet(currentPageIndex + 1)}
@@ -494,13 +524,22 @@ const BookPlayer = () => {
           />
           <div 
             className="swipe-area swipe-right"
-            onClick={() => currentPageIndex < sheets.length - 1 && flipToSheet(currentPageIndex + 1)}
+            onClick={() => currentPageIndex < mobilePages.length - 1 && flipToSheet(currentPageIndex + 1)}
           />
 
           {/* Current Page Content */}
-          <div className="page-mobile">
-            {sheets[currentPageIndex] && renderMobileContent(
-              sheets[currentPageIndex].front, 
+          <div 
+            className="page-mobile"
+            style={{
+              backgroundImage: `url(${pageBG})`,
+              backgroundSize: '100% 100%',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              backgroundColor: 'transparent'
+            }}
+          >
+            {mobilePages[currentPageIndex] && renderMobileContent(
+              mobilePages[currentPageIndex], 
               true
             )}
           </div>
@@ -508,7 +547,14 @@ const BookPlayer = () => {
       ) : (
         /* Desktop 3D Book Interface */
         <>
-          <div id="book-stage">
+          <div 
+            id="book-stage"
+            style={{
+              transformStyle: 'preserve-3d',
+              WebkitTransformStyle: 'preserve-3d',
+              perspective: '1500px'
+            }}
+          >
             {sheets.map((sheet, idx) => {
               const zIndex = idx === currentPageIndex ? 10 : (50 - Math.abs(currentPageIndex - idx));
               const isFlipped = idx <= currentPageIndex - 1;
@@ -517,16 +563,44 @@ const BookPlayer = () => {
                 <div 
                   key={idx} 
                   className={`page ${isFlipped ? 'flipped' : ''}`}
-                  style={{ zIndex: isFlipped ? idx : 50 - idx }}
+                  style={{ 
+                    zIndex: isFlipped ? idx : 50 - idx,
+                    transformStyle: 'preserve-3d',
+                    WebkitTransformStyle: 'preserve-3d'
+                  }}
                   onClick={() => flipToSheet(isFlipped ? idx : idx + 1)}
                 >
-                  <div className={`front ${sheet.front.type === 'cover_art' ? 'cover-front' : ''}`}>
+                  <div 
+                    className={`front ${sheet.front.type === 'cover_art' ? 'cover-front' : ''}`}
+                    style={{
+                      backgroundImage: sheet.front.type === 'cover_art' ? `url(${pageBGCover})` : `url(${pageBGreverse})`,
+                      backgroundSize: '100% 100%',
+                      backgroundPosition: 'center',
+                      backgroundRepeat: 'no-repeat',
+                      backgroundColor: 'Transparent',
+                      willChange: 'transform, opacity',
+                      transformStyle: 'preserve-3d',
+                      WebkitTransformStyle: 'preserve-3d'
+                    }}
+                  >
                     {renderDesktopContent(sheet.front, true)}
                     <div className="page-number right">
                       {idx * 2 + 1}
                     </div>
                   </div>
-                  <div className={`back ${sheet.back.type === 'cover_art' ? 'cover-back' : ''}`}>
+                  <div 
+                    className={`back ${sheet.back.type === 'cover_art' ? 'cover-back' : ''}`}
+                    style={{
+                      backgroundImage: sheet.back.type === 'cover_art' ? 'none' : `url(${pageBG})`,
+                      backgroundSize: '100% 100%',
+                      backgroundPosition: 'center',
+                      backgroundRepeat: 'no-repeat',
+                      backgroundColor: sheet.back.type === 'cover_art' ? '#4a3b2a' : 'white',
+                      willChange: 'transform, opacity',
+                      transformStyle: 'preserve-3d',
+                      WebkitTransformStyle: 'preserve-3d'
+                    }}
+                  >
                     {renderDesktopContent(sheet.back, false)}
                     <div className="page-number left">
                       {idx * 2 + 2}
