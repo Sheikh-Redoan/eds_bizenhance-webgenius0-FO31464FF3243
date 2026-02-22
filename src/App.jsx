@@ -14,6 +14,7 @@ import Login from "./features/login/Login";
 import Signup from "./features/signup/Signup";
 import Home from "./features/home/home";
 import ForgotPassword from "./features/forgotpassword/ForgotPassword";
+import PaymentSuccess from "./features/payment/PaymentSuccess";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setSong } from "./features/player/playerSlice";
@@ -67,6 +68,12 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
+            
+            <Route path="/payment/success" element={
+              <ProtectedRoute>
+                <PaymentSuccess />
+              </ProtectedRoute>
+            } />
             
             <Route path="/dashboard" element={
               <ProtectedRoute>

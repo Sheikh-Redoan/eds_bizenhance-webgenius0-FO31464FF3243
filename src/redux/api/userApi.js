@@ -1,10 +1,19 @@
 import { baseApi } from "./baseApi";
+import { updateUser } from "../slices/authSlice";
 
 export const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getUserDashboard: builder.query({
       query: () => "/user-dashboard",
       providesTags: ["Dashboard"],
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          if (data?.data?.user) {
+            dispatch(updateUser(data.data.user));
+          }
+        } catch {}
+      },
     }),
 
     submitQuiz: builder.mutation({
