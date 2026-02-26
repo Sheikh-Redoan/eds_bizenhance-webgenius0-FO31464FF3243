@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import { Check, X, Loader2 } from "lucide-react";
 import Button from "../../components/ui/Button";
 import buttonBG from "../../assets/images/Buttonbordersecoundary.png";
@@ -15,10 +14,6 @@ const PaymentSuccess = () => {
   
   const token = searchParams.get("token");
   const subscription_id = searchParams.get("subscription_id");
-  
-  const [status, setStatus] = useState("processing");
-  const [message, setMessage] = useState("Verifying your payment...");
-
   const isSubscription = Boolean(subscription_id);
 
   const { data: subData, error: subError } = useGetSubscriptionSuccessQuery(
@@ -26,36 +21,45 @@ const PaymentSuccess = () => {
     { skip: !isSubscription || !token } 
   );
 
-  const [verifyDonation] = usePaypalDonateSuccessMutation();
+  const [verifyDonation, { data: donationData, error: donationError }] = usePaypalDonateSuccessMutation();
 
   useEffect(() => {
-    if (!token) {
-      setStatus("error");
-      setMessage("Invalid payment parameters. No token found.");
-      return;
+    if (token && !isSubscription) {
+      verifyDonation({ token });
     }
+  }, []);
 
+  const getStatus = () => {
+    if (!token) return "error";
     if (isSubscription) {
-      if (subData) {
-        setStatus("success");
-        setMessage("Your subscription has been successfully activated!");
-      } else if (subError) {
-        setStatus("error");
-        setMessage("Failed to verify subscription. Please contact support.");
-      }
+      if (subData) return "success";
+      if (subError) return "error";
     } else {
-      verifyDonation({ token })
-        .unwrap()
-        .then(() => {
-          setStatus("success");
-          setMessage("Thank you! Your donation was successful.");
-        })
-        .catch(() => {
-          setStatus("error");
-          setMessage("Failed to verify donation. Please contact support.");
-        });
+      if (donationData) return "success";
+      if (donationError) return "error";
     }
-  }, [isSubscription, token, subData, subError, verifyDonation]);
+    return "processing";
+  };
+
+  const getMessage = () => {
+    if (!token) return "Invalid payment parameters. No token found.";
+    const status = getStatus();
+    if (status === "success") {
+      return isSubscription 
+        ? "Your subscription has been successfully activated!"
+        : "Thank you! Your donation was successful.";
+    }
+    if (status === "error") {
+      return isSubscription
+        ? "Failed to verify subscription. Please contact support."
+        : "Failed to verify donation. Please contact support.";
+    }
+    return "Verifying your payment...";
+  };
+
+  const status = getStatus();
+  const message = getMessage();
+
 
   return (
     <div className="min-h-[calc(100vh-80px)] flex items-center justify-center p-4">

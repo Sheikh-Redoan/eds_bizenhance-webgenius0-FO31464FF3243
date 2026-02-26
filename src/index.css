@@ -442,7 +442,7 @@ input[type="range"]::-moz-range-thumb {
 
   .lyric-line-mobile .target {
     font-size: 1.1rem;
-    color: #3d291f;
+    color: #3d201f;
     font-weight: 500;
   }
 
@@ -789,6 +789,8 @@ input[type="range"]::-moz-range-thumb {
 
   .lyric-line-mobile .target {
     font-size: 0.95rem;
+    color: #a50f0f;
+    font-weight: 800;
   }
 
   .nav-button {
