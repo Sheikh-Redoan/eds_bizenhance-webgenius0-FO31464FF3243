@@ -21,6 +21,11 @@ export const contentApi = baseApi.injectEndpoints({
       query: (id) => `/song/details/${id}`,
       providesTags: ["SongDetails"],
     }),
+
+    getFunFacts: builder.query({
+      query: () => "/fun-fact",
+      providesTags: ["FunFact"],
+    }),
   }),
 });
 
@@ -29,4 +34,5 @@ export const {
   useGetSongCategoriesQuery,
   useGetSongsQuery,
   useGetSongDetailsQuery,
+  useGetFunFactsQuery,
 } = contentApi;

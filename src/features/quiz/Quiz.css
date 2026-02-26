@@ -487,3 +487,51 @@
     font-size: 1.5rem;
   }
 }
+
+/* Fun Fact Styles */
+.fun-fact-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.fun-fact-text {
+  fill: #FF9800;
+  font-family: 'Luckiest Guy', cursive;
+  font-size: 24px;
+  letter-spacing: 2px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+@media (max-width: 768px) {
+  .fun-fact-text {
+    font-size: 18px;
+  }
+}
+
+/* Animate the fun fact text on hover */
+.fun-fact-text:hover {
+  fill: #FFB74D;
+  transition: fill 0.3s ease;
+}
+
+/* Style for the fun fact content */
+.fun-fact-container div:last-child {
+  border-radius: 20px;
+  padding: 8px 16px;
+  backdrop-filter: blur(2px);
+  
+}
+
+/* Override inline black text colors from backend HTML */
+.fun-fact-html-content * {
+  color: #F5F5F5 !important;
+  font-family: inherit !important;
+  text-align: center !important;
+}
+
+.fun-fact-html-content p {
+  margin-bottom: 0.5rem;
+}
