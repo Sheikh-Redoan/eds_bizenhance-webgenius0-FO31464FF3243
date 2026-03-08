@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { startQuiz, selectAnswer, nextQuestion, resetQuiz } from "./quizSlice";
+import cardBg from "../../assets/images/cardFreame.png";
 import {
   useGetSongDetailsQuery,
   useGetFunFactsQuery,
@@ -16,6 +17,7 @@ import resultBg from "../../assets/images/resultbord.png";
 import dashboardButton from "../../assets/images/DashboardbuttonBG.png";
 import moresongbgbutton from "../../assets/images/moreSongs.png";
 import bulb from "../../assets/images/Knowledge Nugget Icon.png";
+import useAutoScroll from "./useAutoScroll";
 const Quiz = () => {
   const { songId } = useParams();
   const dispatch = useDispatch();
@@ -25,6 +27,14 @@ const Quiz = () => {
   const [submitQuiz] = useSubmitQuizMutation();
   const { data: funFactsResponse } = useGetFunFactsQuery();
   const [randomFact, setRandomFact] = useState(null);
+
+  const {
+    containerRef: factContainerRef,
+    contentRef: factContentRef,
+    isHovered: isFactHovered,
+    setIsHovered: setIsFactHovered,
+    hasReachedEnd
+  } = useAutoScroll(0.5, 2000);
 
   const {
     questions,
@@ -108,14 +118,14 @@ const Quiz = () => {
         className="flex justify-center items-center p-4"
         style={{ minHeight: "calc(100vh - 82px)" }}
       >
-        <div className="w-full max-w-[524px] h-auto min-h-[670px] relative bg-transparent results-container">
+        <div className="w-full max-w-[1000px]  relative bg-transparent">
           <div className="w-full px-4 mt-4 results-content">
             <div className="text-center text-white text-3xl md:text-4xl font-bold font-Merriweather leading-10 complete-message-responsive">
               Exercise Complete!
             </div>
           </div>
 
-          <div className="w-full px-4 mt-4 results-bg flex justify-start items-start flex-col">
+          <div className="w-full px-4 mt-4 flex justify-start items-start flex-col">
             <div className="w-56 md:w-64 mx-auto mt-0 md:mt-0 inline-flex flex-col justify-start items-start gap-4 md:gap-6 z-10">
               <div className="self-stretch text-center justify-center text-white score-display-responsive font-bold font-Merriweather text-[50px]!">
                 {score}/{questions.length}
@@ -124,30 +134,162 @@ const Quiz = () => {
 
             {/* Fun Fact Section - Animated */}
             <div className="w-full px-4 mt-6 mb-4 fun-fact-container flex flex-col items-center">
-              <AnimatePresence>
+              <AnimatePresence mode="wait">
                 {randomFact && (
                   <motion.div
-                    initial={{ y: 50, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
-                    className="z-10 w-full max-w-md bg-stone-900/60 p-4 rounded-xl border border-stone-600/50 shadow-xl backdrop-blur-sm"
+                    initial={{ y: 50, opacity: 0, rotateX: -15 }}
+                    animate={{ 
+                      y: 0, 
+                      opacity: 1, 
+                      rotateX: 0,
+                      transition: {
+                        duration: 0.8,
+                        ease: [0.4, 0, 0.2, 1],
+                        staggerChildren: 0.2
+                      }
+                    }}
+                    exit={{ 
+                      y: -50, 
+                      opacity: 0, 
+                      rotateX: 15,
+                      transition: { duration: 0.5 }
+                    }}
+                    whileHover={{ 
+                      scale: 1.02,
+                      boxShadow: "0 20px 40px rgba(0,0,0,0.4)",
+                      transition: { duration: 0.3 }
+                    }}
+                    className="z-10 w-full rounded-xl border-[12px] sm:border-[16px] lg:border-[30px] border-wood rounded-lg shadow-lg backdrop-blur-sm flex bg-[#1e1e1e] relative overflow-hidden max-[668px]:flex-col"
+                    style={{
+                      borderImage: `url(${cardBg}) 30 round`,
+                      transformStyle: "preserve-3d",
+                      transform: "perspective(1000px)"
+                    }}
                   >
-                    <img
-                      className="w-10 md:w-10 h-auto mb-4 z-10 mx-auto"
-                      src={bulb}
-                      alt="Knowledge Nugget"
+                    {/* Animated background shimmer effect */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"
+                      animate={{
+                        x: ["-100%", "200%"],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "linear",
+                        repeatDelay: 2
+                      }}
                     />
-                    <div className="border-2 border-[#eed191bb]">
-                      <h3 className="text-xl flex justify-center items-center md:text-4xl font-bold font-OldLondon text-[#C4A480] text-center mb-2">
-                        {randomFact.title}
-                      </h3>
-                      <div
-                        className="text-white text-sm md:text-base font-Merriweather leading-relaxed text-center fun-fact-html-content"
-                        dangerouslySetInnerHTML={{
-                          __html: randomFact.description,
+                    
+                    {/* Image section with animation */}
+                    <motion.div 
+                      className="w-1/2 flex justify-center items-center relative overflow-hidden max-[668px]:w-full max-[668px]:h-1/2"
+                      initial={{ x: -20, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.2, duration: 0.6 }}
+                    >
+                      <motion.img
+                        className="w-full h-auto object-contain"
+                        src={randomFact.image}
+                        alt="Knowledge Nugget"
+                        whileHover={{ scale: 1.1, rotate: 2 }}
+                        transition={{ type: "spring", stiffness: 200 }}
+                      />
+                      {/* Subtle pulse animation */}
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-t from-[#C4A480]/20 to-transparent"
+                        animate={{
+                          opacity: [0, 0.5, 0],
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut"
                         }}
                       />
-                    </div>
+                    </motion.div>
+                    
+                    {/* Content section with auto-scroll */}
+                    <motion.div 
+                      className="w-1/2 relative max-[668px]:w-full max-[668px]:h-1/2"
+                      initial={{ x: 20, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.3, duration: 0.6 }}
+                    >
+                      <motion.h3 
+                        className="text-xl flex justify-center items-center md:text-4xl font-bold font-OldLondon text-[#C4A480] text-center sticky top-0 bg-[#1e1e1e] z-30 py-3"
+                        initial={{ y: -10 }}
+                        animate={{ y: 0 }}
+                        transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
+                      >
+                        {randomFact.title}
+                      </motion.h3>
+                      
+                      {/* Top gradient */}
+                      <div className="absolute top-[60px] left-0 right-0 h-5 bg-gradient-to-b from-[#1e1e1e] to-transparent pointer-events-none z-20" />
+                      
+                      {/* Auto-scroll container */}
+                      <div
+                        ref={factContainerRef}
+                        className="overflow-y-auto custom-scrollbar"
+                        style={{ 
+                          maxHeight: "250px",
+                          scrollBehavior: 'smooth'
+                        }}
+                        onMouseEnter={() => setIsFactHovered(true)}
+                        onMouseLeave={() => setIsFactHovered(false)}
+                      >
+                        <div ref={factContentRef} className="px-2 py-1">
+                          <motion.div
+                            className="text-white text-sm md:text-base font-Merriweather leading-relaxed text-center fun-fact-html-content"
+                            dangerouslySetInnerHTML={{
+                              __html: randomFact.description,
+                            }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.5 }}
+                          />
+                        </div>
+                      </div>
+                      
+                      {/* Bottom gradient */}
+                      <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[#1e1e1e] to-transparent pointer-events-none z-20" />
+                      
+                      {/* Status indicators */}
+                      <div className="absolute bottom-2 right-2 flex gap-2 z-30">
+                        <AnimatePresence>
+                          {isFactHovered && (
+                            <motion.div
+                              initial={{ opacity: 0, x: 10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              exit={{ opacity: 0, x: 10 }}
+                              className="bg-[#C4A480]/80 text-white px-2 py-1 rounded-full text-xs backdrop-blur-sm"
+                            >
+                              Paused
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    </motion.div>
+                    
+                    {/* Bulb icon with animation */}
+                    <motion.img
+                      className="w-10 h-auto absolute top-0 right-0 z-50"
+                      src={bulb}
+                      alt="Knowledge Nugget"
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{ 
+                        delay: 0.7,
+                        type: "spring",
+                        stiffness: 260,
+                        damping: 20 
+                      }}
+                      whileHover={{ 
+                        scale: 1.2,
+                        rotate: 10,
+                        transition: { duration: 0.2 }
+                      }}
+                    />
                   </motion.div>
                 )}
               </AnimatePresence>
