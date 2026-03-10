@@ -47,8 +47,13 @@ const Membership = () => {
     try {
       const res = await subscribe({ plan_id: plan.id }).unwrap();
       
-      if (res?.data?.approve_url) {
-        window.location.href = res.data.approve_url;
+      const redirectUrl = res?.data?.approve_url || res?.data?.approval_url;
+      
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+      } else {
+        console.error("No redirect URL found in response:", res);
+        alert("Failed to get payment link. Please try again.");
       }
     } catch (err) {
       console.error("Subscription failed", err);

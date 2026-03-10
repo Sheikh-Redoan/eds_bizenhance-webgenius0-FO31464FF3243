@@ -37,6 +37,11 @@ export const paymentApi = baseApi.injectEndpoints({
       invalidatesTags: ["Dashboard", "User", "Plans"],
     }),
 
+    getOneTimeSuccess: builder.query({
+      query: (token) => `/paypal/one-time/success?token=${token}`,
+      invalidatesTags: ["Dashboard", "User", "Plans"],
+    }),
+
     paypalDonateSuccess: builder.mutation({
       query: ({ token }) => {
         const formData = new FormData();
@@ -57,5 +62,6 @@ export const {
   usePaypalDonateMutation,
   useCreateSubscriptionMutation,
   useGetSubscriptionSuccessQuery,
+  useGetOneTimeSuccessQuery,
   usePaypalDonateSuccessMutation,
 } = paymentApi;

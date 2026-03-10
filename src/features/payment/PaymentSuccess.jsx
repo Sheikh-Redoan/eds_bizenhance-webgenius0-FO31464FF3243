@@ -1,10 +1,12 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Check, X, Loader2 } from "lucide-react";
 import Button from "../../components/ui/Button";
 import buttonBG from "../../assets/images/Buttonbordersecoundary.png";
+import { motion } from "framer-motion";
 import { 
-  useGetSubscriptionSuccessQuery, 
+  useGetSubscriptionSuccessQuery,
+  useGetOneTimeSuccessQuery,
   usePaypalDonateSuccessMutation 
 } from "../../redux/api/paymentApi";
 
@@ -16,27 +18,34 @@ const PaymentSuccess = () => {
   const subscription_id = searchParams.get("subscription_id");
   const isSubscription = Boolean(subscription_id);
 
-  const { data: subData, error: subError } = useGetSubscriptionSuccessQuery(
+  const { data: subData, error: subError, isFetching: isFetchingSub } = useGetSubscriptionSuccessQuery(
     { token, subscription_id },
     { skip: !isSubscription || !token } 
   );
 
-  const [verifyDonation, { data: donationData, error: donationError }] = usePaypalDonateSuccessMutation();
+  const { data: oneTimeData, error: oneTimeError, isFetching: isFetchingOneTime } = useGetOneTimeSuccessQuery(
+    token,
+    { skip: isSubscription || !token } 
+  );
+
+  const [verifyDonation, { data: donationData, error: donationError, isLoading: isDonating }] = usePaypalDonateSuccessMutation();
 
   useEffect(() => {
-    if (token && !isSubscription) {
+    if (token && !isSubscription && oneTimeError) {
       verifyDonation({ token });
     }
-  }, []);
+  }, [token, isSubscription, oneTimeError, verifyDonation]);
 
   const getStatus = () => {
     if (!token) return "error";
     if (isSubscription) {
+      if (isFetchingSub) return "processing";
       if (subData) return "success";
       if (subError) return "error";
     } else {
-      if (donationData) return "success";
-      if (donationError) return "error";
+      if (isFetchingOneTime || isDonating) return "processing";
+      if (oneTimeData || donationData) return "success";
+      if (oneTimeError && donationError) return "error";
     }
     return "processing";
   };
@@ -44,16 +53,17 @@ const PaymentSuccess = () => {
   const getMessage = () => {
     if (!token) return "Invalid payment parameters. No token found.";
     const status = getStatus();
+    
     if (status === "success") {
-      return isSubscription 
-        ? "Your subscription has been successfully activated!"
-        : "Thank you! Your donation was successful.";
+      if (isSubscription) return "Your subscription has been successfully activated!";
+      if (oneTimeData) return "Your Lifetime membership was successfully activated!";
+      if (donationData) return "Thank you! Your donation was successful.";
     }
+    
     if (status === "error") {
-      return isSubscription
-        ? "Failed to verify subscription. Please contact support."
-        : "Failed to verify donation. Please contact support.";
+      return "Failed to verify payment. Please contact support.";
     }
+    
     return "Verifying your payment...";
   };
 
