@@ -5,13 +5,15 @@ import profile from "../../assets/images/Ellipse 6.jpg";
 import Bronze from "../../assets/images/Bronze.png";
 import Silver from "../../assets/images/Silver.png";
 import Gold from "../../assets/images/Gold.png";
-import { Edit2 } from 'lucide-react';
+import { Edit2, XCircle } from 'lucide-react';
 import { useGetUserDashboardQuery } from "../../redux/api/userApi";
+import { useCancelSubscriptionMutation } from "../../redux/api/paymentApi";
 import EditProfileModal from './EditProfileModal';
 
 const Dashboard = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { data: dashboardData, isLoading, isError } = useGetUserDashboardQuery();
+  const [cancelSubscription, { isLoading: isCanceling }] = useCancelSubscriptionMutation();
   
   if (isLoading) {
     return <div className="min-h-screen flex items-center justify-center text-white">Loading Dashboard...</div>;
@@ -23,6 +25,7 @@ const Dashboard = () => {
 
   const apiData = dashboardData?.data;
   const user = apiData?.user;
+  const isSubscribed = user?.role === "Guild Membership";
   const requiredXp = 1500;
   const currentXp = apiData?.total_xp || 0;
   
@@ -46,6 +49,18 @@ const Dashboard = () => {
   };
 
   const progressPercentage = (userData.currentXp / userData.requiredXp) * 100;
+
+  const handleCancelSubscription = async () => {
+    if (window.confirm("Are you sure you want to cancel your subscription? You will lose access to premium features at the end of your billing cycle.")) {
+      try {
+        await cancelSubscription().unwrap();
+        alert("Your subscription has been successfully cancelled.");
+      } catch (err) {
+        console.error("Cancellation failed:", err);
+        alert("Failed to cancel subscription. Please contact support or try again later.");
+      }
+    }
+  };
 
   return (
     <div
@@ -236,6 +251,22 @@ const Dashboard = () => {
               <div className="text-stone-200 text-lg sm:text-xl font-Inter tracking-wide">
                 {userData.title}
               </div>
+              {isSubscribed && (
+                <button
+                  onClick={handleCancelSubscription}
+                  disabled={isCanceling}
+                  className="mt-2 flex items-center gap-2 text-sm text-red-400 hover:text-red-300 transition-colors border border-red-400/30 hover:border-red-400/60 rounded-full px-4 py-1.5 bg-red-950/20"
+                >
+                  {isCanceling ? (
+                    <span className="animate-pulse">Canceling...</span>
+                  ) : (
+                    <>
+                      <XCircle size={16} />
+                      Cancel Subscription
+                    </>
+                  )}
+                </button>
+              )}
             </div>
           </div>
 

@@ -47,13 +47,21 @@ const Membership = () => {
     try {
       const res = await subscribe({ plan_id: plan.id }).unwrap();
       
-      const redirectUrl = res?.data?.approve_url || res?.data?.approval_url;
+      console.log("API Subscription Response:", res);
+      console.log("Response data object:", res?.data);
+      
+      const redirectUrl = 
+          res?.data?.approval_url || 
+          res?.approval_url || 
+          res?.data?.data?.approval_url ||
+          res?.data?.approve_url;
       
       if (redirectUrl) {
         window.location.href = redirectUrl;
       } else {
-        console.error("No redirect URL found in response:", res);
-        alert("Failed to get payment link. Please try again.");
+        console.error("No redirect URL found in response. Full object:", res);
+        console.error("Data keys:", res?.data ? Object.keys(res.data) : 'No data object');
+        alert("Failed to get the payment link. Please check the console for details.");
       }
     } catch (err) {
       console.error("Subscription failed", err);

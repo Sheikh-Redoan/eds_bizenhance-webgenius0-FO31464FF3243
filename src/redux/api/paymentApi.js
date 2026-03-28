@@ -18,7 +18,7 @@ export const paymentApi = baseApi.injectEndpoints({
         };
       },
     }),
-
+ 
     createSubscription: builder.mutation({
       query: (data) => {
         const formData = new FormData();
@@ -29,6 +29,14 @@ export const paymentApi = baseApi.injectEndpoints({
           body: formData,
         };
       },
+    }),
+
+    cancelSubscription: builder.mutation({
+      query: () => ({
+        url: "/paypal/subscription/cancel",
+        method: "POST",
+      }),
+      invalidatesTags: ["Dashboard", "User", "Plans"],
     }),
 
     getSubscriptionSuccess: builder.query({
@@ -61,6 +69,7 @@ export const {
   useGetPlansQuery,
   usePaypalDonateMutation,
   useCreateSubscriptionMutation,
+  useCancelSubscriptionMutation,
   useGetSubscriptionSuccessQuery,
   useGetOneTimeSuccessQuery,
   usePaypalDonateSuccessMutation,

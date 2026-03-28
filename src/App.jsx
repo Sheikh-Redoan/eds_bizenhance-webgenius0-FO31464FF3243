@@ -68,12 +68,8 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
-            
-            <Route path="/payment/success" element={
-              <ProtectedRoute>
-                <PaymentSuccess />
-              </ProtectedRoute>
-            } />
+            <Route path="/payment/success" element={<PaymentSuccess />} />
+
             
             <Route path="/dashboard" element={
               <ProtectedRoute>
