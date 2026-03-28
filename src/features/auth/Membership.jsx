@@ -5,7 +5,8 @@ import buttonBG from "../../assets/images/Buttonbordersecoundary.png";
 import Input from "../../components/ui/Input";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { useGetPlansQuery, usePaypalDonateMutation, useCreateSubscriptionMutation } from "../../redux/api/paymentApi";
+import { useGetPlansQuery, usePaypalDonateMutation, useCreateSubscriptionMutation, useCancelSubscriptionMutation } from "../../redux/api/paymentApi";
+import { useGetUserDashboardQuery } from "../../redux/api/userApi";
 
 const Membership = () => {
   const [selectedPlan, setSelectedPlan] = useState(null);
@@ -15,6 +16,10 @@ const Membership = () => {
   const { data: plansData, isLoading: isLoadingPlans } = useGetPlansQuery();
   const [donate, { isLoading: isDonating }] = usePaypalDonateMutation();
   const [subscribe, { isLoading: isSubscribing }] = useCreateSubscriptionMutation();
+  const { data: dashboardData, isLoading: isDashboardLoading } = useGetUserDashboardQuery();
+  const [cancelSubscription, { isLoading: isCanceling }] = useCancelSubscriptionMutation();
+
+  const isPremium = dashboardData?.data?.user?.is_premium || false;
 
   const subscriptionPlans = [
     ...(plansData?.data?.map(plan => ({
@@ -92,7 +97,17 @@ const Membership = () => {
     }
   };
 
-  if (isLoadingPlans) {
+  const handleCancelSubscription = async () => {
+    try {
+      const res = await cancelSubscription().unwrap();
+      alert(res.message || "Subscription successfully canceled.");
+    } catch (err) {
+      console.error("Cancellation failed", err);
+      alert(err?.data?.message || "Failed to cancel subscription. Please try again.");
+    }
+  };
+
+  if (isLoadingPlans || isDashboardLoading) {
     return <div className="text-white text-center mt-20">Loading Plans...</div>;
   }
 
@@ -409,30 +424,51 @@ const Membership = () => {
                   className="mt-6 lg:mt-[41px]"
                   variants={buttonVariants}
                 >
-                  <Button
-                    className={`py-4 lg:py-5 text-center text-orange-100 text-sm lg:text-base font-normal font-Merriweather leading-5 w-full ${
-                      isPopular ? 'bg-gradient-to-r from-yellow-600 to-amber-700' : ''
-                    }`}
-                    style={{ backgroundImage: `url(${buttonBG})`, width: "100%" }}
-                    onClick={() => isDonation ? handleDonation() : handleSubscribe(plan)}
-                    disabled={(isSubscribing || isDonating) && selectedPlan === plan.id}
-                  >
-                    {(isSubscribing || isDonating) && selectedPlan === plan.id ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <motion.div
-                          className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        />
-                        Processing...
-                      </span>
-                    ) : (
-                      plan.buttonText
-                    )}
-                  </Button>
+                  {isPremium && !isDonation ? (
+                    <Button
+                      className="py-4 lg:py-5 text-center text-white text-sm lg:text-base font-normal font-Merriweather leading-5 w-full  rounded transition-all duration-300"
+                      onClick={handleCancelSubscription}
+                      disabled={isCanceling}
+                    >
+                      {isCanceling ? (
+                        <span className="flex items-center justify-center gap-2">
+                          <motion.div
+                            className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          />
+                          Canceling...
+                        </span>
+                      ) : (
+                        "Cancel Subscription"
+                      )}
+                    </Button>
+                  ) : (
+                    <Button
+                      className={`py-4 lg:py-5 text-center text-orange-100 text-sm lg:text-base font-normal font-Merriweather leading-5 w-full ${
+                        isPopular ? 'bg-gradient-to-r from-yellow-600 to-amber-700' : ''
+                      }`}
+                      style={{ backgroundImage: `url(${buttonBG})`, width: "100%" }}
+                      onClick={() => isDonation ? handleDonation() : handleSubscribe(plan)}
+                      disabled={(isSubscribing || isDonating) && selectedPlan === plan.id}
+                    >
+                      {(isSubscribing || isDonating) && selectedPlan === plan.id ? (
+                        <span className="flex items-center justify-center gap-2">
+                          <motion.div
+                            className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          />
+                          Processing...
+                        </span>
+                      ) : (
+                        plan.buttonText
+                      )}
+                    </Button>
+                  )}
 
                   {/* Price breakdown for lifetime */}
-                  {plan.id === "lifetime" && !(isSubscribing || isDonating) && (
+                  {plan.id === "lifetime" && !(isSubscribing || isDonating) && !isPremium && (
                     <motion.p
                       className="text-center text-yellow-200/70 text-xs lg:text-sm mt-2"
                       initial={{ opacity: 0 }}

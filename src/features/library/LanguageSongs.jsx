@@ -6,6 +6,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { selectIsAuthenticated, selectCurrentUser } from "../../redux/slices/authSlice";
 import { useGetSongsQuery, useGetSongCategoriesQuery } from "../../redux/api/contentApi";
+import { useGetUserDashboardQuery } from "../../redux/api/userApi"; // ADDED: Import dashboard API
 import { Play, ChevronRight, Music, Filter, Search, X, Lock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import SearchInput from "../../components/ui/SearchInput";
@@ -190,6 +191,15 @@ const LanguageSongs = () => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const user = useSelector(selectCurrentUser);
   
+  // ADDED: Fetch the dashboard data cleanly to get the real-time is_premium status.
+  // We use `skip` so it only fetches if the user is actually authenticated.
+  const { data: dashboardData } = useGetUserDashboardQuery(undefined, {
+    skip: !isAuthenticated,
+  });
+
+  // Extract the fresh premium status. Fallback to the slice if needed, default to false.
+  const isPremium = dashboardData?.data?.user?.is_premium || user?.is_premium || false;
+
   const { data: songsData, isLoading: songsLoading } = useGetSongsQuery();
   const { data: categoriesData } = useGetSongCategoriesQuery();
 
@@ -376,10 +386,11 @@ const LanguageSongs = () => {
           filteredSongs.map((song, index) => {
             let isLocked = true;
 
+            // UPDATED: Using the reliable `isPremium` value derived from the dashboard API
             if (!isAuthenticated) {
               // Unregistered: Only the 1st song (index 0) is unlocked
               if (index === 0) isLocked = false;
-            } else if (user?.is_premium) {
+            } else if (isPremium) {
               // Premium User: All songs unlocked
               isLocked = false;
             } else {
@@ -417,12 +428,6 @@ const LanguageSongs = () => {
             <p className="text-white/40 font-Merriweather text-sm sm:text-base mb-4 sm:mb-6 max-w-md mx-auto">
               Try adjusting your search or filters
             </p>
-            {/* <Button
-              onClick={clearFilters}
-              className="px-4 sm:px-6 py-2 sm:py-2 bg-transparent border border-[#B28769] text-white hover:bg-[#B28769]/20 text-sm sm:text-base"
-            >
-              Clear All Filters
-            </Button> */}
           </div>
         )}
       </motion.div>
