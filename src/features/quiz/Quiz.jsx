@@ -18,6 +18,7 @@ import dashboardButton from "../../assets/images/DashboardbuttonBG.png";
 import moresongbgbutton from "../../assets/images/moreSongs.png";
 import bulb from "../../assets/images/Knowledge Nugget Icon.png";
 import useAutoScroll from "./useAutoScroll";
+
 const Quiz = () => {
   const { songId } = useParams();
   const dispatch = useDispatch();
@@ -27,6 +28,9 @@ const Quiz = () => {
   const [submitQuiz] = useSubmitQuizMutation();
   const { data: funFactsResponse } = useGetFunFactsQuery();
   const [randomFact, setRandomFact] = useState(null);
+
+  // Access the current song from player redux slice as a fallback for language data
+  const currentSongFromPlayer = useSelector((state) => state.player.currentSong);
 
   const {
     containerRef: factContainerRef,
@@ -70,13 +74,36 @@ const Quiz = () => {
     }
   }, [songDetails, dispatch, questions.length]);
 
+  // NEW LOGIC: Filter fun facts based on the selected song's language
   useEffect(() => {
     if (isComplete && funFactsResponse?.data?.length > 0 && !randomFact) {
-      const facts = funFactsResponse.data;
-      const randomIndex = Math.floor(Math.random() * facts.length);
-      setRandomFact(facts[randomIndex]);
+      const allFacts = funFactsResponse.data;
+      
+      // Determine the language ID of the current song
+      // It checks the API response first, then falls back to Redux state
+      const currentLanguageId = songDetails?.data?.language_id || currentSongFromPlayer?.language_id;
+
+      let filteredFacts = allFacts;
+
+      // Filter facts if we have a valid language ID to compare against
+      if (currentLanguageId) {
+        const languageSpecificFacts = allFacts.filter(
+          (fact) => fact.language_id === currentLanguageId
+        );
+
+        // If facts exist for this language, use them. Otherwise, fallback to all facts to avoid breaking UI.
+        if (languageSpecificFacts.length > 0) {
+          filteredFacts = languageSpecificFacts;
+        } else {
+          console.warn(`No fun facts found for language_id: ${currentLanguageId}. Falling back to all facts.`);
+        }
+      }
+
+      // Pick a random fact from our filtered list
+      const randomIndex = Math.floor(Math.random() * filteredFacts.length);
+      setRandomFact(filteredFacts[randomIndex]);
     }
-  }, [isComplete, funFactsResponse, randomFact]);
+  }, [isComplete, funFactsResponse, randomFact, songDetails, currentSongFromPlayer]);
 
   const currentQuestion = questions[currentQuestionIndex];
   const songData = songDetails?.data
