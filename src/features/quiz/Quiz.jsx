@@ -50,8 +50,18 @@ const Quiz = () => {
     isCorrect,
   } = useSelector((state) => state.quiz);
 
+  // Reset Redux state and local fact state when the song changes
   useEffect(() => {
-    if (songDetails?.data?.quiz_questions && questions.length === 0) {
+    dispatch(resetQuiz());
+    setRandomFact(null);
+  }, [songId, dispatch]);
+
+  useEffect(() => {
+    if (
+      songDetails?.data?.quiz_questions && 
+      songDetails.data.id.toString() === songId && 
+      questions.length === 0
+    ) {
       const apiQuestions = songDetails.data.quiz_questions;
 
       const formattedQuestions = apiQuestions.map((q) => {
@@ -72,7 +82,7 @@ const Quiz = () => {
         dispatch(startQuiz(formattedQuestions));
       }
     }
-  }, [songDetails, dispatch, questions.length]);
+  }, [songDetails, dispatch, questions.length, songId]);
 
   // NEW LOGIC: Filter fun facts based on the selected song's language
   useEffect(() => {
@@ -209,13 +219,13 @@ const Quiz = () => {
                     
                     {/* Image section with animation */}
                     <motion.div 
-                      className="w-1/2 flex justify-center items-center relative overflow-hidden max-[668px]:w-full max-[668px]:h-1/2"
+                      className="w-1/2 flex justify-center items-center relative overflow-hidden max-[668px]:w-full max-[668px]:h-1/2 "
                       initial={{ x: -20, opacity: 0 }}
                       animate={{ x: 0, opacity: 1 }}
                       transition={{ delay: 0.2, duration: 0.6 }}
                     >
                       <motion.img
-                        className="w-full h-auto object-contain"
+                        className="w-full h-auto object-contain max-[667px]:mt-15"
                         src={randomFact.image}
                         alt="Knowledge Nugget"
                         whileHover={{ scale: 1.1, rotate: 2 }}
@@ -299,8 +309,9 @@ const Quiz = () => {
                     </motion.div>
                     
                     {/* Bulb icon with animation */}
-                    <motion.img
-                      className="w-10 h-auto absolute top-0 right-0 z-50"
+                    <div className="w-10 h-auto absolute top-0 left-0 z-50 flex justify-center items-center ">
+                      <motion.img
+                      className="w-10 h-auto absolute top-0 left-0 z-50 max-[667px]:left-10"
                       src={bulb}
                       alt="Knowledge Nugget"
                       initial={{ scale: 0, rotate: -180 }}
@@ -317,6 +328,8 @@ const Quiz = () => {
                         transition: { duration: 0.2 }
                       }}
                     />
+                    <p className="w-50 h-auto absolute top-5 left-12 z-50 md:text-2xl font-bold font-OldLondon text-[#fff] text-center max-[667px]:text-[20px] max-[667px]:left-18 ">Knowledge Nuggets</p>
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -381,7 +394,8 @@ const Quiz = () => {
           {songData?.title}
         </div>
         <div className="justify-center text-white description-responsive font-normal font-Merriweather leading-5 md:leading-6 text-center px-4">
-          {songData?.description}
+          {/* {songData?.description} */}
+          Translate the displayed lyrics
         </div>
       </div>
 

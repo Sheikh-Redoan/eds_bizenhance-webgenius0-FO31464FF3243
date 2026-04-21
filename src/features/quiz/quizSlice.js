@@ -54,6 +54,7 @@ export const quizSlice = createSlice({
       }
     },
     resetQuiz: (state) => {
+      state.questions = [];
       state.currentQuestionIndex = 0;
       state.score = 0;
       state.answers = [];

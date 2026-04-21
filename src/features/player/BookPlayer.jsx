@@ -196,6 +196,26 @@ const BookPlayer = () => {
     navigate(`/exercise/${currentSong.id}`);
   };
 
+  const handleAudioEnded = () => {
+    dispatch(setIsPlaying(false));
+
+    // Force flip to exercise page when audio completely finishes
+    if (!isMobile) {
+      const exerciseSheetIndex = sheets.findIndex(s => s.front.type === 'exercise_prompt' || s.back.type === 'exercise_prompt');
+      if (exerciseSheetIndex !== -1) {
+        const targetPageIndex = sheets[exerciseSheetIndex].front.type === 'exercise_prompt' 
+          ? exerciseSheetIndex 
+          : exerciseSheetIndex + 1;
+        dispatch(setPage(targetPageIndex));
+      }
+    } else {
+      const exercisePageIndex = mobilePages.findIndex(p => p.type === 'exercise_prompt');
+      if (exercisePageIndex !== -1) {
+        dispatch(setPage(exercisePageIndex));
+      }
+    }
+  };
+
   // Auto-flip pages based on current time
   useEffect(() => {
     if (!currentSong || !isPlaying) return;
@@ -212,9 +232,26 @@ const BookPlayer = () => {
 
       if (activeMobileIndex !== -1 && activeMobileIndex !== currentPageIndex) {
         dispatch(setPage(activeMobileIndex));
+      } else if (activeMobileIndex === -1) {
+        // MOBILE FIX: Automatically flip to exercise when lyrics end
+        let lastLyricEndTime = 0;
+        mobilePages.forEach(page => {
+          if (page.type === 'lyrics' && page.endTime) {
+            lastLyricEndTime = Math.max(lastLyricEndTime, page.endTime);
+          }
+        });
+
+        if (currentTime > lastLyricEndTime && lastLyricEndTime > 0) {
+          const exerciseIndex = mobilePages.findIndex(p => p.type === 'exercise_prompt');
+          if (exerciseIndex !== -1 && currentPageIndex !== exerciseIndex) {
+            dispatch(setPage(exerciseIndex));
+          }
+        }
       }
     } else {
       if (!sheets.length) return;
+
+      let activeIndexFound = false;
 
       for (let i = 1; i < sheets.length; i++) {
         const sheet = sheets[i];
@@ -224,6 +261,7 @@ const BookPlayer = () => {
             if (currentPageIndex !== i) {
               dispatch(setPage(i));
             }
+            activeIndexFound = true;
             return;
           }
         }
@@ -233,7 +271,38 @@ const BookPlayer = () => {
             if (currentPageIndex !== i + 1) {
               dispatch(setPage(i + 1));
             }
+            activeIndexFound = true;
             return;
+          }
+        }
+      }
+
+      // DESKTOP FIX: If no active lyrics found, check if song passed the last lyric
+      if (!activeIndexFound) {
+        let lastLyricEndTime = 0;
+        sheets.forEach(sheet => {
+          if (sheet.front.type === 'lyrics' && sheet.front.endTime) {
+            lastLyricEndTime = Math.max(lastLyricEndTime, sheet.front.endTime);
+          }
+          if (sheet.back.type === 'lyrics' && sheet.back.endTime) {
+            lastLyricEndTime = Math.max(lastLyricEndTime, sheet.back.endTime);
+          }
+        });
+
+        // If current time is past the final lyric, flip to the exercise page
+        if (currentTime > lastLyricEndTime && lastLyricEndTime > 0) {
+          const exerciseSheetIndex = sheets.findIndex(s => s.front.type === 'exercise_prompt' || s.back.type === 'exercise_prompt');
+          
+          if (exerciseSheetIndex !== -1) {
+            // Determine exactly which page index shows the exercise prompt
+            const targetPageIndex = sheets[exerciseSheetIndex].front.type === 'exercise_prompt' 
+              ? exerciseSheetIndex 
+              : exerciseSheetIndex + 1;
+
+            // Flip only if we aren't already on that page
+            if (currentPageIndex !== targetPageIndex) {
+              dispatch(setPage(targetPageIndex));
+            }
           }
         }
       }
@@ -305,7 +374,7 @@ const BookPlayer = () => {
             Vocabulary
           </h2>
           
-          <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
+          <div className="flex-1 overflow-y-auto custom-scrollbar pr-2" style={{ maxHeight: currentSong.exercise ? 'calc(100% - 100px)' : '100%' }}>
             <div className="space-y-3 pb-4">
               {content.words.map((vocab, k) => (
                 <div key={k} className="vocab-card-mobile">
@@ -318,9 +387,9 @@ const BookPlayer = () => {
           </div>
 
           {currentSong.exercise && (
-            <div className="mt-4 pt-4 border-t border-amber-900/20 shrink-0">
+            <div className="mt-4 pt-4 border-t border-amber-900/20 shrink-0 relative z-50">
               <button
-                className="quiz-button-mobile"
+                className="quiz-button-mobile relative z-50"
                 style={{
                   backgroundImage:`url(${buttonBG})`,
                   backgroundSize: 'contain',
@@ -336,6 +405,32 @@ const BookPlayer = () => {
               </button>
             </div>
           )}
+        </div>
+      );
+    }
+
+    if (content.type === 'exercise_prompt') {
+      return (
+        <div className="h-full flex flex-col items-center justify-center text-center p-4 relative z-50">
+          <div className="mb-6">
+            <h2 className="text-2xl font-serif text-amber-900 mb-3">{content.content.title}</h2>
+            <p className="text-lg text-stone-700 font-serif italic">{content.content.description}</p>
+          </div>
+          <button
+            className="quiz-button-mobile relative z-50"
+            style={{
+              backgroundImage:`url(${buttonBG})`,
+              backgroundSize: 'contain',
+              backgroundRepeat: 'no-repeat'
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleStartExercise();
+            }}
+          >
+            <img src={topicon} alt="" className="w-5 h-5" />
+            <span>{content.content.buttonText}</span>
+          </button>
         </div>
       );
     }
@@ -480,7 +575,7 @@ const BookPlayer = () => {
         src={currentSong.audioUrl} 
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
-        onEnded={() => dispatch(setIsPlaying(false))}
+        onEnded={handleAudioEnded}
         preload="auto"
       />
 
