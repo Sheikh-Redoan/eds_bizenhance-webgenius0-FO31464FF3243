@@ -152,11 +152,11 @@ const Quiz = () => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="flex justify-center items-center p-4"
+        className="flex justify-center items-start p-4"
         style={{ minHeight: "calc(100vh - 82px)" }}
       >
-        <div className="w-full max-w-[1000px]  relative bg-transparent">
-          <div className="w-full px-4 mt-4 results-content">
+        <div className="w-full max-w-[1320px]  relative bg-transparent">
+          <div className="w-full px-4 results-content">
             <div className="text-center text-white text-3xl md:text-4xl font-bold font-Merriweather leading-10 complete-message-responsive">
               Exercise Complete!
             </div>
@@ -196,7 +196,7 @@ const Quiz = () => {
                       boxShadow: "0 20px 40px rgba(0,0,0,0.4)",
                       transition: { duration: 0.3 }
                     }}
-                    className="z-10 w-full rounded-xl border-[12px] sm:border-[16px] lg:border-[30px] border-wood rounded-lg shadow-lg backdrop-blur-sm flex bg-[#1e1e1e] relative overflow-hidden max-[668px]:flex-col"
+                    className="z-10 w-full h-[550px] rounded-xl border-[12px] sm:border-[16px] lg:border-[30px] border-wood rounded-lg shadow-lg backdrop-blur-sm flex bg-[#1e1e1e] relative overflow-hidden max-[668px]:flex-col"
                     style={{
                       borderImage: `url(${cardBg}) 30 round`,
                       transformStyle: "preserve-3d",
@@ -247,7 +247,7 @@ const Quiz = () => {
                     
                     {/* Content section with auto-scroll */}
                     <motion.div 
-                      className="w-1/2 relative max-[668px]:w-full max-[668px]:h-1/2"
+                      className="w-1/2 relative h-full max-[668px]:w-full max-[668px]:h-1/2"
                       initial={{ x: 20, opacity: 0 }}
                       animate={{ x: 0, opacity: 1 }}
                       transition={{ delay: 0.3, duration: 0.6 }}
@@ -267,9 +267,9 @@ const Quiz = () => {
                       {/* Auto-scroll container */}
                       <div
                         ref={factContainerRef}
-                        className="overflow-y-auto custom-scrollbar"
+                        className="overflow-y-auto custom-scrollbar "
                         style={{ 
-                          maxHeight: "250px",
+                          maxHeight: "350px",
                           scrollBehavior: 'smooth'
                         }}
                         onMouseEnter={() => setIsFactHovered(true)}
@@ -335,7 +335,7 @@ const Quiz = () => {
               </AnimatePresence>
             </div>
           </div>
-          <div className=" self-stretch text-center justify-center text-white score-message-responsive font-normal font-Merriweather leading-8 md:leading-10">
+          <div className=" self-stretch text-center  justify-center text-white score-message-responsive font-normal font-Merriweather leading-8 md:leading-10">
             {score === questions.length ? "Perfect!" : "Keep Practicing!"}
           </div>
           <div className="w-full max-w-[384px] mx-auto mt-8 px-4 flex flex-col sm:flex-row justify-center items-center gap-4 results-buttons-container">

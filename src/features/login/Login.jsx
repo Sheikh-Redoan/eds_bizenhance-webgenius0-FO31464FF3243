@@ -179,7 +179,8 @@ const Login = () => {
                 placeholder="Email"
                 type="email"
                 error={errors.email}
-                icon={<Mail className="text-[#B28769]/50" size={20} />}
+                className=""
+                icon={<Mail className="text-[#teal]/50" size={20} />}
               />
               {errors.email && (
                 <motion.p

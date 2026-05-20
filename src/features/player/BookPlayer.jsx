@@ -75,7 +75,7 @@ const BookPlayer = () => {
           content: {
             title: "Test Your Knowledge",
             description: "Ready to check what you've learned?",
-            buttonText: "Start Quiz"
+            buttonText: "Start Exercises"
           }
         });
       }
@@ -492,7 +492,7 @@ const BookPlayer = () => {
                   className={`lyric-line ${isActive ? 'active' : ''}`}
                   onClick={(e) => { e.stopPropagation(); handleSeek(line.time); }}
                 >
-                  <p className="text-sm md:text-base text-gray-500 italic">{line.en}</p>
+                  <p className="text-sm md:text-base text-gray-500">{line.en}</p>
                   <p className="text-base md:text-lg text-amber-900 font-serif">{line.target}</p>
                 </div>
               );

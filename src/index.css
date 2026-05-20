@@ -837,7 +837,7 @@ input[type="range"]::-moz-range-thumb {
   position: fixed;
   top: 0;
   bottom: 0;
-  width: 20%;
+  width: 0%;
   z-index: 50;
   opacity: 0;
 }

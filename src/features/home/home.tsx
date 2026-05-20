@@ -161,7 +161,7 @@ const Home = () => {
         >
           Explore songs, stories, and musical worlds in different languages.
           Make learning fun with interactive lyrics, cultural insights, and
-          exciting quizzes.
+          exciting exercises.
         </motion.p>
 
         <motion.div
