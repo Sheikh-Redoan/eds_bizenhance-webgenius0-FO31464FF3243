@@ -82,8 +82,16 @@ const Navbar = () => {
             ) : (
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2 text-black font-serif">
-                  <div className="w-10 h-10 rounded-full bg-stone-700 border-2 border-[#FCD669] flex items-center justify-center">
-                    <User size={20} />
+                  <div className="w-10 h-10 rounded-full bg-stone-700 border-2 border-[#FCD669] flex items-center justify-center overflow-hidden shrink-0">
+                    {user?.avatar ? (
+                      <img 
+                        src={user.avatar} 
+                        alt={user?.name || "Profile"} 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <User size={20} className="text-stone-300" />
+                    )}
                   </div>
                   <span className="max-w-[100px] truncate">{user?.name || "Member"}</span>
                 </div>
