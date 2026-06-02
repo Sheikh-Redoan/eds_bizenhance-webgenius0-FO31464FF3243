@@ -3,8 +3,9 @@
 /* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { selectIsAuthenticated, selectCurrentUser } from "../../redux/slices/authSlice";
+import { selectCurrentStep, nextStep } from "../../redux/slices/tutorialSlice";
 import { useGetSongsQuery, useGetSongCategoriesQuery } from "../../redux/api/contentApi";
 import { useGetUserDashboardQuery } from "../../redux/api/userApi"; // ADDED: Import dashboard API
 import { Play, ChevronRight, Music, Filter, Search, X, Lock } from "lucide-react";
@@ -76,6 +77,7 @@ const SongCard = ({ song, onClick, index, isLocked }) => {
       onHoverEnd={() => setIsHovered(false)}
       className={`relative w-full ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer'}`}
       onClick={isLocked ? null : onClick}
+      id={index === 0 ? "tour-open-song" : ""}
     >
       {/* LOCKED OVERLAY */}
       {isLocked && (
@@ -188,8 +190,10 @@ const SongCard = ({ song, onClick, index, isLocked }) => {
 const LanguageSongs = () => {
   const { languageId } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const user = useSelector(selectCurrentUser);
+  const currentStep = useSelector(selectCurrentStep);
   
   // ADDED: Fetch the dashboard data cleanly to get the real-time is_premium status.
   // We use `skip` so it only fetches if the user is actually authenticated.
@@ -406,6 +410,7 @@ const LanguageSongs = () => {
                   isLocked={isLocked}
                   onClick={() => {
                     if (!isLocked) {
+                      if (currentStep === 3 && index === 0) dispatch(nextStep());
                       navigate(`/listen/${song.id}`);
                     } else {
                       if (!isAuthenticated) {

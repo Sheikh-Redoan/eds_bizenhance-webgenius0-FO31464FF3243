@@ -11,12 +11,17 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setCredentials: (state, action) => {
-      const { user, token } = action.payload;
+      const { user, token, isFirstLogin } = action.payload;
       state.user = user;
       state.token = token;
       state.isAuthenticated = true;
       if (token) {
         localStorage.setItem("token", token);
+      }
+      
+      // Store flag to trigger tutorial after state update
+      if (isFirstLogin) {
+        localStorage.setItem("shouldStartTutorial", "true");
       }
     },
     updateUser: (state, action) => {

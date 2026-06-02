@@ -1,10 +1,9 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react-hooks/set-state-in-effect */
 import React, { useRef, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { selectIsAuthenticated } from '../../redux/slices/authSlice';
 import { setSong, setPage, setCurrentTime, setDuration, setIsPlaying } from './playerSlice';
+import { selectCurrentStep, nextStep } from '../../redux/slices/tutorialSlice';
 import { useGetSongDetailsQuery } from '../../redux/api/contentApi';
 import AudioControls from './AudioControls';
 import Button from '../../components/ui/Button';
@@ -19,6 +18,7 @@ const BookPlayer = () => {
   const navigate = useNavigate();
   const { songId } = useParams();
   const isAuthenticated = useSelector(selectIsAuthenticated);
+  const currentStep = useSelector(selectCurrentStep);
   const { currentSong, isPlaying, currentTime, currentPageIndex } = useSelector((state) => state.player);
   const audioRef = useRef(null);
   const [sheets, setSheets] = useState([]);
@@ -192,12 +192,16 @@ const BookPlayer = () => {
   };
 
   const handleStartExercise = () => {
+    if (currentStep === 6) dispatch(nextStep());
     dispatch(setIsPlaying(false));
     navigate(`/exercise/${currentSong.id}`);
   };
 
   const handleAudioEnded = () => {
     dispatch(setIsPlaying(false));
+
+    // Advance to Start Exercise step when song is over
+    if (currentStep === 5) dispatch(nextStep());
 
     // Force flip to exercise page when audio completely finishes
     if (!isMobile) {
@@ -389,6 +393,7 @@ const BookPlayer = () => {
           {currentSong.exercise && (
             <div className="mt-4 pt-4 border-t border-amber-900/20 shrink-0 relative z-50">
               <button
+                id="tour-start-exercise"
                 className="quiz-button-mobile relative z-50"
                 style={{
                   backgroundImage:`url(${buttonBG})`,
@@ -417,6 +422,7 @@ const BookPlayer = () => {
             <p className="text-lg text-stone-700 font-serif italic">{content.content.description}</p>
           </div>
           <button
+            id="tour-start-exercise"
             className="quiz-button-mobile relative z-50"
             style={{
               backgroundImage:`url(${buttonBG})`,
@@ -537,6 +543,7 @@ const BookPlayer = () => {
                 </div>
 
                  <Button 
+                id="tour-start-exercise"
                 className="text-base md:text-lg font-Merriweather p-6 md:p-8 lg:p-10 flex items-center gap-2 text-white w-full max-w-[200px] md:max-w-[220px] lg:max-w-[250px] text-center justify-center transform hover:scale-105 transition-transform"
                 style={{backgroundImage: `url(${buttonBG})`, backgroundSize: 'contain'}}
                 onClick={(e) => {

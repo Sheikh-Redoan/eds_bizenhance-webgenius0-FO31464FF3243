@@ -1,11 +1,14 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useGetSongDetailsQuery } from '../../redux/api/contentApi';
+import { selectCurrentStep, endTutorial } from '../../redux/slices/tutorialSlice';
 
 const QuizResults = () => {
   const { songId } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const currentStep = useSelector(selectCurrentStep);
   const { score, questions } = useSelector((state) => state.quiz);
   
   const { data: songDetails } = useGetSongDetailsQuery(songId);
@@ -61,8 +64,12 @@ const QuizResults = () => {
         {/* Action Buttons */}
         <div className="w-96 left-[65px] top-[527px] absolute inline-flex justify-start items-center gap-6 z-20">
           <div 
+            id="tour-view-dashboard"
             className="flex-1 h-20 relative overflow-hidden cursor-pointer group"
-            onClick={() => navigate('/dashboard')}
+            onClick={() => {
+              if (currentStep === 7) dispatch(endTutorial());
+              navigate('/dashboard');
+            }}
           >
             <div className="w-full h-full border-2 border-stone-400 absolute top-0 left-0 skew-x-[-10deg] bg-stone-800/80 hover:bg-stone-700 transition-colors"></div>
             <div className="absolute inset-0 flex items-center justify-center text-center text-white text-base font-normal font-Merriweather leading-4">

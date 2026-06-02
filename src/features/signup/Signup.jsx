@@ -90,7 +90,9 @@ const Signup = () => {
         password_confirmation: formData.confirmPassword,
       }).unwrap();
       
-      console.log("Registration successful");
+      console.log("Registration successful - First time user");
+      // Set flag for first-time login to trigger tutorial
+      localStorage.setItem("shouldStartTutorial", "true");
       navigate("/login");
       
     } catch (error) {

@@ -20,9 +20,9 @@ import { useDispatch } from "react-redux";
 import { setSong } from "./features/player/playerSlice";
 import { ENHANCED_SONGS } from "./data/mockSongs";
 import main_bg from "./assets/main-bg1.png";
-
-// 1. Import the MouseEffect component
 import MouseEffect from "./components/ui/MouseEffect";
+import TutorialOverlay from "./components/ui/TutorialOverlay";
+import { startTutorial } from "./redux/slices/tutorialSlice";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -35,10 +35,25 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
   const dispatch = useDispatch();
+  const isAuthenticated = useSelector(selectIsAuthenticated);
 
   useEffect(() => {
     dispatch(setSong(ENHANCED_SONGS[0]));
   }, [dispatch]);
+
+  useEffect(() => {
+    // Listen for authentication to complete before checking local storage
+    if (isAuthenticated) {
+      const shouldStartTutorial = localStorage.getItem("shouldStartTutorial");
+      if (shouldStartTutorial === "true") {
+        localStorage.removeItem("shouldStartTutorial");
+        // Slight delay ensures the Dashboard route has fully loaded
+        setTimeout(() => {
+          dispatch(startTutorial());
+        }, 600);
+      }
+    }
+  }, [isAuthenticated, dispatch]);
 
   return (
     <div className="min-h-screen font-sans text-paper-light relative overflow-hidden">
@@ -52,8 +67,8 @@ function App() {
         }}
       ></div>
       
-      {/* 2. Add the MouseEffect component here */}
       <MouseEffect />
+      <TutorialOverlay />
 
       {/* Content Wrapper */}
       <div className="relative z-10 min-h-screen">

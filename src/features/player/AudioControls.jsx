@@ -1,10 +1,12 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { togglePlay, setCurrentTime, setVolume, toggleMute } from "./playerSlice";
+import { selectCurrentStep, nextStep } from "../../redux/slices/tutorialSlice";
 import { Play, Pause, Volume2, VolumeOff, Volume1, VolumeX } from "lucide-react";
 
 const AudioControls = ({ audioRef }) => {
   const dispatch = useDispatch();
+  const currentStep = useSelector(selectCurrentStep);
   const { isPlaying, currentTime, duration, currentSong, volume, isMuted } =
     useSelector((state) => state.player);
 
@@ -68,7 +70,11 @@ const AudioControls = ({ audioRef }) => {
         
         {/* Play/Pause Button */}
         <button
-          onClick={() => dispatch(togglePlay())}
+          id="tour-play-song"
+          onClick={() => {
+            if (currentStep === 4 && !isPlaying) dispatch(nextStep());
+            dispatch(togglePlay());
+          }}
           className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 border-2 sm:border-3 md:border-4 border-[#8B7355] text-white flex items-center justify-center hover:opacity-90 transition shrink-0"
         >
           {isPlaying ? (

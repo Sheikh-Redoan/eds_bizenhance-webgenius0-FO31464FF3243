@@ -3,6 +3,7 @@ import { NavLink, Link, useNavigate } from "react-router-dom";
 import { BookOpen, Menu, X, LogOut, User } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { logout, selectIsAuthenticated, selectCurrentUser } from "../../redux/slices/authSlice";
+import { selectCurrentStep, nextStep } from "../../redux/slices/tutorialSlice";
 import logo from "../../assets/images/MainLogo(1).png"
 
 const ActiveFlagSVG = () => (
@@ -16,9 +17,11 @@ const ActiveFlagSVG = () => (
   </svg>
 );
 
-const NavItem = ({ to, children }) => (
+const NavItem = ({ to, children, id, onClick }) => (
   <NavLink
     to={to}
+    id={id}
+    onClick={onClick}
     className={({ isActive }) =>
       `relative px-4 py-2 text-base font-medium font-serif transition-colors duration-200 
       ${isActive ? "text-amber-100" : "text-black hover:text-[#b83b3b]"}`
@@ -37,6 +40,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const user = useSelector(selectCurrentUser);
+  const currentStep = useSelector(selectCurrentStep);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -59,7 +63,14 @@ const Navbar = () => {
 
           <div className="hidden md:flex items-center space-x-1 font-merriweather">
             <NavItem className="text-black" to="/">Home</NavItem>
-            <NavItem className="text-black" to="/languages">Languages</NavItem>
+            <NavItem 
+              className="text-black" 
+              to="/languages"
+              id="tour-nav-languages"
+              onClick={() => { if (currentStep === 1) dispatch(nextStep()); }}
+            >
+              Languages
+            </NavItem>
             <NavItem className="text-black" to="/membership">Membership</NavItem>
             {isAuthenticated && <NavItem className="text-black" to="/dashboard">Dashboard</NavItem>}
             <NavItem className="text-black" to="/contact">Contact</NavItem>

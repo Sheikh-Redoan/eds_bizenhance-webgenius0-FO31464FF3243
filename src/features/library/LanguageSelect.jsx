@@ -5,9 +5,13 @@ import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { useNavigate } from "react-router-dom";
 import { useGetLanguagesQuery } from "../../redux/api/contentApi";
+import { useSelector, useDispatch } from "react-redux";
+import { selectCurrentStep, nextStep } from "../../redux/slices/tutorialSlice";
 
 const LanguageSelect = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const currentStep = useSelector(selectCurrentStep);
   const { data: languageData, isLoading } = useGetLanguagesQuery();
   
   const languages = languageData?.data?.map(lang => ({
@@ -181,6 +185,7 @@ const LanguageSelect = () => {
             languages.map((lang, index) => (
             <motion.div
               key={lang.id}
+              id={index === 0 ? "tour-explore-song" : ""}
               className="relative mx-auto w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-full"
               custom={index}
               variants={cardVariants}
@@ -241,7 +246,10 @@ const LanguageSelect = () => {
                       className="text-[#E7D183] flex justify-center items-center gap-1 sm:gap-2 group w-full"
                       variants={buttonVariants}
                       whileHover="hover"
-                      onClick={() => navigate(`/languages/${lang.id}`)}
+                      onClick={() => {
+                        if (currentStep === 2 && index === 0) dispatch(nextStep());
+                        navigate(`/languages/${lang.id}`);
+                      }}
                     >
                       <Music size={14} smSize={16} lgSize={18} className="group-hover:text-yellow-300 transition-colors w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5" />
                       <p className="text-center text-[#E7D183] text-xs sm:text-sm lg:text-base font-normal font-Merriweather leading-4 sm:leading-5 group-hover:text-yellow-300 transition-colors truncate">
