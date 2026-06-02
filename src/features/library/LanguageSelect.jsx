@@ -228,9 +228,9 @@ const LanguageSelect = () => {
                   </motion.div>
 
                   {/* Language Info Section */}
-                  <div className="bg-[#755F48] flex justify-center items-center flex-col py-3 sm:py-4 lg:py-5 px-2">
+                  <div className="bg-[#2F1F41] flex justify-center items-center flex-col py-3 sm:py-4 lg:py-5 px-2">
                     <motion.p
-                      className="w-full text-center text-white text-lg sm:text-xl lg:text-2xl font-semibold font-Merriweather leading-6 sm:leading-7 lg:leading-8 mb-1 sm:mb-2 lg:mb-2 truncate"
+                      className="w-full text-center text-[#E7D183] text-lg sm:text-xl lg:text-2xl font-semibold font-Merriweather leading-6 sm:leading-7 lg:leading-8 mb-1 sm:mb-2 lg:mb-2 truncate"
                       whileHover={{ scale: 1.05 }}
                     >
                       {lang.name}
@@ -238,13 +238,13 @@ const LanguageSelect = () => {
 
                     {/* Explore Button */}
                     <motion.button
-                      className="text-white flex justify-center items-center gap-1 sm:gap-2 group w-full"
+                      className="text-[#E7D183] flex justify-center items-center gap-1 sm:gap-2 group w-full"
                       variants={buttonVariants}
                       whileHover="hover"
                       onClick={() => navigate(`/languages/${lang.id}`)}
                     >
                       <Music size={14} smSize={16} lgSize={18} className="group-hover:text-yellow-300 transition-colors w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5" />
-                      <p className="text-center text-white text-xs sm:text-sm lg:text-base font-normal font-Merriweather leading-4 sm:leading-5 group-hover:text-yellow-300 transition-colors truncate">
+                      <p className="text-center text-[#E7D183] text-xs sm:text-sm lg:text-base font-normal font-Merriweather leading-4 sm:leading-5 group-hover:text-yellow-300 transition-colors truncate">
                         Explore Songs
                       </p>
                       <motion.div
