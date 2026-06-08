@@ -526,14 +526,33 @@
 }
 
 /* Override inline black text colors from backend HTML */
+.fun-fact-html-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .fun-fact-html-content * {
   color: #F5F5F5 !important;
-  font-family: inherit !important;
+  font-family: 'Merriweather', serif !important;
   text-align: center !important;
+  line-height: 1.6 !important;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .fun-fact-html-content p {
   margin-bottom: 0.5rem;
+}
+
+/* Ensure images from the backend HTML (if any) resize properly */
+.fun-fact-html-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 10px auto;
+  display: block;
 }
 
 /* Custom scrollbar for the fun fact section */

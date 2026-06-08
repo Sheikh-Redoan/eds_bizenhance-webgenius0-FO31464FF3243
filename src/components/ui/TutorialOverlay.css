@@ -22,19 +22,19 @@
 .panel-left { top: 0; bottom: 0; left: 0; }
 
 .tutorial-message {
-  background: #041221;
-  color: #ffffff;
-  border: 2px solid #00b3ff;
-  box-shadow: 0 0 20px rgba(0, 179, 255, 0.4);
-  border-radius: 8px;
-  padding: 15px 20px;
-  position: fixed;
-  z-index: 9001;
-  transition: all 0.4s ease-in-out;
-  pointer-events: none;
-  width: max-content;
-  max-width: 300px;
-  text-align: center;
+    background: #d4a76a;
+    color: #fffafa;
+    border: 2px solid #E4C395;
+    box-shadow: 0 0 20px #e4c395d9;
+    border-radius: 8px;
+    padding: 15px 20px;
+    position: fixed;
+    z-index: 9001;
+    transition: all 0.4s ease-in-out;
+    pointer-events: none;
+    width: max-content;
+    max-width: 300px;
+    text-align: center;
 }
 
 .tutorial-message p { 
@@ -44,14 +44,14 @@
 }
 
 .tutorial-message:before {
-  content: '';
-  display: block;
-  border: transparent 12px solid;
-  position: absolute;
-  border-bottom-color: #00b3ff;
-  top: -26px;
-  left: 50%;
-  margin-left: -12px;
+    content: '';
+    display: block;
+    border: transparent 12px solid;
+    position: absolute;
+    border-bottom-color: #E4C395;
+    top: -26px;
+    left: 50%;
+    margin-left: -12px;
 }
 
 .tutorial-message:after {
@@ -68,7 +68,6 @@
 .tutorial-highlight {
   position: relative;
   z-index: 9002 !important;
-  box-shadow: 0 0 15px 5px rgba(0, 255, 255, 0.6) !important;
   animation: pulse-glow 2s infinite;
 }
 

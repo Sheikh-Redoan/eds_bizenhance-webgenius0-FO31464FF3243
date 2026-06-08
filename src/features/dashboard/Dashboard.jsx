@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Button from "../../components/ui/Button";
 import buttonBG from "../../assets/images/ButtonBgSecoundary.png";
 import profile from "../../assets/images/Ellipse 6.jpg";
@@ -12,6 +13,7 @@ import EditProfileModal from './EditProfileModal';
 
 const Dashboard = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const navigate = useNavigate();
   const { data: dashboardData, isLoading, isError } = useGetUserDashboardQuery();
   const [cancelSubscription, { isLoading: isCanceling }] = useCancelSubscriptionMutation();
   
@@ -25,9 +27,9 @@ const Dashboard = () => {
 
   const apiData = dashboardData?.data;
   const user = apiData?.user;
-  const isSubscribed = user?.role === "Guild Membership";
+  const isSubscribed = user?.is_premium || user?.role === "Guild Membership";
   const requiredXp = 1500;
-  const currentXp = apiData?.total_xp || 0;
+  const currentXp = user?.xp || apiData?.total_xp_earned || 0;
   
   const userData = {
     name: user?.name || "Language Learner",
@@ -39,12 +41,11 @@ const Dashboard = () => {
       quizzesCompleted: apiData?.total_complete_quiz || 0,
       badgesEarned: apiData?.total_badge_earned || 0,
       songsCompleted: 0,
-      achievements: apiData?.achievement?.length || 0,
+      achievements: apiData?.achievement || [],
     },
     weekly: {
       quizzes: apiData?.total_this_week_quiz || 0,
       xp: apiData?.total_xp_earned || 0,
-      activity: [40, 60, 30, 80, 50, 90, 70],
     },
   };
 
@@ -251,22 +252,6 @@ const Dashboard = () => {
               <div className="text-stone-200 text-lg sm:text-xl font-Inter tracking-wide">
                 {userData.title}
               </div>
-              {isSubscribed && (
-                <button
-                  onClick={handleCancelSubscription}
-                  disabled={isCanceling}
-                  className="mt-2 flex items-center gap-2 text-sm text-red-400 hover:text-red-300 transition-colors border border-red-400/30 hover:border-red-400/60 rounded-full px-4 py-1.5 bg-red-950/20"
-                >
-                  {isCanceling ? (
-                    <span className="animate-pulse">Canceling...</span>
-                  ) : (
-                    <>
-                      <XCircle size={16} />
-                      Cancel Subscription
-                    </>
-                  )}
-                </button>
-              )}
             </div>
           </div>
 
@@ -283,7 +268,7 @@ const Dashboard = () => {
               <div
                 className="h-full bg-gradient-to-r from-orange-400 to-amber-200 rounded-full shadow-[0_0_10px_rgba(251,191,36,0.5)] transition-all duration-500 ease-out"
                 style={{ 
-                  width: `${progressPercentage}%`,
+                  width: `${Math.min(progressPercentage, 100)}%`,
                   animation: "progressBar 1.5s ease-out"
                 }}
               />
@@ -314,7 +299,8 @@ const Dashboard = () => {
           </div>
 
           <Button 
-            className="flex justify-center items p-4 sm:p-[20px] text-white gap-3 sm:gap-4 text-center text-sm sm:text-base font-normal font-Merriweather leading-5 transform transition-all duration-300 hover:scale-105 active:scale-95 w-full" 
+            onClick={() => navigate('/languages')}
+            className="flex justify-center items p-4 sm:p-[20px] text-white gap-3 sm:gap-4 text-center text-sm sm:text-base font-normal font-Merriweather leading-5 transform transition-all duration-300 hover:scale-105 active:scale-95 w-full cursor-pointer" 
             style={{ backgroundImage: `url(${buttonBG})`, backgroundSize: 'contain', backgroundPosition: 'center' }}
           >
             Keep it up!
@@ -351,41 +337,27 @@ const Dashboard = () => {
           Achievements
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
-          {/* Bronze Listener */}
-          <div className="h-auto min-h-[180px] sm:h-44 p-4 sm:p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl flex flex-col justify-center items-center gap-3 sm:gap-4 hover:transform hover:scale-105 transition-all duration-300 shadow-lg group animate-scale animate-delay-200">
-            <img 
-              src={Bronze} 
-              alt="Bronze Medal" 
-              className="w-16 h-16 sm:w-20 sm:h-20 transform transition-transform duration-300 group-hover:rotate-12"
-            />
-            <div className="text-white text-xl sm:text-2xl font-bold font-Inter tracking-wide text-center group-hover:text-amber-100 transition-colors">
-              Bronze Listener
+          {userData.stats.achievements.length > 0 ? (
+            userData.stats.achievements.map((achievement, index) => (
+              <div 
+                key={index}
+                className={`h-auto min-h-[180px] sm:h-44 p-4 sm:p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl flex flex-col justify-center items-center gap-3 sm:gap-4 hover:transform hover:scale-105 transition-all duration-300 shadow-lg group animate-scale animate-delay-${(index % 3 + 2) * 100}`}
+              >
+                <img 
+                  src={achievement.image || Bronze}
+                  alt={achievement.title}
+                  className="w-16 h-16 sm:w-20 sm:h-20 transform transition-transform duration-300 group-hover:rotate-12 object-contain"
+                />
+                <div className="text-white text-xl sm:text-2xl font-bold font-Inter tracking-wide text-center group-hover:text-amber-100 transition-colors">
+                  {achievement.title}
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="col-span-full flex justify-center p-8 bg-white/5 border border-white/10 rounded-xl text-stone-300">
+              No achievements earned yet. Complete more quizzes to unlock badges!
             </div>
-          </div>
-
-          {/* Silver Singer */}
-          <div className="h-auto min-h-[180px] sm:h-44 p-4 sm:p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl flex flex-col justify-center items-center gap-3 sm:gap-4 hover:transform hover:scale-105 transition-all duration-300 shadow-lg group animate-scale animate-delay-300">
-            <img 
-              src={Silver} 
-              alt="Silver Medal"
-              className="w-16 h-16 sm:w-20 sm:h-20 transform transition-transform duration-300 group-hover:rotate-12"
-            />
-            <div className="text-white text-xl sm:text-2xl font-bold font-Inter tracking-wide text-center group-hover:text-amber-100 transition-colors">
-              Silver Singer
-            </div>
-          </div>
-
-          {/* Gold Performer */}
-          <div className="h-auto min-h-[180px] sm:h-44 p-4 sm:p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl flex flex-col justify-center items-center gap-3 sm:gap-4 hover:transform hover:scale-105 transition-all duration-300 shadow-lg group animate-scale animate-delay-400">
-            <img 
-              src={Gold} 
-              alt="Gold Medal"
-              className="w-16 h-16 sm:w-20 sm:h-20 transform transition-transform duration-300 group-hover:rotate-12"
-            />
-            <div className="text-white text-xl sm:text-2xl font-bold font-Inter tracking-wide text-center group-hover:text-amber-100 transition-colors">
-              Gold Performer
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

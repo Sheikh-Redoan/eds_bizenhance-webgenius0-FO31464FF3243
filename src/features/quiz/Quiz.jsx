@@ -196,7 +196,7 @@ const Quiz = () => {
                       boxShadow: "0 20px 40px rgba(0,0,0,0.4)",
                       transition: { duration: 0.3 }
                     }}
-                    className="z-10 w-full h-[550px] rounded-xl border-[12px] sm:border-[16px] lg:border-[30px] border-wood rounded-lg shadow-lg backdrop-blur-sm flex bg-[#1e1e1e] relative overflow-hidden max-[668px]:flex-col"
+                    className="z-10 w-full min-h-[600px] md:h-[550px] h-auto rounded-xl border-[8px] sm:border-[16px] lg:border-[30px] border-wood shadow-lg backdrop-blur-sm flex flex-col md:flex-row bg-[#1e1e1e] relative overflow-hidden"
                     style={{
                       borderImage: `url(${cardBg}) 30 round`,
                       transformStyle: "preserve-3d",
@@ -219,13 +219,13 @@ const Quiz = () => {
                     
                     {/* Image section with animation */}
                     <motion.div 
-                      className="w-1/2 flex justify-center items-center relative overflow-hidden max-[668px]:w-full max-[668px]:h-1/2 "
+                      className="w-full md:w-1/2 h-[250px] md:h-full flex justify-center items-center relative overflow-hidden mt-12 md:mt-0"
                       initial={{ x: -20, opacity: 0 }}
                       animate={{ x: 0, opacity: 1 }}
                       transition={{ delay: 0.2, duration: 0.6 }}
                     >
                       <motion.img
-                        className="w-full h-auto object-contain max-[667px]:mt-15"
+                        className="w-full h-full object-contain"
                         src={randomFact.image}
                         alt="Knowledge Nugget"
                         whileHover={{ scale: 1.1, rotate: 2 }}
@@ -247,7 +247,7 @@ const Quiz = () => {
                     
                     {/* Content section with auto-scroll */}
                     <motion.div 
-                      className="w-1/2 relative h-full max-[668px]:w-full max-[668px]:h-1/2"
+                      className="w-full md:w-1/2 relative flex-1 md:h-full flex flex-col pb-4 md:pb-0"
                       initial={{ x: 20, opacity: 0 }}
                       animate={{ x: 0, opacity: 1 }}
                       transition={{ delay: 0.3, duration: 0.6 }}
@@ -267,13 +267,16 @@ const Quiz = () => {
                       {/* Auto-scroll container */}
                       <div
                         ref={factContainerRef}
-                        className="overflow-y-auto custom-scrollbar "
+                        className="overflow-y-auto custom-scrollbar flex-1 relative z-20 mb-10 md:mb-0"
                         style={{ 
-                          maxHeight: "350px",
+                          height: "100%",
+                          maxHeight: "400px",
                           scrollBehavior: 'smooth'
                         }}
                         onMouseEnter={() => setIsFactHovered(true)}
                         onMouseLeave={() => setIsFactHovered(false)}
+                        onTouchStart={() => setIsFactHovered(true)}
+                        onTouchEnd={() => setIsFactHovered(false)}
                       >
                         <div ref={factContentRef} className="px-2 py-1">
                           <motion.div
@@ -308,27 +311,24 @@ const Quiz = () => {
                       </div>
                     </motion.div>
                     
-                    {/* Bulb icon with animation */}
-                    <div className="w-10 h-auto absolute top-0 left-0 z-50 flex justify-center items-center ">
+                    {/* Bulb icon with animation - FIXED */}
+                    <div className="absolute top-4 left-4 md:top-6 md:left-6 z-50 flex items-center gap-3 pointer-events-none">
                       <motion.img
-                      className="w-10 h-auto absolute top-0 left-0 z-50 max-[667px]:left-10"
-                      src={bulb}
-                      alt="Knowledge Nugget"
-                      initial={{ scale: 0, rotate: -180 }}
-                      animate={{ scale: 1, rotate: 0 }}
-                      transition={{ 
-                        delay: 0.7,
-                        type: "spring",
-                        stiffness: 260,
-                        damping: 20 
-                      }}
-                      whileHover={{ 
-                        scale: 1.2,
-                        rotate: 10,
-                        transition: { duration: 0.2 }
-                      }}
-                    />
-                    <p className="w-50 h-auto absolute top-5 left-12 z-50 md:text-2xl font-bold font-OldLondon text-[#fff] text-center max-[667px]:text-[20px] max-[667px]:left-18 ">Knowledge Nuggets</p>
+                        className="w-8 md:w-10 h-auto drop-shadow-lg"
+                        src={bulb}
+                        alt="Knowledge Nugget"
+                        initial={{ scale: 0, rotate: -180 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        transition={{ 
+                          delay: 0.7,
+                          type: "spring",
+                          stiffness: 260,
+                          damping: 20 
+                        }}
+                      />
+                      <p className="text-lg md:text-2xl font-bold font-OldLondon text-[#fff] drop-shadow-md">
+                        Knowledge Nuggets
+                      </p>
                     </div>
                   </motion.div>
                 )}
