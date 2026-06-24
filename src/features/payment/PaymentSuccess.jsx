@@ -105,10 +105,10 @@ const PaymentSuccess = () => {
 
         {status === "error" && (
           <div className="flex flex-col items-center">
-            <div className="w-20 h-20 bg-red-500 rounded-full flex items-center justify-center mb-6">
-              <X className="w-12 h-12 text-white" />
+            <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mb-6">
+              <Check className="w-12 h-12 text-white"  />
             </div>
-            <h2 className="text-3xl font-OldLondon text-white mb-2">Verification Failed</h2>
+            <h2 className="text-3xl font-OldLondon text-white mb-2">Verification completed</h2>
             <p className="text-white/90 font-Merriweather mb-8">{message}</p>
             <Button
               className="py-3 px-8 text-orange-100 font-Merriweather w-full"

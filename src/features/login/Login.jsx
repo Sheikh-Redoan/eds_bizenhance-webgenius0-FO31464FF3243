@@ -5,6 +5,8 @@ import { useLoginMutation } from "../../redux/endpoints/authApi";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import buttonBG from "../../assets/images/Buttonbordersecoundary.png";
+import loginBorder from "../../assets/images/login page border.svg";
+import logo from "../../assets/images/MainLogo.png";
 import { motion } from "framer-motion";
 import { Mail, Lock, LogIn, Eye, EyeOff, AlertCircle } from "lucide-react";
 
@@ -129,7 +131,7 @@ const Login = () => {
   return (
     <div className="flex items-center justify-center p-4" style={{height: "calc(100vh - 81px)"}}>
       <motion.div
-        className="max-w-[676px] w-full"
+        className="max-w-[500px] w-full overflow-visible"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
@@ -145,25 +147,42 @@ const Login = () => {
             animate={{ ...floatingAnimation, transition: { ...floatingAnimation.transition, delay: 1 } }}
           />
         </div>
-
+    
         <motion.div
-          className="bg-[#522E0C]/90 shadow-2xl rounded-lg p-8  backdrop-blur-sm"
+          className=" rounded-lg p-8 relative"
           variants={formVariants}
         >
-          {/* Header with animation */}
-          <motion.div className="text-center mb-8" variants={itemVariants}>
+          {/* Border Image as overlay */}
+          <div 
+            className="absolute pointer-events-none"
+            style={{
+              top: '-10%',
+              left: '-10%',
+              right: '-10%',
+              bottom: '-10%',
+              backgroundImage: `url(${loginBorder})`,
+              backgroundSize: '95% 95%',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+            }}
+          />
+          
+          {/* Content with higher z-index */}
+          <div className="relative z-10">
+            {/* Header with animation */}
+            <motion.div className="text-center mb-8" variants={itemVariants}>
             <motion.div
               className="inline-block mb-4"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
             >
-              
+              <img src={logo} alt="Logo" className="h-16 w-auto mx-auto" />
             </motion.div>
             
-            <h1 className="text-center text-white text-5xl font-normal font-Morriweather leading-[60px] mb-2">
+            <h1 className="text-center text-white text-3xl font-normal font-Morriweather leading-[60px] mb-2">
               Login
             </h1>
-            <p className="text-center justify-center text-white/80 text-xl font-normal font-Merriweather leading-6">
+            <p className="text-center justify-center text-white/80 text-l font-normal font-Merriweather leading-6">
               Please enter your details to continue your journey
             </p>
           </motion.div>
@@ -327,6 +346,7 @@ const Login = () => {
               </motion.span>
             </Link>
           </motion.p>
+          </div>
         </motion.div>
       </motion.div>
     </div>

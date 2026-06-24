@@ -6,6 +6,8 @@ import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import Textarea from "../../components/ui/Textarea";
 import buttonBG from "../../assets/images/Buttonbordersecoundary.png";
+import loginBorder from "../../assets/images/signup page border.svg";
+import logo from "../../assets/images/MainLogo.png";
 import { motion } from "framer-motion";
 import { User, Mail, Lock, UserPlus, Eye, EyeOff, AlertCircle, Users, UserCheck } from "lucide-react";
 
@@ -159,7 +161,7 @@ const Signup = () => {
       height: "calc(100vh - 81px)"
     }}>
       <motion.div
-        className="max-w-2xl w-full"
+        className="max-w-[500px] w-full overflow-visible"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
@@ -177,17 +179,40 @@ const Signup = () => {
         </div>
 
         <motion.div
-          className="bg-[#522E0C]/90 shadow-2xl rounded-lg p-8  backdrop-blur-sm"
+          className="rounded-lg p-8 relative"
           variants={formVariants}
         >
-          {/* Header with animation */}
-          <motion.div className="text-center mb-8" variants={itemVariants}>
+          {/* Border Image as overlay */}
+          <div 
+            className="absolute pointer-events-none"
+            style={{
+              top: '-10%',
+              left: '-10%',
+              right: '-10%',
+              bottom: '-10%',
+              backgroundImage: `url(${loginBorder})`,
+              backgroundSize: '95% 95%',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+            }}
+          />
+          
+          {/* Content with higher z-index */}
+          <div className="relative z-10">
+            {/* Header with animation */}
+            <motion.div className="text-center mb-8" variants={itemVariants}>
+              <motion.div
+                className="inline-block mb-4"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <img src={logo} alt="Logo" className="h-16 w-auto mx-auto" />
+              </motion.div>
             
-            
-            <h1 className="text-center text-white text-5xl font-normal font-Merriweather leading-[60px] mb-2">
+            <h1 className="text-center text-white text-3xl font-normal font-Merriweather leading-[60px] mb-2">
               Sign up
             </h1>
-            <p className="text-center justify-center text-white/80 text-xl font-normal font-Merriweather leading-6">
+            <p className="text-center justify-center text-white/80 text-l font-normal font-Merriweather leading-6">
               Continue as a Customer
             </p>
           </motion.div>
@@ -412,6 +437,7 @@ const Signup = () => {
               </motion.span>
             </Link>
           </motion.p>
+          </div>
         </motion.div>
       </motion.div>
     </div>
