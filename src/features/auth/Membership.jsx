@@ -5,10 +5,16 @@ import buttonBG from "../../assets/images/Buttonbordersecoundary.png";
 import Input from "../../components/ui/Input";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // Added import
+import { useSelector } from "react-redux"; // Added import
+import { selectIsAuthenticated } from "../../redux/slices/authSlice"; // Added import
 import { useGetPlansQuery, usePaypalDonateMutation, useCreateSubscriptionMutation, useCancelSubscriptionMutation } from "../../redux/api/paymentApi";
 import { useGetUserDashboardQuery } from "../../redux/api/userApi";
 
 const Membership = () => {
+  const navigate = useNavigate(); // Initialize navigate
+  const isAuthenticated = useSelector(selectIsAuthenticated); // Get auth state
+
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [donationAmount, setDonationAmount] = useState("25");
   const [paymentSuccess, setPaymentSuccess] = useState(false);
@@ -48,6 +54,12 @@ const Membership = () => {
   ];
 
   const handleSubscribe = async (plan) => {
+    // Auth Check Added
+    if (!isAuthenticated) {
+      navigate("/login"); 
+      return;
+    }
+
     setSelectedPlan(plan.id);
     try {
       const res = await subscribe({ plan_id: plan.id }).unwrap();
@@ -77,6 +89,12 @@ const Membership = () => {
   };
 
   const handleDonation = async () => {
+    // Auth Check Added
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+
     const amount = parseFloat(donationAmount);
     if (isNaN(amount) || amount < 1) {
       alert("Please enter a valid donation amount (minimum $1)");

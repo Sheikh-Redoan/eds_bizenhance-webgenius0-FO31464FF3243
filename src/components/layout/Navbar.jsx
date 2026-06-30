@@ -4,7 +4,8 @@ import { BookOpen, Menu, X, LogOut, User } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { logout, selectIsAuthenticated, selectCurrentUser } from "../../redux/slices/authSlice";
 import { selectCurrentStep, nextStep } from "../../redux/slices/tutorialSlice";
-import logo from "../../assets/images/MainLogo(1).png"
+import logo from "../../assets/images/MainLogo(1).png";
+import { useGetUserDashboardQuery } from "../../redux/api/userApi"; // Added import
 
 const ActiveFlagSVG = () => (
   <svg
@@ -43,6 +44,11 @@ const Navbar = () => {
   const currentStep = useSelector(selectCurrentStep);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  // Added hook: Fetches user profile globally when logged in, ensuring the avatar loads on any route.
+  useGetUserDashboardQuery(undefined, {
+    skip: !isAuthenticated,
+  });
 
   const handleLogout = () => {
     dispatch(logout());

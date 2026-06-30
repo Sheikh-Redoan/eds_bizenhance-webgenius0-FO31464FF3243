@@ -212,6 +212,10 @@ const LanguageSelect = () => {
                   borderImage: `url(${cardBg}) 30 round`,
                   transformStyle: "preserve-3d",
                 }}
+                onClick={() => {
+                        if (currentStep === 2 && index === 0) dispatch(nextStep());
+                        navigate(`/languages/${lang.id}`);
+                      }}
               >
                 <div className="bg-[#ffd6a2] overflow-hidden">
                   {/* Image Section */}
@@ -246,10 +250,6 @@ const LanguageSelect = () => {
                       className="text-[#E7D183] flex justify-center items-center gap-1 sm:gap-2 group w-full"
                       variants={buttonVariants}
                       whileHover="hover"
-                      onClick={() => {
-                        if (currentStep === 2 && index === 0) dispatch(nextStep());
-                        navigate(`/languages/${lang.id}`);
-                      }}
                     >
                       <Music size={14} smSize={16} lgSize={18} className="group-hover:text-yellow-300 transition-colors w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5" />
                       <p className="text-center text-[#E7D183] text-xs sm:text-sm lg:text-base font-normal font-Merriweather leading-4 sm:leading-5 group-hover:text-yellow-300 transition-colors truncate">
