@@ -414,8 +414,6 @@ const Signup = () => {
               <div className="flex-1 h-px bg-[#B28769]/30"></div>
               <div className="flex-1 h-px bg-[#B28769]/30"></div>
             </motion.div>
-
-            
           </form>
 
           {/* Login Link */}

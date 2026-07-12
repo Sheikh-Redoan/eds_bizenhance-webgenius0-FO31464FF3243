@@ -15,6 +15,7 @@ import Select from "../../components/ui/Select";
 import Button from "../../components/ui/Button";
 import cardBg from "../../assets/images/cardFreame.png";
 import buttonBG from "../../assets/images/Buttonbordersecoundary.png";
+import exclusive from "../../assets/images/ex.png";
 
 // Simplified WaveformVisual
 const WaveformVisual = ({ isPlaying = false }) => {
@@ -129,8 +130,10 @@ const SongCard = ({ song, onClick, index, isLocked }) => {
           <div className="px-3 sm:px-4 pb-3 sm:pb-4 pt-1 flex flex-col gap-2 sm:gap-3 flex-1">
             {/* Header */}
             <div className="relative z-10">
-              <h3 className="text-[#3F291B] text-base sm:text-lg md:text-xl font-Merriweather font-bold truncate">
-                {song.title}
+              <h3 className="text-[#3F291B] text-base sm:text-lg md:text-xl font-Merriweather font-bold truncate flex items-center gap-1 flex-wrap">
+                {song.title} {song.is_exclusive ? (
+                   <img src={exclusive} alt="Exclusive" className="w-10 h-10 ml-1" />
+                ) :null}
               </h3>
               <div className="flex items-center gap-1 sm:gap-2 mt-0.5">
                 <Music size={10} smSize={12} className="text-[#8B7355] w-2 h-2 sm:w-3 sm:h-3" />
@@ -260,11 +263,12 @@ const LanguageSongs = () => {
       difficulty: song.difficult.toLowerCase(),
       image: song.image,
       coverColor: "from-orange-200/20 to-emerald-200/20",
+      is_exclusive: song.is_exclusive,
     }));
-
+    
     setFilteredSongs(normalizedSongs);
   }, [searchQuery, selectedDifficulty, selectedGenre, allSongs, languageId]);
-
+  
   const clearFilters = () => {
     setSearchQuery("");
     setSelectedDifficulty(null);
