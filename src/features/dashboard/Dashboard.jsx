@@ -6,7 +6,7 @@ import profile from "../../assets/images/Ellipse 6.jpg";
 import Bronze from "../../assets/images/Bronze.png";
 import Silver from "../../assets/images/Silver.png";
 import Gold from "../../assets/images/Gold.png";
-import { Edit2, XCircle } from 'lucide-react';
+import { Edit2, Lock } from 'lucide-react';
 import { useGetUserDashboardQuery } from "../../redux/api/userApi";
 import { useCancelSubscriptionMutation } from "../../redux/api/paymentApi";
 import EditProfileModal from './EditProfileModal';
@@ -27,21 +27,19 @@ const Dashboard = () => {
 
   const apiData = dashboardData?.data;
   const user = apiData?.user;
-  const isSubscribed = user?.is_premium || user?.role === "Guild Membership";
-  const requiredXp = 1500;
+  const allBadges = apiData?.badges ? [...apiData.badges].sort((a, b) => a.xp_num - b.xp_num) : [];
   const currentXp = user?.xp || apiData?.total_xp_earned || 0;
-  
+  const nextBadge = allBadges.find(b => b.xp_num > currentXp) || allBadges[allBadges.length - 1] || { xp_num: 1500 };
+
   const userData = {
     name: user?.name || "Language Learner",
     title: user?.role === "User" ? "Explorer" : user?.role,
     avatar: user?.avatar || profile,
-    currentXp: currentXp,
-    requiredXp: requiredXp,
+    currentXp,
+    requiredXp: nextBadge.xp_num,
     stats: {
       quizzesCompleted: apiData?.total_complete_quiz || 0,
       badgesEarned: apiData?.total_badge_earned || 0,
-      songsCompleted: 0,
-      achievements: apiData?.achievement || [],
     },
     weekly: {
       quizzes: apiData?.total_this_week_quiz || 0,
@@ -49,7 +47,7 @@ const Dashboard = () => {
     },
   };
 
-  const progressPercentage = (userData.currentXp / userData.requiredXp) * 100;
+  const progressPercentage = Math.min((userData.currentXp / userData.requiredXp) * 100, 100);
 
   const handleCancelSubscription = async () => {
     if (window.confirm("Are you sure you want to cancel your subscription? You will lose access to premium features at the end of your billing cycle.")) {
@@ -258,7 +256,7 @@ const Dashboard = () => {
           <div className="flex flex-col gap-2 sm:gap-3 w-full">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end text-white font-Inter gap-1 sm:gap-0">
               <span className="text-base sm:text-lg tracking-wide mobile-center sm:text-left">
-                Progress to next level
+                Progress to next badge
               </span>
               <span className="text-base sm:text-lg font-medium tracking-wide">
                 {userData.currentXp} / {userData.requiredXp} XP
@@ -268,7 +266,7 @@ const Dashboard = () => {
               <div
                 className="h-full bg-gradient-to-r from-orange-400 to-amber-200 rounded-full shadow-[0_0_10px_rgba(251,191,36,0.5)] transition-all duration-500 ease-out"
                 style={{ 
-                  width: `${Math.min(progressPercentage, 100)}%`,
+                  width: `${progressPercentage}%`,
                   animation: "progressBar 1.5s ease-out"
                 }}
               />
@@ -331,31 +329,51 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Bottom Row: Achievements */}
+      {/* Bottom Row: Badge Progression */}
       <div className="flex flex-col gap-4 sm:gap-6">
         <h2 className="text-white text-2xl sm:text-3xl font-Medieval animate-scale mobile-center sm:text-left">
-          Achievements
+          Badge Progression
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
-          {userData.stats.achievements.length > 0 ? (
-            userData.stats.achievements.map((achievement, index) => (
-              <div 
-                key={index}
-                className={`h-auto min-h-[180px] sm:h-44 p-4 sm:p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl flex flex-col justify-center items-center gap-3 sm:gap-4 hover:transform hover:scale-105 transition-all duration-300 shadow-lg group animate-scale animate-delay-${(index % 3 + 2) * 100}`}
-              >
-                <img 
-                  src={achievement.image || Bronze}
-                  alt={achievement.title}
-                  className="w-16 h-16 sm:w-20 sm:h-20 transform transition-transform duration-300 group-hover:rotate-12 object-contain"
-                />
-                <div className="text-white text-xl sm:text-2xl font-bold font-Inter tracking-wide text-center group-hover:text-amber-100 transition-colors">
-                  {achievement.title}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+          {allBadges.length > 0 ? (
+            allBadges.map((badge, index) => {
+              const isUnlocked = currentXp >= badge.xp_num;
+              return (
+                <div
+                  key={badge.id}
+                  className={`relative h-auto min-h-[180px] sm:h-44 p-4 sm:p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl flex flex-col justify-center items-center gap-2 sm:gap-3 shadow-lg transition-all duration-300 animate-scale ${
+                    isUnlocked ? 'hover:scale-105 hover:bg-white/15 group' : 'grayscale opacity-60'
+                  }`}
+                  style={{ animationDelay: `${(index % 4 + 1) * 100}ms`, animationFillMode: 'both' }}
+                >
+                  {!isUnlocked && (
+                    <div className="absolute top-4 right-4 text-stone-400">
+                      <Lock size={18} />
+                    </div>
+                  )}
+                  <img
+                    src={badge.image || Bronze}
+                    alt={badge.title}
+                    className={`w-14 h-14 sm:w-20 sm:h-20 object-contain ${
+                      isUnlocked ? 'transform transition-transform duration-300 group-hover:rotate-12' : ''
+                    }`}
+                  />
+                  <div className="flex flex-col items-center gap-1 mt-2">
+                    <div className={`text-lg sm:text-xl font-bold font-Inter tracking-wide text-center transition-colors ${
+                      isUnlocked ? 'text-white group-hover:text-amber-100' : 'text-stone-300'
+                    }`}>
+                      {badge.title}
+                    </div>
+                    <div className={`text-xs sm:text-sm font-Inter ${isUnlocked ? 'text-amber-400/80' : 'text-stone-400'}`}>
+                      {isUnlocked ? 'Unlocked' : `Requires ${badge.xp_num} XP`}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           ) : (
             <div className="col-span-full flex justify-center p-8 bg-white/5 border border-white/10 rounded-xl text-stone-300">
-              No achievements earned yet. Complete more quizzes to unlock badges!
+              No badges available at the moment.
             </div>
           )}
         </div>
