@@ -23,6 +23,7 @@ export const paymentApi = baseApi.injectEndpoints({
       query: (data) => {
         const formData = new FormData();
         formData.append("plan_id", data.plan_id);
+        formData.append("gateway", data.gateway);
         return {
           url: "/paypal/subscription/create",
           method: "POST",

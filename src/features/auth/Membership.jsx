@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom"; // Added import
 import { useSelector } from "react-redux"; // Added import
 import { selectIsAuthenticated } from "../../redux/slices/authSlice"; // Added import
 import { useGetPlansQuery, usePaypalDonateMutation, useCreateSubscriptionMutation, useCancelSubscriptionMutation } from "../../redux/api/paymentApi";
+import PaymentModal from "../../components/ui/PaymentModal";
 import { useGetUserDashboardQuery } from "../../redux/api/userApi";
 
 const Membership = () => {
@@ -18,6 +19,8 @@ const Membership = () => {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [donationAmount, setDonationAmount] = useState("25");
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [pendingPlanId, setPendingPlanId] = useState(null);
 
   const { data: plansData, isLoading: isLoadingPlans } = useGetPlansQuery();
   const [donate, { isLoading: isDonating }] = usePaypalDonateMutation();
@@ -53,38 +56,33 @@ const Membership = () => {
     }
   ];
 
-  const handleSubscribe = async (plan) => {
-    // Auth Check Added
+  const handleSubscribeClick = (plan) => {
     if (!isAuthenticated) {
-      navigate("/login"); 
+      navigate("/login");
       return;
     }
+    setPendingPlanId(plan.id);
+    setIsPaymentModalOpen(true);
+  };
 
-    setSelectedPlan(plan.id);
+  const processSubscription = async (gateway) => {
+    if (!pendingPlanId) return;
+    setSelectedPlan(pendingPlanId);
     try {
-      const res = await subscribe({ plan_id: plan.id }).unwrap();
-      
-      console.log("API Subscription Response:", res);
-      console.log("Response data object:", res?.data);
-      
-      const redirectUrl = 
-          res?.data?.approval_url || 
-          res?.approval_url || 
-          res?.data?.data?.approval_url ||
-          res?.data?.approve_url;
-      
+      const res = await subscribe({ plan_id: pendingPlanId, gateway }).unwrap();
+      const redirectUrl = res?.data?.approve_url || res?.data?.approval_url;
       if (redirectUrl) {
         window.location.href = redirectUrl;
       } else {
-        console.error("No redirect URL found in response. Full object:", res);
-        console.error("Data keys:", res?.data ? Object.keys(res.data) : 'No data object');
-        alert("Failed to get the payment link. Please check the console for details.");
+        alert("Failed to get the payment link. Please try again.");
       }
     } catch (err) {
       console.error("Subscription failed", err);
       alert("Failed to initiate subscription. Please try again.");
     } finally {
       setSelectedPlan(null);
+      setIsPaymentModalOpen(false);
+      setPendingPlanId(null);
     }
   };
 
@@ -284,6 +282,13 @@ const Membership = () => {
         </motion.div>
       )}
 
+      <PaymentModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        onSelectGateway={processSubscription}
+        isLoading={isSubscribing}
+      />
+
       {/* Popular Badge for Lifetime Plan */}
       <motion.div
         className="absolute left-1/2 transform -translate-x-1/2 top-4 z-10 hidden lg:block"
@@ -467,7 +472,7 @@ const Membership = () => {
                         isPopular ? 'bg-gradient-to-r from-yellow-600 to-amber-700' : ''
                       }`}
                       style={{ backgroundImage: `url(${buttonBG})`, width: "100%" }}
-                      onClick={() => isDonation ? handleDonation() : handleSubscribe(plan)}
+                      onClick={() => isDonation ? handleDonation() : handleSubscribeClick(plan)}
                       disabled={(isSubscribing || isDonating) && selectedPlan === plan.id}
                     >
                       {(isSubscribing || isDonating) && selectedPlan === plan.id ? (

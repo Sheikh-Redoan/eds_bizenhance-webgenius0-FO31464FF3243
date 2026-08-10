@@ -466,7 +466,18 @@ const LanguageSongs = () => {
           </Button>
         )}
       </div>
-
+      <div className="w-full max-w-5xl border-t border-[#B28769]/30" />
+      <div className="w-full max-w-5xl flex flex-col sm:flex-row gap-3 sm:gap-4 items-center justify-center">
+        {/* Search Component */}
+        <div className="w-full sm:w-48 md:w-64 lg:w-80 xl:w-96">  
+          <SearchInput 
+            className='max-[640px]:bg-[#E4C395] max-[640px]:shadow-2xl'
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search songs..."
+          />
+        </div>
+      </div>
       {/* Results Counter */}
       <div className="text-white/60 font-Merriweather text-sm sm:text-base">
         Found {filteredSongs.length} {filteredSongs.length === 1 ? 'song' : 'songs'}
