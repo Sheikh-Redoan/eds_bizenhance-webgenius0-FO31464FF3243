@@ -34,7 +34,7 @@ const PaymentModal = ({ isOpen, onClose, onSelectGateway, isLoading }) => {
       >
         {/* Gateway Logo */}
         <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-lg border border-zinc-100 bg-white">
-          <Icon className={`w-8 h-8 ${isStripe ? 'text-[#635BFF]' : 'text-[#0070BA]'}`} />
+          <Icon className={`w-8 h-8 object-contain`} />
         </div>
 
         {/* Text Area */}

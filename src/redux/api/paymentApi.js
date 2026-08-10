@@ -11,6 +11,7 @@ export const paymentApi = baseApi.injectEndpoints({
       query: (data) => {
         const formData = new FormData();
         formData.append("amount", data.amount);
+        formData.append("gateway", data.gateway);
         return {
           url: "/paypal-donate",
           method: "POST",
