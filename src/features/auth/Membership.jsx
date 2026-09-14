@@ -42,15 +42,18 @@ const Membership = () => {
       type: plan.type
     })) || []),
     {
-      id: "donation",
-      icon: HandCoins,
-      title: "Supporter Donate",
-      price: "Custom Amount",
-      description: "Support future development, language content, and creative community projects.",
-      buttonText: "Donation",
-      isDonation: true,
-      popular: false,
-    }
+  id: "donation",
+  icon: HandCoins,
+  title: "Supporter Donate",
+  price: "Custom Amount",
+  description: [
+    "Make a Contribution",
+    "Fund Future, Grow Community, Seed Projects."
+  ],
+  buttonText: "Donation",
+  isDonation: true,
+  popular: false,
+} 
   ];
 
   const handleSubscribe = async (plan) => {
@@ -365,7 +368,7 @@ const Membership = () => {
                 </h3>
                 
                 <motion.p 
-                  className="text-white/80 text-lg lg:text-xl font-bold font-Merriweather mx-auto max-w-[180px] mb-4 lg:mb-[24px] text-center"
+                  className="text-yellow-200 text-lg lg:text-md font-bold font-Merriweather mx-auto max-w-[180px] mb-4 lg:mb-[24px] text-center"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 + 0.3 }}
@@ -380,9 +383,14 @@ const Membership = () => {
 
                 {isDonation ? (
                   <>
-                    <p className="text-center text-white/80 text-base lg:text-xl font-normal font-Merriweather leading-6 lg:leading-8 mx-auto max-w-[343px] mb-4 lg:mb-[24px] mt-4 lg:mt-[24px]">
-                      {plan.description}
-                    </p>
+                    <ul className="text-white/80 text-base lg:text-md font-normal font-Merriweather leading-6 lg:leading-8 mx-auto max-w-[343px] mb-4 lg:mb-[24px] mt-4 lg:mt-[24px] list-disc list-inside">
+  {plan.description.map((item, idx) => (
+    <li key={idx} className="flex items-start text-white text-sm lg:text-base font-normal font-Merriweather gap-3 my-2">
+      <Check className="text-[#b49267]" size={20} lg:size={24} />
+      <p className="max-w-[180px]" >{item}</p>
+    </li>
+  ))}
+</ul>
 
                     <motion.div
                       initial={{ opacity: 0, scale: 0.9 }}
@@ -505,7 +513,6 @@ const Membership = () => {
                       animate={{ opacity: 1 }}
                       transition={{ delay: 1 }}
                     >
-                      All donations are tax-deductible
                     </motion.p>
                   )}
                 </motion.div>
