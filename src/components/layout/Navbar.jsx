@@ -78,6 +78,7 @@ const Navbar = () => {
               Languages
             </NavItem>
             <NavItem className="text-black" to="/membership">Membership</NavItem>
+            <NavItem className="text-black" to="/community">Community</NavItem>
             {isAuthenticated && <NavItem className="text-black" to="/dashboard">Dashboard</NavItem>}
             <NavItem className="text-black" to="/contact">Contact</NavItem>
           </div>
@@ -137,6 +138,7 @@ const Navbar = () => {
             <Link to="/" onClick={() => setIsOpen(false)} className="text-stone-300 hover:text-amber-500 py-2 font-serif border-b border-stone-700">Home</Link>
             <Link to="/languages" onClick={() => setIsOpen(false)} className="text-stone-300 hover:text-amber-500 py-2 font-serif border-b border-stone-700">Languages</Link>
             <Link to="/membership" onClick={() => setIsOpen(false)} className="text-stone-300 hover:text-amber-500 py-2 font-serif border-b border-stone-700">Membership</Link>
+            <Link to="/community" onClick={() => setIsOpen(false)} className="text-stone-300 hover:text-amber-500 py-2 font-serif border-b border-stone-700">Community</Link>
             {isAuthenticated && (
               <Link to="/dashboard" onClick={() => setIsOpen(false)} className="text-stone-300 hover:text-amber-500 py-2 font-serif border-b border-stone-700">Dashboard</Link>
             )}

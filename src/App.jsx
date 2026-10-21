@@ -23,6 +23,7 @@ import main_bg from "./assets/main-bg1.png";
 import MouseEffect from "./components/ui/MouseEffect";
 import TutorialOverlay from "./components/ui/TutorialOverlay";
 import { startTutorial } from "./redux/slices/tutorialSlice";
+import CommunityRoutes from "./features/community/routes";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -84,6 +85,7 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/payment/success" element={<PaymentSuccess />} />
+            <Route path="/community/*" element={<CommunityRoutes />} />
 
             
             <Route path="/dashboard" element={
