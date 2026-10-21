@@ -1,45 +1,153 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Castle, BookOpen, Compass, Trophy, Library, HelpCircle, ArrowRight } from 'lucide-react';
-import Button from '../../../components/ui/Button';
-import FramedCard from '../components/FramedCard';
-import WingBanner from '../components/WingBanner';
-import { ALL_WINGS } from '../config/wings';
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  BookOpen,
+  Star,
+} from "lucide-react";
+import gsap from "gsap";
+import topIcon from "../../../assets/icons/top-icon.png";
+import communityHallImg from "../../../assets/images/community_hall.jpg";
+import OrnateButton from "../components/OrnateButton";
 
 export const CommunityHero = () => {
   const navigate = useNavigate();
+  const cardRef = useRef(null);
+  const containerRef = useRef(null);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+    checkDesktop();
+    window.addEventListener("resize", checkDesktop);
+    return () => window.removeEventListener("resize", checkDesktop);
+  }, []);
+
+  // GSAP 3D interactive tilt effect matching home.tsx
+  useEffect(() => {
+    const card = cardRef.current;
+    const container = containerRef.current;
+    if (!card || !container || !isDesktop) return;
+
+    const handleMouseMove = (event) => {
+      const rect = container.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      const mouseX = ((event.clientX - centerX) / rect.width) * 20;
+      const mouseY = ((event.clientY - centerY) / rect.height) * 12;
+
+      gsap.to(card, {
+        duration: 0.5,
+        rotationY: mouseX,
+        rotationX: -mouseY,
+        transformPerspective: 1000,
+        ease: "power2.out",
+      });
+    };
+
+    const handleMouseLeave = () => {
+      gsap.to(card, {
+        duration: 0.8,
+        rotationY: 0,
+        rotationX: 0,
+        ease: "power3.out",
+      });
+    };
+
+    container.addEventListener("mousemove", handleMouseMove);
+    container.addEventListener("mouseleave", handleMouseLeave);
+    return () => {
+      container.removeEventListener("mousemove", handleMouseMove);
+      container.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, [isDesktop]);
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border-2 border-amber-900/50 bg-gradient-to-b from-[#3a2211] via-[#2c180a] to-[#1a0e05] text-[#f7eedd] p-8 sm:p-12 shadow-2xl text-center space-y-6 mb-10">
-      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-serif font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">
-        <Castle size={14} />
-        <span>The Lingual Jams Fellowship</span>
-      </div>
+    <div className="relative w-full h-[calc(100vh-180px)] my-4 flex justify-center items-center py-8">
+      <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-14">
+        {/* Left Column: Heading, Subtitle, Ornate Buttons */}
+        <div className="w-full lg:w-7/12 flex flex-col items-start gap-6 text-left">
+          {/* Pill Badge */}
+          <div className="px-4 py-2 bg-stone-500/50 backdrop-blur-xs rounded-full inline-flex items-center gap-2 border border-white/20 shadow-sm">
+            <img
+              src={topIcon}
+              alt=""
+              className="w-4 h-4 animate-spin-slow opacity-90"
+              style={{ animation: "spin 12s linear infinite" }}
+            />
+            <span className="text-white text-xs sm:text-sm font-normal font-Merriweather leading-5">
+              Welcome to the community
+            </span>
+          </div>
 
-      <h1 className="text-3xl sm:text-5xl font-serif font-bold tracking-wide text-amber-100 max-w-3xl mx-auto leading-tight">
-        Enter the Grand Community Guild
-      </h1>
+          {/* Title in authentic Old London font */}
+          <div className="space-y-4">
+            <h1 className="text-white text-5xl sm:text-7xl lg:text-8xl font-normal font-OldLondon leading-[1.05] tracking-wide drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)]">
+              Lingual Jams community
+            </h1>
 
-      <p className="font-serif text-sm sm:text-lg text-amber-200/80 max-w-2xl mx-auto leading-relaxed">
-        Where language enthusiasts, polyglots, and lyric bards congregate. Explore cohort courses, collaborative lyric lore, blind translating contests, and pedagogical dissertations.
-      </p>
+            <p className="max-w-2xl text-stone-100/90 text-base sm:text-lg lg:text-xl font-normal font-Merriweather leading-relaxed sm:leading-8 drop-shadow-sm">
+              A community of lyricists, linguists, and language artists.
+              Compose, translate, critique, and celebrate language through song.
+            </p>
+          </div>
 
-      <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-        <Button
-          variant="ornate"
-          onClick={() => navigate('/community/guild-hall')}
-          className="px-6 py-3 text-base flex items-center gap-2"
+          {/* Ornate Frame Buttons matching design */}
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6 pt-2 w-full">
+            <OrnateButton
+              icon={BookOpen}
+              onClick={() => navigate("/community/guild-hall")}
+              className="w-full sm:w-auto min-w-[220px]"
+            >
+              Enter the Guild Hall
+            </OrnateButton>
+
+            <OrnateButton
+              icon={Star}
+              onClick={() => navigate("/community/living-archives")}
+              className="w-full sm:w-auto min-w-[200px]"
+            >
+              Explore Archives
+            </OrnateButton>
+          </div>
+        </div>
+
+        {/* Right Column: Guild Sanctuary Artwork with Torn Edges & 3D Tilt */}
+        <div
+          ref={containerRef}
+          className="perspective w-full lg:w-5/12 flex items-center justify-center cursor-pointer"
+          style={{ perspective: "1000px" }}
         >
-          <span>Explore All Six Wings</span>
-          <ArrowRight size={16} />
-        </Button>
-        <Button
-          variant="secondary"
-          onClick={() => navigate('/community/guild-gate')}
-          className="px-6 py-3 text-base"
-        >
-          Gather at Guild Gate
-        </Button>
+          <div
+            ref={cardRef}
+            className="relative w-full max-w-[380px] sm:max-w-[420px] aspect-square transform-style-3d transition-transform duration-500 ease-out group"
+            style={{ transformStyle: "preserve-3d" }}
+          >
+            {/* Torn edge wrapper around image */}
+            <div className="torn-parchment bg-[#1a0c04] p-2 shadow-2xl w-full h-full">
+              <div
+                className="torn-parchment-inner w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                style={{
+                  backgroundImage: `url(${communityHallImg})`,
+                  transform: "translateZ(10px)",
+                }}
+              />
+            </div>
+
+            {/* Ambient glow accent */}
+            <div
+              className="absolute -inset-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+              style={{
+                background:
+                  "radial-gradient(circle at 50% 50%, rgba(217, 119, 6, 0.25) 0%, transparent 70%)",
+                filter: "blur(25px)",
+                zIndex: -1,
+              }}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -48,69 +156,10 @@ export const CommunityHero = () => {
 export const CommunityHome = () => {
   const navigate = useNavigate();
 
-  const getWingIcon = (id) => {
-    switch (id) {
-      case 'guild-gate': return Compass;
-      case 'study-chambers': return BookOpen;
-      case 'creative-forge': return Trophy;
-      case 'living-archives': return Library;
-      case 'scholars-hall': return Castle;
-      case 'support-wing': return HelpCircle;
-      default: return Compass;
-    }
-  };
-
   return (
-    <div className="space-y-10">
+    <div className="space-y-12">
+      {/* Top Banner Hero */}
       <CommunityHero />
-
-      <div>
-        <div className="text-center max-w-xl mx-auto mb-8 space-y-1.5">
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-amber-950">
-            The Chambers of the Fellowship
-          </h2>
-          <p className="font-serif text-xs sm:text-sm text-stone-600">
-            Choose your destination among the specialized guild wings.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {ALL_WINGS.map((wing) => {
-            const Icon = getWingIcon(wing.id);
-
-            return (
-              <FramedCard
-                key={wing.id}
-                onClick={() => navigate(wing.path)}
-                className="flex flex-col justify-between h-56 group"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-[10px] font-serif font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-200">
-                      {wing.tag}
-                    </span>
-                    <div className="w-8 h-8 rounded-full bg-amber-900/10 text-amber-800 flex items-center justify-center group-hover:bg-amber-900 group-hover:text-amber-100 transition-colors">
-                      <Icon size={16} />
-                    </div>
-                  </div>
-
-                  <h3 className="text-lg font-serif font-bold text-stone-900 group-hover:text-amber-900 transition-colors">
-                    {wing.title}
-                  </h3>
-                  <p className="font-serif text-xs sm:text-sm text-stone-600 mt-2 leading-relaxed">
-                    {wing.desc}
-                  </p>
-                </div>
-
-                <div className="flex items-center text-xs font-serif font-bold text-amber-900 group-hover:translate-x-1 transition-transform">
-                  <span>Enter Chamber</span>
-                  <ArrowRight size={14} className="ml-1" />
-                </div>
-              </FramedCard>
-            );
-          })}
-        </div>
-      </div>
     </div>
   );
 };
