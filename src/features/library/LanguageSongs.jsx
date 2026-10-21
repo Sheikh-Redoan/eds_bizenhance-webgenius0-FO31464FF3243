@@ -8,7 +8,7 @@ import { selectIsAuthenticated, selectCurrentUser } from "../../redux/slices/aut
 import { selectCurrentStep, nextStep } from "../../redux/slices/tutorialSlice";
 import { useGetSongsQuery, useGetSongCategoriesQuery } from "../../redux/api/contentApi";
 import { useGetUserDashboardQuery } from "../../redux/api/userApi"; // ADDED: Import dashboard API
-import { Play, ChevronRight, Music, Filter, Search, X, Lock } from "lucide-react";
+import { Play, ChevronRight, Music, Filter, Search, X, Lock, MoreVertical } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import SearchInput from "../../components/ui/SearchInput";
 import Select from "../../components/ui/Select";
@@ -16,6 +16,53 @@ import Button from "../../components/ui/Button";
 import cardBg from "../../assets/images/cardFreame.png";
 import buttonBG from "../../assets/images/Buttonbordersecoundary.png";
 import exclusive from "../../assets/images/ex.png";
+
+const SongDetailsModal = ({ song, onClose }) => {
+  if (!song) return null;
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+        onClick={onClose}
+      >
+        <motion.div
+          initial={{ scale: 0.95, opacity: 0, y: 20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.95, opacity: 0, y: 20 }}
+          onClick={(e) => e.stopPropagation()}
+          className="border-[10px] sm:border-[14px] border-[#5d4037] "
+          style={{ borderImage: `url(${cardBg}) 30 round` }}
+        >
+          <div className="bg-[#FFF1E0] shadow-2xl max-w-4xl w-full min-h-[400px] max-h-[490px] flex flex-col md:flex-row overflow-hidden relative">
+          <button
+            onClick={onClose}
+            className="absolute top-3 right-3 z-10 p-1.5 bg-[#3F291B]/80 hover:bg-[#3F291B] text-[#D4B483] rounded-full transition-colors"
+          >
+            <X size={20} />
+          </button>
+          <div className="w-full md:w-2/5 h-56 md:h-auto relative shrink-0 bg-[#3F291B]">
+            <img src={song.image} alt={song.title} className="w-full h-full object-cover opacity-90" />
+            <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-[#FFF1E0] via-transparent to-transparent" />
+          </div>
+          <div className="w-full md:w-3/5 p-6 sm:p-8 flex flex-col overflow-y-auto">
+            <h2 className="text-2xl sm:text-3xl font-Merriweather font-bold text-[#3F291B] mb-2">{song.title}</h2>
+            <p className="text-[#8B7355] font-Merriweather font-medium italic mb-6">{song.artist}</p>
+            <div className="space-y-4 text-[#5D4037] font-Merriweather leading-relaxed">
+              <h4 className="font-bold text-lg border-b border-[#8B7355]/30 pb-2">About this track</h4>
+              <p className="whitespace-pre-wrap text-sm sm:text-base">
+                {song.long_description || song.description || "No additional details available for this track."}
+              </p>
+            </div>
+          </div>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
 
 // Simplified WaveformVisual
 const WaveformVisual = ({ isPlaying = false }) => {
@@ -35,8 +82,20 @@ const WaveformVisual = ({ isPlaying = false }) => {
 };
 
 // Responsive SongCard
-const SongCard = ({ song, onClick, index, isLocked }) => {
+const SongCard = ({ song, onClick, index, isLocked, onViewDetails }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+
+  const toggleMenu = (e) => {
+    e.stopPropagation();
+    setShowMenu(!showMenu);
+  };
+
+  const handleViewDetails = (e) => {
+    e.stopPropagation();
+    setShowMenu(false);
+    onViewDetails(song);
+  };
 
   const cardVariants = {
     hidden: { 
@@ -76,6 +135,7 @@ const SongCard = ({ song, onClick, index, isLocked }) => {
       variants={cardVariants}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
+      onMouseLeave={() => setShowMenu(false)}
       className={`relative w-full ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer'}`}
       onClick={isLocked ? null : onClick}
       id={index === 0 ? "tour-open-song" : ""}
@@ -116,14 +176,41 @@ const SongCard = ({ song, onClick, index, isLocked }) => {
             
             {/* Difficulty Badge */}
             <div 
-              className="absolute top-1 sm:top-2 right-0 px-2 sm:px-3 py-0.5 sm:py-1 rounded-l-md shadow-md z-10"
+              className="absolute top-1 sm:top-2 left-0 px-2 sm:px-3 py-0.5 sm:py-1 rounded-r-md shadow-md z-10"
               style={{ backgroundColor: difficultyColor[song.difficulty] + "CC" }}
             >
               <span className="text-white text-[8px] xs:text-[9px] sm:text-[10px] font-Merriweather uppercase tracking-wide">
                 {song.difficulty}
               </span>
             </div>
-            
+
+            {/* 3-Dot Menu */}
+            <div className="absolute top-1 sm:top-2 right-1 sm:right-2 z-20">
+              <button
+                onClick={toggleMenu}
+                className="p-1 sm:p-1.5 bg-black/40 hover:bg-black/60 text-white rounded-md backdrop-blur-sm transition-colors"
+              >
+                <MoreVertical size={16} />
+              </button>
+              <AnimatePresence>
+                {showMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 mt-1 w-32 bg-[#3F291B] border border-[#8B7355] rounded-md shadow-xl overflow-hidden z-30"
+                  >
+                    <button
+                      onClick={handleViewDetails}
+                      className="w-full text-left px-3 py-2 text-xs sm:text-sm text-[#EFEFEF] hover:bg-[#5D4037] hover:text-white transition-colors font-Merriweather"
+                    >
+                      View Details
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
 
           {/* Details Section */}
@@ -222,6 +309,7 @@ const LanguageSongs = () => {
   const [selectedDifficulty, setSelectedDifficulty] = useState(null);
   const [selectedGenre, setSelectedGenre] = useState(null);
   const [filteredSongs, setFilteredSongs] = useState([]);
+  const [selectedModalSong, setSelectedModalSong] = useState(null);
 
   const languageName = languageId
     ? languageId.charAt(0).toUpperCase() + languageId.slice(1)
@@ -259,6 +347,7 @@ const LanguageSongs = () => {
       title: song.title,
       artist: song.artist?.name || "Unknown",
       description: song.short_description,
+      long_description: song.long_description,
       genre: song.category?.name,
       difficulty: song.difficult.toLowerCase(),
       image: song.image,
@@ -377,7 +466,18 @@ const LanguageSongs = () => {
           </Button>
         )}
       </div>
-
+      <div className="w-full max-w-5xl border-t border-[#B28769]/30" />
+      <div className="w-full max-w-5xl flex flex-col sm:flex-row gap-3 sm:gap-4 items-center justify-center">
+        {/* Search Component */}
+        <div className="w-full sm:w-48 md:w-64 lg:w-80 xl:w-96">  
+          <SearchInput 
+            className='max-[640px]:bg-[#E4C395] max-[640px]:shadow-2xl'
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search songs..."
+          />
+        </div>
+      </div>
       {/* Results Counter */}
       <div className="text-white/60 font-Merriweather text-sm sm:text-base">
         Found {filteredSongs.length} {filteredSongs.length === 1 ? 'song' : 'songs'}
@@ -412,6 +512,7 @@ const LanguageSongs = () => {
                   song={song}
                   index={index}
                   isLocked={isLocked}
+                  onViewDetails={(s) => setSelectedModalSong(s)}
                   onClick={() => {
                     if (!isLocked) {
                       if (currentStep === 3 && index === 0) dispatch(nextStep());
@@ -440,6 +541,13 @@ const LanguageSongs = () => {
           </div>
         )}
       </motion.div>
+
+      {selectedModalSong && (
+        <SongDetailsModal
+          song={selectedModalSong}
+          onClose={() => setSelectedModalSong(null)}
+        />
+      )}
     </div>
   );
 };
