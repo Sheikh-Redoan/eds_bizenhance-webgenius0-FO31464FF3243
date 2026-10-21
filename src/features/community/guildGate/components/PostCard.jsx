@@ -1,72 +1,106 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { clsx } from 'clsx';
-import { Pin, MessageSquare, Eye } from 'lucide-react';
-import AuthorMeta from '../../components/AuthorMeta';
-import TagChip from '../../components/TagChip';
-import LikeButton from '../../components/LikeButton';
-import FramedCard from '../../components/FramedCard';
+import { Heart, MessageSquare, Clock, ArrowRight } from 'lucide-react';
+import buttonBorderSecondary from '../../../../assets/images/Buttonbordersecoundary.png';
 
-export const PostCard = ({ post, onLike }) => {
+export const PostCard = ({ post }) => {
   const navigate = useNavigate();
 
   return (
-    <FramedCard
-      onClick={() => navigate(`/community/guild-gate/posts/${post.id}`)}
-      className={clsx(
-        'space-y-3.5',
-        post.pinned && 'border-amber-700/60 bg-[#faf6ed]'
-      )}
-    >
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          {post.pinned && (
-            <span className="inline-flex items-center gap-1 text-[11px] font-serif font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">
-              <Pin size={11} className="rotate-45" />
-              <span>Pinned Scroll</span>
-            </span>
+    <div className="w-full bg-[#B49267]/20 hover:bg-[#B49267]/30 transition-colors border border-[#B49267]/50 rounded-sm p-4 sm:p-5 md:p-6 flex flex-col gap-3.5 sm:gap-4">
+      {/* Top Author Row & Tag */}
+      <div className="w-full flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          {/* Avatar */}
+          {post.author?.avatar ? (
+            <img
+              src={post.author.avatar}
+              alt={post.author?.name || ''}
+              className="w-9 h-9 rounded-full object-cover shrink-0 border border-white/40 shadow-xs"
+            />
+          ) : (
+            <div className="w-9 h-9 rounded-full bg-stone-700 border border-white/40 flex items-center justify-center text-white text-xs font-semibold shrink-0">
+              {post.author?.name ? post.author.name.charAt(0) : 'M'}
+            </div>
           )}
-          <span className="text-xs font-serif font-bold text-stone-600 bg-stone-200/70 px-2.5 py-0.5 rounded-full">
-            {post.category}
-          </span>
+
+          {/* Name & Roles / Time */}
+          <div className="flex flex-col items-start gap-0.5 text-left">
+            <span className="text-white text-sm sm:text-base font-medium font-sans leading-tight">
+              {post.author?.name || 'Anonymous Bard'}
+            </span>
+
+            <div className="flex flex-wrap items-center gap-2 text-white/70 text-xs font-normal font-Merriweather">
+              <span className="capitalize">{post.author?.role || 'Member'}</span>
+              <span className="w-1 h-1 bg-zinc-300 rounded-full inline-block" />
+              <div className="inline-flex items-center gap-1">
+                <Clock size={11} className="opacity-80" />
+                <span>{post.timeAgoText || '21h ago'}</span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="flex items-center gap-1.5">
-          {(post.tags || []).slice(0, 3).map((t) => (
-            <TagChip key={t} label={t} className="!text-[10px] !py-0.2 !px-2" />
-          ))}
-        </div>
+        {/* Tag on Right */}
+        {(post.tags?.[0] || post.category) && (
+          <div className="px-2.5 py-1 border border-white/70 rounded-xs flex items-center justify-center shrink-0">
+            <span className="text-white text-xs sm:text-sm font-normal font-Merriweather leading-none">
+              {post.tags?.[0] || post.category}
+            </span>
+          </div>
+        )}
       </div>
 
-      <div>
-        <h3 className="text-lg sm:text-xl font-serif font-bold text-stone-900 hover:text-amber-900 transition-colors line-clamp-2">
+      {/* Post Title & Excerpt */}
+      <div className="flex flex-col items-start gap-1.5 text-left w-full">
+        <h3
+          onClick={() => navigate(`/community/guild-gate/posts/${post.id}`)}
+          className="text-white text-base sm:text-lg font-normal font-Merriweather hover:underline cursor-pointer leading-snug"
+        >
           {post.title}
         </h3>
-        <p className="font-serif text-xs sm:text-sm text-stone-600 line-clamp-2 mt-1 leading-relaxed">
+
+        <p className="text-white/70 text-xs sm:text-sm font-normal font-Merriweather leading-relaxed">
           {post.content}
         </p>
       </div>
 
-      <div className="flex items-center justify-between pt-3 border-t border-stone-200/80">
-        <AuthorMeta author={post.author} createdAt={post.createdAt} />
+      {/* Bottom Row: Stats (Appreciate & Replies) + Ornate READ button */}
+      <div className="w-full flex items-center justify-between pt-1">
+        <div className="flex items-center gap-5 sm:gap-6 text-white text-xs sm:text-sm font-Merriweather">
+          {/* Appreciate */}
+          <div className="flex items-center gap-1.5 text-white/80 hover:text-white transition-colors cursor-pointer">
+            <Heart size={14} className="opacity-80" />
+            <span className="font-medium text-white">{post.likes ?? 120}</span>
+            <span className="text-white/70 text-xs hidden xs:inline">Appreciate</span>
+          </div>
 
-        <div className="flex items-center gap-3 text-xs font-serif text-stone-600">
-          <span className="flex items-center gap-1">
-            <Eye size={13} className="text-stone-400" />
-            <span>{post.views || 0}</span>
-          </span>
-          <span className="flex items-center gap-1">
-            <MessageSquare size={13} className="text-stone-400" />
-            <span>{post.repliesCount || 0}</span>
-          </span>
-          <LikeButton
-            initialCount={post.likes || 0}
-            size="sm"
-            onLikeChange={(liked, count) => onLike?.(post.id, liked, count)}
-          />
+          {/* Replies */}
+          <div className="flex items-center gap-1.5 text-white/80 hover:text-white transition-colors cursor-pointer">
+            <MessageSquare size={14} className="opacity-80" />
+            <span className="font-medium text-white">{post.repliesCount ?? 11}</span>
+            <span className="text-white/70 text-xs hidden xs:inline">Replies</span>
+          </div>
         </div>
+
+        {/* Ornate READ Button */}
+        <button
+          type="button"
+          onClick={() => navigate(`/community/guild-gate/posts/${post.id}`)}
+          className="relative group w-24 sm:w-28 h-7 sm:h-8 flex items-center justify-center cursor-pointer select-none transition-transform duration-150 active:scale-95 bg-white rounded-xs"
+        >
+          <img
+            src={buttonBorderSecondary}
+            alt=""
+            className="absolute inset-0 w-full h-full object-fill pointer-events-none drop-shadow-xs"
+          />
+          <span className="relative z-10 inline-flex items-center gap-1 text-neutral-950 text-xs sm:text-sm font-normal font-Merriweather leading-none">
+            <span>READ</span>
+            <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
+          </span>
+        </button>
       </div>
-    </FramedCard>
+    </div>
   );
 };
 
