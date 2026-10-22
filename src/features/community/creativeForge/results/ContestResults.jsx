@@ -1,124 +1,120 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Trophy, Award, Medal, Sparkles } from 'lucide-react';
+import { ChevronRight, Music, Play } from 'lucide-react';
 import { useGetContestQuery } from '../../../../redux/api/communityApi';
-import Breadcrumbs from '../../../../components/ui/Breadcrumbs';
-import Button from '../../../../components/ui/Button';
-import ParchmentPanel from '../../components/ParchmentPanel';
-import FramedCard from '../../components/FramedCard';
 
 export const ContestResults = () => {
   const { contestId } = useParams();
   const navigate = useNavigate();
 
   const { data: contest } = useGetContestQuery(contestId);
+  const [isPlaying, setIsPlaying] = useState(false);
 
-  const winners = [
-    {
-      place: 1,
-      title: 'Midnight Silhouette Adaptation',
-      author: 'Aurelius of Granada',
-      score: '96.4% Consensus',
-      award: 'Master Bard Laurel',
-      excerpt: 'Hold me in the velvet night as if the moon might never rise again...',
-    },
-    {
-      place: 2,
-      title: 'The Castilian Whisper',
-      author: 'Dame Genevieve',
-      score: '89.2% Consensus',
-      award: 'Silver Quill Medal',
-      excerpt: 'Kiss me before the dawn intrudes upon our solemn song...',
-    },
-    {
-      place: 3,
-      title: 'Cadence of the Wandering Soul',
-      author: 'Julian Mercer',
-      score: '84.8% Consensus',
-      award: 'Bronze Rune Plaque',
-      excerpt: 'A heartbeat echoed across forgotten cobblestones of Madrid...',
-    },
-  ];
-
-  const breadcrumbs = [
-    { label: 'Creative Forge', to: '/community/creative-forge' },
-    { label: contest?.title || 'Contest', to: `/community/creative-forge/contests/${contestId}` },
-    { label: 'Results' },
+  const winningLyrics = [
+    'Cuando el alba toca el río,',
+    'y despierta el viejo sol,',
+    'llevo historias en el viento,',
+    'llevo el mundo en mi canción.',
+    '',
+    'Que la voz cruce los montes,',
+    'que la lengua guarde el mar,',
+    'cada verso es una puerta,',
+    'cada nombre, un nuevo hogar.',
   ];
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <Breadcrumbs items={breadcrumbs} />
+    <div className="w-full max-w-[1064px] mx-auto flex flex-col justify-start items-start gap-8 my-2 px-2 sm:px-0">
+      {/* 1. Breadcrumbs */}
+      <div className="w-full inline-flex flex-wrap justify-start items-center gap-2 select-none">
         <button
           type="button"
-          onClick={() => navigate(`/community/creative-forge/contests/${contestId}`)}
-          className="text-xs font-serif text-stone-600 hover:text-stone-900 flex items-center gap-1"
+          onClick={() => navigate('/community/guild-hall')}
+          className="text-white/60 hover:text-white transition-colors text-base sm:text-xl font-normal font-Merriweather cursor-pointer"
         >
-          <ArrowLeft size={13} />
-          <span>Contest Overview</span>
+          Guild Hall
         </button>
+
+        <ChevronRight size={18} className="text-white/60 shrink-0" />
+
+        <button
+          type="button"
+          onClick={() => navigate('/community/creative-forge')}
+          className="text-white/60 hover:text-white transition-colors text-base sm:text-xl font-normal font-Merriweather cursor-pointer"
+        >
+          The Creative Forge
+        </button>
+
+        <ChevronRight size={18} className="text-white shrink-0" />
+
+        <span className="text-white text-base sm:text-xl font-normal font-Merriweather capitalize">
+          {contest?.title || 'Voices Across Water'}
+        </span>
       </div>
 
-      <div className="p-6 rounded-2xl bg-gradient-to-r from-purple-950 via-purple-900 to-amber-950 text-white shadow-xl space-y-2 text-center">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-serif font-bold uppercase tracking-wider bg-amber-400/20 text-amber-300 border border-amber-400/30">
-          <Trophy size={14} />
-          <span>Official Proclamation of Winners</span>
-        </div>
-        <h1 className="text-2xl sm:text-3xl font-serif font-bold text-amber-100">
-          {contest?.title}
-        </h1>
-        <p className="text-xs sm:text-sm font-serif text-purple-200">
-          Peer ballots verified by the High Council. The authors are hereby unmasked.
-        </p>
-      </div>
+      {/* 2. Main Results Card */}
+      <div className="w-full flex flex-col justify-start items-end gap-8">
+        <div className="w-full pl-6 pr-7 py-5 bg-stone-400/30 outline outline-1 outline-offset-[-1px] outline-stone-400 flex flex-col lg:flex-row justify-start items-center gap-6 shadow-sm">
+          {/* Left: Winning Artwork & Audio Excerpt */}
+          <div className="w-full sm:w-96 h-56 relative bg-gray-800 outline outline-1 outline-offset-[-1px] outline-stone-400 overflow-hidden shrink-0 group">
+            <img
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=780&q=80"
+              alt="Winning work preview"
+            />
+            {/* Center Music Note / Play Badge */}
+            <button
+              type="button"
+              onClick={() => setIsPlaying(!isPlaying)}
+              className="w-11 h-11 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-3xl outline outline-[0.80px] outline-white/60 bg-black/40 backdrop-blur-sm flex items-center justify-center text-stone-50 hover:bg-black/60 transition-all cursor-pointer shadow-lg"
+              title={isPlaying ? 'Pause audio' : 'Play winning song excerpt'}
+            >
+              {isPlaying ? <Play size={18} className="fill-current" /> : <Music size={18} />}
+            </button>
+          </div>
 
-      <div className="space-y-4">
-        {winners.map((w) => (
-          <FramedCard
-            key={w.place}
-            className={`space-y-3 ${
-              w.place === 1
-                ? 'border-2 border-amber-600 bg-amber-50/70 shadow-md ring-2 ring-amber-400/30'
-                : ''
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${
-                    w.place === 1
-                      ? 'bg-amber-500 text-stone-900'
-                      : w.place === 2
-                      ? 'bg-stone-300 text-stone-800'
-                      : 'bg-amber-800 text-amber-100'
-                  }`}
-                >
-                  #{w.place}
-                </div>
-                <div>
-                  <h3 className="font-serif font-bold text-base text-stone-900">
-                    {w.title}
-                  </h3>
-                  <span className="text-xs font-serif text-stone-600">
-                    Composed by <strong>{w.author}</strong>
-                  </span>
-                </div>
-              </div>
-
-              <div className="text-right">
-                <span className="text-xs font-serif font-bold text-amber-900 block">
-                  {w.award}
-                </span>
-                <span className="text-[11px] text-stone-500">{w.score}</span>
+          {/* Right: Current Official Lyrics & Winning Statistics Box */}
+          <div className="flex-1 w-full flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            {/* Lyrics with left border accent */}
+            <div className="pl-3 border-l border-stone-400 flex flex-col justify-start items-start gap-2">
+              <h3 className="text-white text-xl font-normal font-Merriweather">
+                Current Official Lyrics
+              </h3>
+              <div className="text-white/80 text-xs font-normal font-Merriweather leading-relaxed">
+                {winningLyrics.map((line, idx) => (
+                  <React.Fragment key={idx}>
+                    {line}
+                    <br />
+                  </React.Fragment>
+                ))}
               </div>
             </div>
 
-            <p className="font-serif text-xs sm:text-sm italic text-stone-700 bg-white/70 p-3 rounded border border-stone-200 leading-relaxed">
-              "{w.excerpt}"
-            </p>
-          </FramedCard>
-        ))}
+            {/* Statistics Card: Valid votes + Winning share */}
+            <div className="p-4 bg-white/20 outline outline-1 outline-offset-[-1px] outline-white/40 flex justify-start items-center gap-8 shrink-0">
+              <div className="flex flex-col justify-start items-start gap-1">
+                <div className="pb-1 border-b-[0.50px] border-white/50 flex items-center">
+                  <span className="text-white/70 text-[10px] font-normal font-Merriweather leading-3">
+                    Valid votes
+                  </span>
+                </div>
+                <div className="text-white text-sm font-normal font-Merriweather leading-3">
+                  287
+                </div>
+              </div>
+
+              <div className="flex flex-col justify-start items-start gap-1">
+                <div className="pb-1 border-b-[0.50px] border-white/50 flex items-center">
+                  <span className="text-white/70 text-[10px] font-normal font-Merriweather leading-3">
+                    Winning share
+                  </span>
+                </div>
+                <div className="text-white text-sm font-normal font-Merriweather leading-3">
+                  38%
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

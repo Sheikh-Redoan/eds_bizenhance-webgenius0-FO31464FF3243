@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Send } from 'lucide-react';
+import {
+  ChevronRight,
+  Music,
+  Image as ImageIcon,
+  Headphones,
+  Sparkles,
+  ChevronDown,
+  Upload,
+  Check,
+} from 'lucide-react';
+import buttonBorderSecondary from '../../../../assets/images/Buttonbordersecoundary.png';
 import { useGetContestQuery, useSubmitCreativeWorkMutation } from '../../../../redux/api/communityApi';
-import Breadcrumbs from '../../../../components/ui/Breadcrumbs';
-import Input from '../../../../components/ui/Input';
-import Button from '../../../../components/ui/Button';
-import Checkbox from '../../../../components/ui/Checkbox';
-import FileDropzone from '../../../../components/ui/FileDropzone';
-import MarkdownEditor from '../../components/MarkdownEditor';
-import ParchmentPanel from '../../components/ParchmentPanel';
 
 export const SubmitCreativeWork = () => {
   const { contestId } = useParams();
@@ -17,142 +20,336 @@ export const SubmitCreativeWork = () => {
   const { data: contest } = useGetContestQuery(contestId);
   const [submitWork, { isLoading: isSubmitting }] = useSubmitCreativeWorkMutation();
 
+  const [activeCategory, setActiveCategory] = useState('lyrics');
+  const [selectedLanguage, setSelectedLanguage] = useState('Spanish');
+  const [isLangOpen, setIsLangOpen] = useState(false);
   const [title, setTitle] = useState('');
-  const [lyrics, setLyrics] = useState('');
-  const [notes, setNotes] = useState('');
+  const [description, setDescription] = useState('');
   const [file, setFile] = useState(null);
-  const [agreed, setAgreed] = useState(false);
+  const [isAgreed, setIsAgreed] = useState(false);
+
+  const categories = [
+    { id: 'lyrics', label: 'Lyrics', icon: Music },
+    { id: 'artwork', label: 'Artwork', icon: ImageIcon },
+    { id: 'music', label: 'Music / Audio', icon: Headphones },
+    { id: 'future', label: 'Future Media', icon: Sparkles },
+  ];
+
+  const languages = ['Spanish', 'French', 'Italian', 'German', 'Portuguese', 'Japanese'];
+
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+    }
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!title.trim() || !lyrics.trim() || !agreed) return;
+    if (e) e.preventDefault();
+    if (!title.trim() || !isAgreed) return;
 
     try {
-      await submitWork({
-        contestId,
-        submission: { title, lyrics, notes, hasFile: Boolean(file) },
-      }).unwrap();
-
-      alert('Your creative work has been inscribed for blind evaluation!');
+      if (submitWork) {
+        await submitWork({
+          contestId,
+          submission: {
+            title,
+            description,
+            category: activeCategory,
+            language: selectedLanguage,
+            hasFile: Boolean(file),
+          },
+        }).unwrap();
+      }
       navigate(`/community/creative-forge/contests/${contestId}`);
     } catch (err) {
       console.error('Failed to submit work:', err);
     }
   };
 
-  const breadcrumbs = [
-    { label: 'Creative Forge', to: '/community/creative-forge' },
-    { label: contest?.title || 'Contest', to: `/community/creative-forge/contests/${contestId}` },
-    { label: 'Submit Creative Work' },
-  ];
+  const handleSaveDraft = () => {
+    alert('Draft saved locally in your guild satchel.');
+  };
+
+  const isFormValid = title.trim().length > 0 && isAgreed;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6 space-y-5">
-      <div className="flex items-center justify-between">
-        <Breadcrumbs items={breadcrumbs} />
+    <div className="w-full max-w-[1200px] mx-auto flex flex-col justify-start items-start gap-8 my-2 px-2 sm:px-0">
+      {/* 1. Breadcrumbs Header */}
+      <div className="w-full inline-flex flex-wrap justify-start items-center gap-2 select-none">
         <button
           type="button"
-          onClick={() => navigate(`/community/creative-forge/contests/${contestId}`)}
-          className="text-xs font-serif text-stone-600 hover:text-stone-900 flex items-center gap-1"
+          onClick={() => navigate('/community/guild-hall')}
+          className="text-white/60 hover:text-white transition-colors text-base sm:text-xl font-normal font-Merriweather cursor-pointer"
         >
-          <ArrowLeft size={13} />
-          <span>Back</span>
+          Guild Hall
         </button>
+
+        <ChevronRight size={18} className="text-white/60 shrink-0" />
+
+        <button
+          type="button"
+          onClick={() => navigate('/community/creative-forge')}
+          className="text-white/60 hover:text-white transition-colors text-base sm:text-xl font-normal font-Merriweather cursor-pointer"
+        >
+          The Creative Forge
+        </button>
+
+        <ChevronRight size={18} className="text-white shrink-0" />
+
+        <span className="text-white text-base sm:text-xl font-normal font-Merriweather">
+          Submit creative work
+        </span>
       </div>
 
-      <ParchmentPanel>
-        <div className="pb-4 border-b border-amber-900/20 mb-6">
-          <span className="text-[10px] font-serif font-bold uppercase tracking-wider text-amber-900">
-            Tournament Entry
-          </span>
-          <h1 className="text-2xl font-serif font-bold text-stone-900">
-            Submit Your Adapted Composition
-          </h1>
-          <p className="text-xs font-serif text-stone-600 mt-0.5">
-            Participating in: <strong>{contest?.title}</strong>
-          </p>
+      {/* 2. Main Title */}
+      <div className="w-full flex flex-col justify-start items-start gap-6">
+        <h1 className="text-white text-3xl font-normal font-MetalMania leading-9 tracking-wide">
+          Create creative work. Submission
+        </h1>
+
+        {/* 3. Category Selectors (Lyrics, Artwork, Music/Audio, Future Media) */}
+        <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-4">
+          {categories.map((cat) => {
+            const isCatActive = activeCategory === cat.id;
+            const Icon = cat.icon;
+
+            return (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => setActiveCategory(cat.id)}
+                className={`h-28 flex flex-col justify-center items-center gap-3 transition-all cursor-pointer ${
+                  isCatActive
+                    ? 'bg-white/20 outline outline-[0.80px] outline-offset-[-0.80px] outline-white'
+                    : 'bg-white/10 outline outline-[0.80px] outline-offset-[-0.80px] outline-white/40 hover:bg-white/15'
+                }`}
+              >
+                <Icon
+                  size={24}
+                  className={isCatActive ? 'text-white' : 'text-white/50'}
+                />
+                <span
+                  className={`text-xl font-normal font-Merriweather leading-6 ${
+                    isCatActive ? 'text-white' : 'text-white/50'
+                  }`}
+                >
+                  {cat.label}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-xs font-serif font-bold text-stone-800 mb-1.5">
-              Work Title / Translation Name *
-            </label>
-            <Input
+        {/* 4. Language Selector Dropdown */}
+        <div className="w-full flex flex-col justify-start items-start gap-3">
+          <label className="text-white text-xl font-normal font-Merriweather leading-6">
+            Language
+          </label>
+          <div className="relative w-full">
+            <button
+              type="button"
+              onClick={() => setIsLangOpen(!isLangOpen)}
+              className="w-full h-12 px-6 bg-stone-400/30 outline outline-1 outline-offset-[-1px] outline-stone-400 flex justify-between items-center text-white cursor-pointer"
+            >
+              <span className="text-white text-base font-normal font-Merriweather">
+                {selectedLanguage}
+              </span>
+              <ChevronDown
+                size={20}
+                className={`text-white transition-transform ${isLangOpen ? 'rotate-180' : ''}`}
+              />
+            </button>
+
+            {isLangOpen && (
+              <div className="absolute z-20 left-0 right-0 top-14 bg-stone-900 border border-stone-600 shadow-xl py-1">
+                {languages.map((lang) => (
+                  <button
+                    key={lang}
+                    type="button"
+                    onClick={() => {
+                      setSelectedLanguage(lang);
+                      setIsLangOpen(false);
+                    }}
+                    className={`w-full text-left px-6 py-2.5 font-Merriweather text-sm transition-colors ${
+                      selectedLanguage === lang
+                        ? 'bg-stone-800 text-white font-bold'
+                        : 'text-stone-300 hover:bg-stone-800/60'
+                    }`}
+                  >
+                    {lang}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 5. Work title Input */}
+        <div className="w-full flex flex-col justify-start items-start gap-3">
+          <label className="text-white text-xl font-normal font-Merriweather leading-6">
+            Work title
+          </label>
+          <div className="w-full pl-6 pr-7 py-3.5 bg-stone-400/30 outline outline-1 outline-offset-[-1px] outline-stone-400 flex items-center">
+            <input
+              type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. La Vie en Rose (Midnight English Adaptation)"
-              required
+              placeholder="Enter the title of your work"
+              className="w-full bg-transparent text-white placeholder-white/40 text-base font-normal font-Merriweather outline-hidden"
             />
           </div>
+        </div>
 
-          <div>
-            <label className="block text-xs font-serif font-bold text-stone-800 mb-1.5">
-              Adapted Verses & Lyrics *
-            </label>
-            <MarkdownEditor
-              value={lyrics}
-              onChange={setLyrics}
-              placeholder="Inscribe your stanzas line by line with meter and rhyme considerations..."
-              rows={10}
+        {/* 6. Description Textarea */}
+        <div className="w-full flex flex-col justify-start items-start gap-3">
+          <label className="text-white text-xl font-normal font-Merriweather leading-6">
+            Description
+          </label>
+          <div className="w-full h-32 px-4 py-3 bg-stone-400/30 outline outline-1 outline-offset-[-1px] outline-stone-400 flex flex-col justify-start items-start">
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Tell the reviewers about your creative work..."
+              className="w-full h-full bg-transparent text-white placeholder-white/40 text-base font-normal font-Merriweather outline-hidden resize-none"
             />
           </div>
+        </div>
 
-          <div>
-            <label className="block text-xs font-serif font-bold text-stone-800 mb-1.5">
-              Poetic Notes & Rhyme Scheme Rationale
-            </label>
-            <MarkdownEditor
-              value={notes}
-              onChange={setNotes}
-              placeholder="Explain how you handled tricky idioms, syllables, or cultural metaphors..."
-              rows={4}
+        {/* 7. File Upload Box (Audio, image, PDF, or document up to 50 MB) */}
+        <div className="w-full">
+          <label className="w-full h-40 px-4 py-3 bg-stone-400/30 outline outline-1 outline-offset-[-1px] outline-stone-400 flex flex-col justify-center items-center gap-3 cursor-pointer hover:bg-stone-400/35 transition-all">
+            <input
+              type="file"
+              onChange={handleFileChange}
+              className="hidden"
+              accept="audio/*,image/*,.pdf,.doc,.docx"
             />
-          </div>
+            <div className="flex flex-col items-center gap-2">
+              <Upload size={28} className="text-white" />
+              <div className="text-center text-white text-xl font-normal font-Merriweather leading-6">
+                {file ? file.name : 'Upload your work'}
+              </div>
+              <div className="text-white/40 text-base font-normal font-Merriweather leading-3">
+                {file
+                  ? `${(file.size / (1024 * 1024)).toFixed(2)} MB uploaded`
+                  : 'Audio, image, PDF, or document · up to 50 MB'}
+              </div>
+            </div>
+          </label>
+        </div>
 
-          <div>
-            <label className="block text-xs font-serif font-bold text-stone-800 mb-1.5">
-              Optional Audio Recital / Performance Recording
-            </label>
-            <FileDropzone
-              file={file}
-              onFileSelect={setFile}
-              onClear={() => setFile(null)}
-              label="Drop audio file (MP3, WAV) or click to browse"
+        {/* 8. Submission & Rights Agreement */}
+        <div className="w-full pt-3 border-t border-stone-400 flex flex-col justify-start items-start gap-4">
+          <h2 className="text-white text-3xl font-normal font-MetalMania leading-9 tracking-wide">
+            Submission & Rights Agreement
+          </h2>
+
+          <div className="w-full pl-6 pr-7 py-5 bg-stone-400/30 outline outline-1 outline-offset-[-1px] outline-stone-400 flex flex-col justify-center items-start gap-4 shadow-sm">
+            {/* Agreement block 1 */}
+            <div className="w-full flex flex-col justify-start items-start gap-1">
+              <h3 className="text-white text-xl font-normal font-Merriweather">
+                Creative Submission Agreement
+              </h3>
+              <p className="text-white/80 text-xs font-normal font-Merriweather leading-4">
+                By submitting, you confirm that this work is original, that you hold the rights required to enter it, and that your entry follows the contest integrity rules.
+              </p>
+            </div>
+
+            {/* Agreement block 2 */}
+            <div className="w-full flex flex-col justify-start items-start gap-1">
+              <h3 className="text-white text-xl font-normal font-Merriweather">
+                Rights & Attribution
+              </h3>
+              <p className="text-white/80 text-xs font-normal font-Merriweather leading-4">
+                You retain authorship. If selected for Guild publication, the applicable archive agreement and contribution record will be presented separately.
+              </p>
+            </div>
+
+            {/* Agreement block 3 */}
+            <div className="w-full flex flex-col justify-start items-start gap-1">
+              <h3 className="text-white text-xl font-normal font-Merriweather">
+                Blind Voting Integrity
+              </h3>
+              <p className="text-white/80 text-xs font-normal font-Merriweather leading-4">
+                You agree not to reveal or promote your anonymous submission identity while blind voting remains open.
+              </p>
+            </div>
+
+            {/* Checkbox acceptance card */}
+            <div
+              onClick={() => setIsAgreed(!isAgreed)}
+              className="w-full pl-6 pr-7 py-5 bg-stone-400/30 outline outline-1 outline-offset-[-1px] outline-stone-400 flex flex-col justify-center items-start gap-2.5 cursor-pointer hover:bg-stone-400/35 transition-all select-none"
+            >
+              <div className="flex items-start gap-3">
+                <div
+                  className={`w-4 h-4 rounded-xs border border-neutral-500 mt-0.5 flex items-center justify-center shrink-0 transition-colors ${
+                    isAgreed ? 'bg-white text-neutral-950' : 'bg-white/90'
+                  }`}
+                >
+                  {isAgreed && <Check size={12} strokeWidth={3} />}
+                </div>
+
+                <div className="flex flex-col justify-start items-start gap-1">
+                  <div className="text-white text-base sm:text-xl font-normal font-Merriweather">
+                    I have read and accept this agreement
+                  </div>
+                  <div className="text-white/80 text-xs font-normal font-Merriweather leading-4">
+                    Digital acceptance will be recorded with your submission and agreement version.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 9. Bottom Actions: Cancel (Left) | Save draft (Middle) | Accept & Submit (Right) */}
+        <div className="w-full flex flex-col sm:flex-row justify-between items-center gap-4 pt-3">
+          {/* Cancel Button */}
+          <button
+            type="button"
+            onClick={() => navigate(`/community/creative-forge/contests/${contestId}`)}
+            className="relative inline-flex items-center justify-center px-8 py-3 bg-white text-neutral-950 font-normal font-Merriweather text-base tracking-normal hover:bg-stone-100 transition-all cursor-pointer group shadow-md"
+          >
+            <img
+              src={buttonBorderSecondary}
+              alt="button border"
+              className="absolute inset-0 w-full h-full pointer-events-none object-fill"
             />
-          </div>
+            <span className="relative z-10">Cancel</span>
+          </button>
 
-          <div className="p-4 bg-amber-50/70 border border-amber-900/20 rounded-lg space-y-3">
-            <Checkbox
-              id="rightsAgreement"
-              checked={agreed}
-              onChange={setAgreed}
-              label="Guild Rights & Originality Declaration *"
-              description="I certify this translation/adaptation is my own creation and does not infringe on third-party licenses. I consent to my work being displayed anonymously during Blind Voting."
-            />
-          </div>
-
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-amber-900/10">
-            <Button
+          {/* Right Button Pair: Save draft + Accept & Submit */}
+          <div className="flex items-center gap-5">
+            <button
               type="button"
-              variant="ghost"
-              onClick={() => navigate(`/community/creative-forge/contests/${contestId}`)}
-              className="px-4 py-2 text-xs"
+              onClick={handleSaveDraft}
+              className="text-white text-base font-normal font-Merriweather leading-4 hover:underline cursor-pointer"
             >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="ornate"
-              disabled={!title.trim() || !lyrics.trim() || !agreed || isSubmitting}
-              className="px-6 py-2.5 text-sm flex items-center gap-2"
+              Save draft
+            </button>
+
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={!isFormValid || isSubmitting}
+              className={`relative inline-flex items-center justify-center px-7 py-3 font-normal font-Merriweather text-base tracking-normal transition-all shadow-md group ${
+                !isFormValid || isSubmitting
+                  ? 'bg-stone-200 text-neutral-950/60 opacity-40 cursor-not-allowed'
+                  : 'bg-white text-neutral-950 hover:bg-stone-100 cursor-pointer'
+              }`}
             >
-              <Send size={15} />
-              <span>{isSubmitting ? 'Submitting...' : 'Seal & Enter Submission'}</span>
-            </Button>
+              <img
+                src={buttonBorderSecondary}
+                alt="button border"
+                className="absolute inset-0 w-full h-full pointer-events-none object-fill"
+              />
+              <span className="relative z-10">
+                {isSubmitting ? 'Submitting...' : 'Accept & Submit'}
+              </span>
+            </button>
           </div>
-        </form>
-      </ParchmentPanel>
+        </div>
+      </div>
     </div>
   );
 };
