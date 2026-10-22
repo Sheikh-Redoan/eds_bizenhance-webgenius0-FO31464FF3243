@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { Send, ArrowLeft } from 'lucide-react';
+import { ChevronRight, ChevronDown } from 'lucide-react';
 import { selectCurrentUser } from '../../../redux/slices/authSlice';
 import { saveDraft, discardDraft } from '../state/communitySlice';
 import { useCreatePostMutation } from '../../../redux/api/communityApi';
-import Breadcrumbs from '../../../components/ui/Breadcrumbs';
-import Input from '../../../components/ui/Input';
-import Button from '../../../components/ui/Button';
-import MarkdownEditor from '../components/MarkdownEditor';
-import TagChip from '../components/TagChip';
-import DraftActions from '../components/DraftActions';
-import ParchmentPanel from '../components/ParchmentPanel';
+import buttonBorderSecondary from '../../../assets/images/Buttonbordersecoundary.png';
+
+const CATEGORIES = [
+  'General Discussion',
+  'Introductions',
+  'Language & Translation',
+  'Analysis',
+  'Announcements',
+];
 
 export const NewPost = () => {
   const navigate = useNavigate();
@@ -19,28 +21,12 @@ export const NewPost = () => {
   const user = useSelector(selectCurrentUser);
 
   const [title, setTitle] = useState('');
-  const [category, setCategory] = useState('Analysis');
+  const [category, setCategory] = useState('General Discussion');
   const [content, setContent] = useState('');
-  const [tagInput, setTagInput] = useState('');
-  const [tags, setTags] = useState(['Lyrics']);
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [isDraftSaving, setIsDraftSaving] = useState(false);
 
   const [createPost, { isLoading: isSubmitting }] = useCreatePostMutation();
-
-  const handleAddTag = (e) => {
-    if (e.key === 'Enter' || e.key === ',') {
-      e.preventDefault();
-      const trimmed = tagInput.trim().replace(/^#/, '');
-      if (trimmed && !tags.includes(trimmed) && tags.length < 5) {
-        setTags([...tags, trimmed]);
-        setTagInput('');
-      }
-    }
-  };
-
-  const handleRemoveTag = (tagToRemove) => {
-    setTags(tags.filter((t) => t !== tagToRemove));
-  };
 
   const handleSaveDraft = () => {
     setIsDraftSaving(true);
@@ -48,29 +34,28 @@ export const NewPost = () => {
       saveDraft({
         type: 'posts',
         id: 'new_post',
-        data: { title, content, category, tags },
+        data: { title, content, category },
       })
     );
-    setTimeout(() => setIsDraftSaving(false), 400);
+    setTimeout(() => {
+      setIsDraftSaving(false);
+    }, 400);
   };
 
-  const handleDiscardDraft = () => {
-    dispatch(discardDraft({ type: 'posts', id: 'new_post' }));
-    setTitle('');
-    setContent('');
-    setTags(['Lyrics']);
+  const handleCancel = () => {
+    navigate('/community/guild-gate');
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!title.trim() || !content.trim()) return;
+    e?.preventDefault();
+    if (!title.trim() || !content.trim() || isSubmitting) return;
 
     try {
       await createPost({
-        title,
-        content,
+        title: title.trim(),
+        content: content.trim(),
         category,
-        tags,
+        tags: [category],
         author: {
           id: user?._id || user?.id || 'anon',
           name: user?.name || 'Guild Traveler',
@@ -86,134 +71,199 @@ export const NewPost = () => {
     }
   };
 
-  const breadcrumbs = [
-    { label: 'Guild Gate', to: '/community/guild-gate' },
-    { label: 'New Scroll' },
-  ];
+  const canPublish = Boolean(title.trim() && content.trim() && !isSubmitting);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6 space-y-5">
-      <div className="flex items-center justify-between">
-        <Breadcrumbs items={breadcrumbs} />
+    <div className="w-full max-w-[1200px] mx-auto flex flex-col justify-start items-start gap-8 my-2 px-2 sm:px-0">
+      {/* 1. Breadcrumbs */}
+      <div className="w-full inline-flex flex-wrap justify-start items-center gap-2 select-none">
         <button
           type="button"
-          onClick={() => navigate(-1)}
-          className="text-xs font-serif text-stone-600 hover:text-stone-900 flex items-center gap-1"
+          onClick={() => navigate('/community/guild-hall')}
+          className="text-white/60 hover:text-white transition-colors text-base sm:text-xl font-normal font-Merriweather cursor-pointer"
         >
-          <ArrowLeft size={13} />
-          <span>Back</span>
+          Guild Hall
         </button>
+
+        <ChevronRight size={18} className="text-white/60 shrink-0" />
+
+        <button
+          type="button"
+          onClick={() => navigate('/community/guild-gate')}
+          className="text-white/60 hover:text-white transition-colors text-base sm:text-xl font-normal font-Merriweather cursor-pointer"
+        >
+          The Guild Gate
+        </button>
+
+        <ChevronRight size={18} className="text-white shrink-0" />
+
+        <span className="text-white text-base sm:text-xl font-normal font-Merriweather">
+          New Post
+        </span>
       </div>
 
-      <ParchmentPanel>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-amber-900/20 mb-6">
-          <div>
-            <h1 className="text-2xl font-serif font-bold text-stone-900">
-              Inscribe a Public Post
-            </h1>
-            <p className="text-xs font-serif text-stone-600 mt-0.5">
-              Share song analyses, dialect questions, or community announcements.
-            </p>
-          </div>
-
-          <DraftActions
-            onSaveDraft={handleSaveDraft}
-            onDiscardDraft={handleDiscardDraft}
-            hasDraft={Boolean(title || content)}
-            isSaving={isDraftSaving}
-          />
+      {/* 2. Main Form Container */}
+      <div className="w-full flex flex-col justify-start items-start gap-6">
+        {/* Title Heading: CREATE NEW POST */}
+        <div className="flex items-center gap-1.5 select-none">
+          <span className="text-white text-3xl font-normal font-MetalMania uppercase tracking-wide leading-9">
+            CREATE
+          </span>
+          <span className="text-white text-3xl font-normal font-MetalMania uppercase tracking-wide leading-9">
+            New Post
+          </span>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-serif font-bold text-stone-800 mb-1.5">
-                Scroll Title *
-              </label>
-              <Input
+        {/* Inputs Stack */}
+        <div className="w-full flex flex-col justify-start items-start gap-6">
+          {/* TITLE Field */}
+          <div className="w-full flex flex-col justify-start items-start gap-3">
+            <label
+              htmlFor="post-title"
+              className="text-white text-xl font-normal font-Merriweather leading-6 tracking-wide uppercase"
+            >
+              TITLE
+            </label>
+            <div className="w-full px-5 sm:px-6 py-4 sm:py-5 bg-[#B49167]/30 border border-[#B49167]/50 focus-within:border-[#B49167] transition-all">
+              <input
+                id="post-title"
+                type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="Subject of your proclamation..."
-                required
+                placeholder="Descriptive thread title…"
+                className="w-full bg-transparent text-white text-base font-normal font-Merriweather placeholder:text-white/40 focus:outline-none leading-relaxed"
               />
-            </div>
-
-            <div>
-              <label className="block text-xs font-serif font-bold text-stone-800 mb-1.5">
-                Category
-              </label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-3 py-2 bg-white/80 border border-stone-300 rounded-lg text-sm font-serif"
-              >
-                <option value="Analysis">Lyrical Analysis</option>
-                <option value="Questions">Language Questions</option>
-                <option value="Announcements">Announcements</option>
-              </select>
             </div>
           </div>
 
-          <div>
-            <label className="block text-xs font-serif font-bold text-stone-800 mb-1.5">
-              Tags (Press Enter to add, max 5)
+          {/* CATEGORY Field */}
+          <div className="w-full flex flex-col justify-start items-start gap-3 relative">
+            <label className="text-white text-xl font-normal font-Merriweather leading-6 tracking-wide">
+              Category
             </label>
-            <div className="flex flex-wrap items-center gap-2 mb-2">
-              {tags.map((t) => (
-                <TagChip
-                  key={t}
-                  label={t}
-                  removable
-                  onRemove={handleRemoveTag}
-                />
-              ))}
-            </div>
-            {tags.length < 5 && (
-              <Input
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                onKeyDown={handleAddTag}
-                placeholder="Add tag (e.g., Bolero, French, VerbDrills)..."
-                className="max-w-xs"
+            <button
+              type="button"
+              onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+              className="w-full px-5 sm:px-6 py-4 sm:py-5 bg-[#B49167]/30 border border-[#B49167]/50 flex justify-between items-center text-left cursor-pointer transition-all hover:bg-[#B49167]/40 focus:outline-none"
+            >
+              <span className="text-white text-base font-normal font-Merriweather leading-relaxed">
+                {category}
+              </span>
+              <ChevronDown
+                size={22}
+                className={`text-white transition-transform duration-200 shrink-0 ${
+                  isCategoryOpen ? 'rotate-180' : ''
+                }`}
               />
+            </button>
+
+            {/* Category Dropdown Menu */}
+            {isCategoryOpen && (
+              <div className="absolute top-[calc(100%+4px)] left-0 w-full z-30 bg-[#0A0A0A]/95 backdrop-blur-md border border-[#B49167]/60 shadow-2xl py-1 max-h-60 overflow-y-auto">
+                {CATEGORIES.map((cat) => (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => {
+                      setCategory(cat);
+                      setIsCategoryOpen(false);
+                    }}
+                    className={`w-full text-left px-6 py-3 text-base font-Merriweather transition-colors flex items-center justify-between ${
+                      category === cat
+                        ? 'bg-[#B49167]/30 text-white font-medium'
+                        : 'text-white/80 hover:bg-[#B49167]/20 hover:text-white'
+                    }`}
+                  >
+                    <span>{cat}</span>
+                    {category === cat && (
+                      <span className="w-2 h-2 rounded-full bg-[#B49167]" />
+                    )}
+                  </button>
+                ))}
+              </div>
             )}
           </div>
 
-          <div>
-            <label className="block text-xs font-serif font-bold text-stone-800 mb-1.5">
-              Manuscript Content *
+          {/* CONTENT Field */}
+          <div className="w-full flex flex-col justify-start items-start gap-3">
+            <label
+              htmlFor="post-content"
+              className="text-white text-xl font-normal font-Merriweather leading-6 tracking-wide uppercase"
+            >
+              CONTENT
             </label>
-            <MarkdownEditor
-              value={content}
-              onChange={setContent}
-              placeholder="Inscribe your thoughts, references, or verse quotations..."
-              rows={9}
-            />
+            <div className="w-full flex flex-col justify-start items-end gap-2">
+              <div className="w-full min-h-[140px] sm:min-h-[160px] px-5 sm:px-6 py-4 sm:py-5 bg-[#B49167]/30 border border-[#B49167]/50 focus-within:border-[#B49167] transition-all">
+                <textarea
+                  id="post-content"
+                  rows={6}
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  placeholder="Write your post… Markdown is supported......"
+                  className="w-full h-full bg-transparent text-white text-base font-normal font-Merriweather placeholder:text-white/40 focus:outline-none resize-y leading-relaxed"
+                />
+              </div>
+              <div className="text-white/70 text-xs font-normal font-Merriweather select-none">
+                {content.length} chars
+              </div>
+            </div>
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-amber-900/10">
-            <Button
+          {/* Actions Bottom Bar */}
+          <div className="w-full flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 pt-2">
+            {/* Left: Cancel Button (Ornate Brown Framed Button) */}
+            <button
               type="button"
-              variant="ghost"
-              onClick={() => navigate('/community/guild-gate')}
-              className="px-4 py-2 text-xs"
+              onClick={handleCancel}
+              className="relative group w-32 sm:w-36 h-11 flex items-center justify-center cursor-pointer select-none transition-transform duration-150 active:scale-95 bg-[#755F48]"
             >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="ornate"
-              disabled={!title.trim() || !content.trim() || isSubmitting}
-              className="px-6 py-2.5 text-sm flex items-center gap-2"
-            >
-              <Send size={15} />
-              <span>{isSubmitting ? 'Inscribing...' : 'Dispatch Scroll'}</span>
-            </Button>
+              <img
+                src={buttonBorderSecondary}
+                alt=""
+                className="absolute inset-0 w-full h-full object-fill pointer-events-none drop-shadow-md group-hover:brightness-110"
+              />
+              <span className="relative z-10 text-white text-base font-normal font-Merriweather drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+                Cancel
+              </span>
+            </button>
+
+            {/* Right: Save Draft & Publish Post */}
+            <div className="flex items-center justify-end gap-4 sm:gap-6">
+              <button
+                type="button"
+                onClick={handleSaveDraft}
+                className="text-white/90 hover:text-white transition-colors text-base font-normal font-Merriweather cursor-pointer underline-offset-4 hover:underline"
+              >
+                {isDraftSaving ? 'Saving...' : 'Save draft'}
+              </button>
+
+              {/* Publish Post Button */}
+              <button
+                type="button"
+                disabled={!canPublish}
+                onClick={handleSubmit}
+                className={`relative group w-36 sm:w-40 h-11 flex items-center justify-center select-none transition-all duration-150 rounded-xs ${
+                  canPublish
+                    ? 'cursor-pointer active:scale-95 bg-white text-neutral-950'
+                    : 'opacity-40 cursor-not-allowed bg-white text-neutral-950'
+                }`}
+              >
+                <img
+                  src={buttonBorderSecondary}
+                  alt=""
+                  className="absolute inset-0 w-full h-full object-fill pointer-events-none drop-shadow-xs"
+                />
+                <span className="relative z-10 text-neutral-950 text-base font-normal font-Merriweather leading-none">
+                  {isSubmitting ? 'Publishing...' : 'Publish Post'}
+                </span>
+              </button>
+            </div>
           </div>
-        </form>
-      </ParchmentPanel>
+        </div>
+      </div>
     </div>
   );
 };
 
 export default NewPost;
+
