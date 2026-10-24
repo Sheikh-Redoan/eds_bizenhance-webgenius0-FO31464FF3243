@@ -7,12 +7,27 @@ import cardFrameImg from '../../../../assets/images/cardFreame.png';
 export const SongCard = ({ song }) => {
   const navigate = useNavigate();
 
+  const [isDownloaded, setIsDownloaded] = React.useState(false);
+
   // Determine badge styling based on audit status
   const isAudited = song.status === 'audited';
 
   const handleDownload = (e) => {
     e.stopPropagation();
-    alert(`Downloading manuscript archive for "${song.title}" (${song.version})...`);
+    const downloadUrl = song.audioFile || '/Every Path (2).mp3';
+    const filename = song.filename || 'Every Path (2).mp3';
+
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    setIsDownloaded(true);
+    setTimeout(() => {
+      setIsDownloaded(false);
+    }, 1500);
   };
 
   return (
@@ -82,10 +97,14 @@ export const SongCard = ({ song }) => {
             <button
               type="button"
               onClick={handleDownload}
-              className="w-full h-7 px-2 bg-stone-600/15 hover:bg-stone-600/25 text-stone-600 hover:text-stone-800 text-xs font-normal font-Merriweather flex justify-center items-center gap-1.5 transition-colors cursor-pointer"
+              className={`w-full h-7 px-2 ${
+                isDownloaded
+                  ? 'bg-emerald-600/20 text-emerald-800'
+                  : 'bg-stone-600/15 hover:bg-stone-600/25 text-stone-600 hover:text-stone-800'
+              } text-xs font-normal font-Merriweather flex justify-center items-center gap-1.5 transition-colors cursor-pointer`}
             >
-              <Download size={13} className="text-stone-500" />
-              <span>Download</span>
+              <Download size={13} className={isDownloaded ? 'text-emerald-700' : 'text-stone-500'} />
+              <span>{isDownloaded ? 'Downloaded' : 'Download'}</span>
             </button>
           </div>
         </div>

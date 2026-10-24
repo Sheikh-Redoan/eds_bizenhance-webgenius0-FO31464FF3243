@@ -1,19 +1,20 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ChevronRight, Search, ChevronDown } from 'lucide-react';
-import SongCard from './components/SongCard';
-import livingArchivesBannerImg from '../../../assets/images/living_archives.jpg';
-import buttonBorderSecondary from '../../../assets/images/Buttonbordersecoundary.png';
-import { useGetArchivedSongsQuery } from '../../../redux/api/communityApi';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ChevronRight, Search, ChevronDown } from "lucide-react";
+import SongCard from "./components/SongCard";
+import livingArchivesBannerImg from "../../../assets/images/living_archives.jpg";
+import buttonBorderSecondary from "../../../assets/images/Buttonbordersecoundary.png";
+import { useGetArchivedSongsQuery } from "../../../redux/api/communityApi";
 
 export const LivingArchives = () => {
   const navigate = useNavigate();
 
   // Filters state matching Figma design
-  const [search, setSearch] = useState('');
-  const [selectedLanguage, setSelectedLanguage] = useState('All languages');
-  const [selectedVersion, setSelectedVersion] = useState('All versions');
-  const [selectedAuditStatus, setSelectedAuditStatus] = useState('Any audit status');
+  const [search, setSearch] = useState("");
+  const [selectedLanguage, setSelectedLanguage] = useState("All languages");
+  const [selectedVersion, setSelectedVersion] = useState("All versions");
+  const [selectedAuditStatus, setSelectedAuditStatus] =
+    useState("Any audit status");
 
   // Dropdown open states
   const [isLangOpen, setIsLangOpen] = useState(false);
@@ -22,64 +23,64 @@ export const LivingArchives = () => {
 
   const { data: apiSongs = [] } = useGetArchivedSongsQuery();
 
-  // Curated manuscripts for Living Archives matching the Figma demo (Les Étoiles Perdues, Noite de Vidro, etc.)
+  // Curated manuscripts for Living Archives matching the Figma demo with Every Path
   const mockArchiveSongs = [
     {
-      id: 'song-1',
-      title: 'Les Étoiles Perdues',
-      language: 'French',
-      version: 'v2.1',
-      status: 'audited',
-      image: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=600&q=80',
-    },
-    {
-      id: 'song-2',
-      title: 'Noite de Vidro',
-      language: 'Portuguese',
-      version: 'v2.1',
-      status: 'in_review',
-      image: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=600&q=80',
-    },
-    {
-      id: 'song-3',
-      title: 'Les Étoiles Perdues',
-      language: 'French',
-      version: 'v2.1',
-      status: 'audited',
-      image: 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?auto=format&fit=crop&w=600&q=80',
-    },
-    {
-      id: 'song-4',
-      title: 'Noite de Vidro',
-      language: 'Portuguese',
-      version: 'v2.1',
-      status: 'in_review',
-      image: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=600&q=80',
+      id: "song-1",
+      title: "Every Path (Каждая тропа)",
+      language: "Russian",
+      version: "v2.1",
+      status: "audited",
+      audioFile: "/Every Path (2).mp3",
+      filename: "Every Path (2).mp3",
+      lessonFile: "/Every_Path_Russian_Lesson.txt",
+      breakdownFile: "/Every_Path_Russian_Grammar_and_Pronunciation_Breakdown.txt",
+      description: "Word-by-word Russian song companion with pronunciation, stress markers, and metric cadence analysis.",
+      image:
+        "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=600&q=80",
     },
   ];
 
   // Filter options
-  const languageOptions = ['All languages', 'French', 'Portuguese', 'Spanish', 'Italian'];
-  const versionOptions = ['All versions', 'v2.1', 'v2.0', 'v1.5', 'v1.0'];
-  const auditOptions = ['Any audit status', 'Audited', 'In Review'];
+  const languageOptions = [
+    "All languages",
+    "Russian",
+    "French",
+    "Portuguese",
+    "Spanish",
+    "Italian",
+  ];
+  const versionOptions = ["All versions", "v2.1", "v2.0", "v1.5", "v1.0"];
+  const auditOptions = ["Any audit status", "Audited", "In Review"];
 
   // Filtering logic
   const filteredSongs = mockArchiveSongs.filter((song) => {
     if (search.trim()) {
       const q = search.toLowerCase();
-      if (!song.title.toLowerCase().includes(q) && !song.language.toLowerCase().includes(q)) {
+      if (
+        !song.title.toLowerCase().includes(q) &&
+        !song.language.toLowerCase().includes(q)
+      ) {
         return false;
       }
     }
-    if (selectedLanguage !== 'All languages' && song.language.toLowerCase() !== selectedLanguage.toLowerCase()) {
+    if (
+      selectedLanguage !== "All languages" &&
+      song.language.toLowerCase() !== selectedLanguage.toLowerCase()
+    ) {
       return false;
     }
-    if (selectedVersion !== 'All versions' && song.version !== selectedVersion) {
+    if (
+      selectedVersion !== "All versions" &&
+      song.version !== selectedVersion
+    ) {
       return false;
     }
-    if (selectedAuditStatus !== 'Any audit status') {
-      const matchAudited = selectedAuditStatus === 'Audited' && song.status === 'audited';
-      const matchInReview = selectedAuditStatus === 'In Review' && song.status === 'in_review';
+    if (selectedAuditStatus !== "Any audit status") {
+      const matchAudited =
+        selectedAuditStatus === "Audited" && song.status === "audited";
+      const matchInReview =
+        selectedAuditStatus === "In Review" && song.status === "in_review";
       if (!matchAudited && !matchInReview) return false;
     }
     return true;
@@ -91,7 +92,7 @@ export const LivingArchives = () => {
       <div className="w-full inline-flex justify-start items-center gap-2 select-none">
         <button
           type="button"
-          onClick={() => navigate('/community/guild-hall')}
+          onClick={() => navigate("/community/guild-hall")}
           className="text-white/60 hover:text-white transition-colors text-base sm:text-xl font-normal font-Merriweather cursor-pointer"
         >
           Guild Hall
@@ -129,6 +130,7 @@ export const LivingArchives = () => {
           {/* Banner Action Buttons: SONG LIBRARY & LANGUAGE ARCHIVES (Soon) */}
           <div className="flex flex-wrap items-center gap-4 select-none">
             {/* Song Library Ornate Brown Button */}
+            <Link></Link>
             <button
               type="button"
               className="relative inline-flex items-center justify-center px-6 py-2.5 bg-[#755F48] hover:bg-[#634f3c] text-white font-normal font-Merriweather text-sm uppercase tracking-wider transition-colors cursor-pointer group shadow-lg"
@@ -165,7 +167,8 @@ export const LivingArchives = () => {
           Song Library
         </h2>
         <p className="text-white/80 text-base font-normal font-Merriweather leading-6">
-          Discover official translations, trace every revision, and honor each contributor.
+          Discover official translations, trace every revision, and honor each
+          contributor.
         </p>
       </div>
 
@@ -201,7 +204,7 @@ export const LivingArchives = () => {
               <ChevronDown
                 size={20}
                 className={`text-stone-400 transition-transform shrink-0 ${
-                  isLangOpen ? 'rotate-180' : ''
+                  isLangOpen ? "rotate-180" : ""
                 }`}
               />
             </button>
@@ -218,8 +221,8 @@ export const LivingArchives = () => {
                     }}
                     className={`w-full text-left px-5 py-2.5 text-sm font-sans transition-colors ${
                       selectedLanguage === opt
-                        ? 'bg-stone-800 text-white font-bold'
-                        : 'text-stone-300 hover:bg-stone-800/60'
+                        ? "bg-stone-800 text-white font-bold"
+                        : "text-stone-300 hover:bg-stone-800/60"
                     }`}
                   >
                     {opt}
@@ -246,7 +249,7 @@ export const LivingArchives = () => {
               <ChevronDown
                 size={20}
                 className={`text-stone-400 transition-transform shrink-0 ${
-                  isVersionOpen ? 'rotate-180' : ''
+                  isVersionOpen ? "rotate-180" : ""
                 }`}
               />
             </button>
@@ -263,8 +266,8 @@ export const LivingArchives = () => {
                     }}
                     className={`w-full text-left px-5 py-2.5 text-sm font-sans transition-colors ${
                       selectedVersion === opt
-                        ? 'bg-stone-800 text-white font-bold'
-                        : 'text-stone-300 hover:bg-stone-800/60'
+                        ? "bg-stone-800 text-white font-bold"
+                        : "text-stone-300 hover:bg-stone-800/60"
                     }`}
                   >
                     {opt}
@@ -291,7 +294,7 @@ export const LivingArchives = () => {
               <ChevronDown
                 size={20}
                 className={`text-stone-400 transition-transform shrink-0 ${
-                  isAuditOpen ? 'rotate-180' : ''
+                  isAuditOpen ? "rotate-180" : ""
                 }`}
               />
             </button>
@@ -308,8 +311,8 @@ export const LivingArchives = () => {
                     }}
                     className={`w-full text-left px-5 py-2.5 text-sm font-sans transition-colors ${
                       selectedAuditStatus === opt
-                        ? 'bg-stone-800 text-white font-bold'
-                        : 'text-stone-300 hover:bg-stone-800/60'
+                        ? "bg-stone-800 text-white font-bold"
+                        : "text-stone-300 hover:bg-stone-800/60"
                     }`}
                   >
                     {opt}

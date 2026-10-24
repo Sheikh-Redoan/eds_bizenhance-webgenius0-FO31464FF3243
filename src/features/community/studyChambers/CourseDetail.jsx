@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { ChevronRight, Clock, Video } from 'lucide-react';
+import { ChevronRight, Clock, Video, Download, FileText, Music, BookOpen, CheckCircle } from 'lucide-react';
 import { selectCurrentUser } from '../../../redux/slices/authSlice';
 import {
   useGetCourseQuery,
@@ -22,6 +22,7 @@ export const CourseDetail = () => {
   const { data: course, isLoading } = useGetCourseQuery(courseId);
   const [requestJoin, { isLoading: isRequesting }] = useRequestToJoinCourseMutation();
   const [cancelJoin, { isLoading: isCancelling }] = useCancelJoinRequestMutation();
+  const [downloadingId, setDownloadingId] = React.useState(null);
 
   const enrollmentState = getEnrollmentState(course, user);
 
@@ -41,6 +42,53 @@ export const CourseDetail = () => {
     }
   };
 
+  const handleDownloadMaterial = (material) => {
+    setDownloadingId(material.id);
+
+    // If material has a direct public fileUrl, download that file
+    if (material.fileUrl) {
+      const link = document.createElement('a');
+      link.href = material.fileUrl;
+      link.download = material.filename || material.fileUrl.split('/').pop() || `${material.title}.txt`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      // Fallback: create a downloadable text file with material contents
+      const content = `=====================================================
+${material.title.toUpperCase()}
+Study Chamber Material
+Type: ${material.type.toUpperCase()} | File Size: ${material.size}
+=====================================================
+
+Description:
+${material.description}
+
+Chamber Notes & Guidance:
+- Focus on lyrical cadence, poetic stress, and emotional resonance.
+- Reference this parchment during live cohort lectures and group seminars.
+- For discussions, consult fellow scholars in the Chamber Chat sanctuary.
+
+[Archived by The Study Chambers - SVA Community Guild]
+`;
+
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      const filename = `${material.title.toLowerCase().replace(/[^a-z0-9]+/g, '_')}.${material.type === 'audio' ? 'mp3' : 'txt'}`;
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+
+    setTimeout(() => {
+      setDownloadingId(null);
+    }, 1200);
+  };
+
   if (isLoading) {
     return (
       <div className="w-full max-w-[1200px] mx-auto space-y-6 my-4 px-2 sm:px-0">
@@ -56,6 +104,37 @@ export const CourseDetail = () => {
     title: 'Hello from Chittagong! Singer + beginner lyricist here',
     description:
       'I’ve been thinking about the moment when a technically accurate translation stops feeling musical. Is it the loss of rhythm, the shape of the vowels, or something less measurable?\nWhen you translate lyrics, which part do you protect first—and what are you willing to let change?',
+    classDescription:
+      'In this chamber, we examine classical romance boleros through acoustic phrasing, syntactic mood transitions, and rhythm-locked vowel shapes. Scholars will dissect grammatical mood triggers, harmonize phonetic flow with cadence, and practice lyrical translation preserving emotional authenticity.',
+    studyMaterials: [
+      {
+        id: 'mat-1',
+        title: 'Every Path Russian Lesson',
+        type: 'text',
+        size: '9.5 KB',
+        filename: 'Every_Path_Russian_Lesson.txt',
+        fileUrl: '/Every_Path_Russian_Lesson.txt',
+        description: 'Comprehensive guided lesson breakdown detailing acoustic translation, metric poetry, and lyrical line-by-line Russian study.',
+      },
+      {
+        id: 'mat-2',
+        title: 'Every Path Russian Grammar & Pronunciation Breakdown',
+        type: 'text',
+        size: '21.5 KB',
+        filename: 'Every_Path_Russian_Grammar_and_Pronunciation_Breakdown.txt',
+        fileUrl: '/Every_Path_Russian_Grammar_and_Pronunciation_Breakdown.txt',
+        description: 'Deep phonetic reference scroll examining vowel mutations, pitch accents, soft consonants, and grammatical case mechanics.',
+      },
+      {
+        id: 'mat-3',
+        title: 'Every Path Auditory Cadence & Song Archive',
+        type: 'audio',
+        size: '6.7 MB',
+        filename: 'Every Path (2).mp3',
+        fileUrl: '/Every Path (2).mp3',
+        description: 'Master acoustic recording highlighting vocal cadence, rhythmic flow, and authentic musical accentuation.',
+      },
+    ],
     language: 'Spanish',
     level: 'Pitch accent',
     enrolledCount: 1,
@@ -109,6 +188,44 @@ export const CourseDetail = () => {
   const isPending = enrollmentState === ENROLLMENT_STATE.PENDING;
   const isOwner = enrollmentState === ENROLLMENT_STATE.OWNER;
   const isApproved = enrollmentState === ENROLLMENT_STATE.APPROVED;
+
+  // Study Materials & Class Description fallback resolution
+  const classOverview =
+    currentCourse.classDescription ||
+    currentCourse.description ||
+    'In this chamber, we examine classical romance boleros through acoustic phrasing, syntactic mood transitions, and rhythm-locked vowel shapes. Scholars will dissect grammatical mood triggers, harmonize phonetic flow with cadence, and practice lyrical translation preserving emotional authenticity.';
+
+  const materials = currentCourse.studyMaterials && currentCourse.studyMaterials.length > 0
+    ? currentCourse.studyMaterials
+    : [
+        {
+          id: 'mat-1',
+          title: 'Every Path Russian Lesson',
+          type: 'text',
+          size: '9.5 KB',
+          filename: 'Every_Path_Russian_Lesson.txt',
+          fileUrl: '/Every_Path_Russian_Lesson.txt',
+          description: 'Comprehensive guided lesson breakdown detailing acoustic translation, metric poetry, and lyrical line-by-line Russian study.',
+        },
+        {
+          id: 'mat-2',
+          title: 'Every Path Russian Grammar & Pronunciation Breakdown',
+          type: 'text',
+          size: '21.5 KB',
+          filename: 'Every_Path_Russian_Grammar_and_Pronunciation_Breakdown.txt',
+          fileUrl: '/Every_Path_Russian_Grammar_and_Pronunciation_Breakdown.txt',
+          description: 'Deep phonetic reference scroll examining vowel mutations, pitch accents, soft consonants, and grammatical case mechanics.',
+        },
+        {
+          id: 'mat-3',
+          title: 'Every Path Auditory Cadence & Song Archive',
+          type: 'audio',
+          size: '6.7 MB',
+          filename: 'Every Path (2).mp3',
+          fileUrl: '/Every Path (2).mp3',
+          description: 'Master acoustic recording highlighting vocal cadence, rhythmic flow, and authentic musical accentuation.',
+        },
+      ];
 
   return (
     <div className="w-full max-w-[1200px] mx-auto flex flex-col justify-start items-start gap-8 my-2 px-2 sm:px-0">
@@ -231,7 +348,112 @@ export const CourseDetail = () => {
           </div>
         </div>
 
-        {/* 3. Bottom Row: Upcoming Session + Join This Chamber */}
+        {/* 3. Study Materials & Class Description Section */}
+        <div className="w-full p-5 sm:p-6 bg-[#B49167]/30 border border-[#B49167]/50 flex flex-col justify-start items-start gap-6 shadow-sm">
+          {/* Section Header */}
+          <div className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-4 border-b border-white/20">
+            <div className="flex items-center gap-2.5">
+              <BookOpen size={22} className="text-white shrink-0" />
+              <h3 className="text-white text-xl sm:text-2xl font-normal font-MetalMania tracking-wide">
+                Class Description & Study Materials
+              </h3>
+            </div>
+            <div className="px-2.5 py-1 border border-white/60 flex items-center justify-center">
+              <span className="text-white/80 text-xs font-normal font-Merriweather">
+                {materials.length} Parchments Available
+              </span>
+            </div>
+          </div>
+
+          {/* Class Detailed Description */}
+          <div className="w-full flex flex-col items-start gap-2">
+            <span className="text-white/80 text-xs uppercase tracking-wider font-semibold font-Merriweather">
+              Chamber Overview & Curriculum
+            </span>
+            <p className="text-white text-xs sm:text-sm font-normal font-Merriweather leading-relaxed whitespace-pre-wrap max-w-5xl">
+              {classOverview}
+            </p>
+          </div>
+
+          {/* Study Materials List */}
+          <div className="w-full flex flex-col items-start gap-3 pt-2">
+            <span className="text-white/80 text-xs uppercase tracking-wider font-semibold font-Merriweather">
+              Downloadable Parchments & Audio Archives
+            </span>
+
+            <div className="w-full flex flex-col gap-3">
+              {materials.map((mat) => {
+                const isDownloading = downloadingId === mat.id;
+                const isAudio = mat.type === 'audio';
+
+                return (
+                  <div
+                    key={mat.id}
+                    className="w-full p-4 sm:p-5 bg-black/20 hover:bg-black/30 border border-white/30 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+                  >
+                    {/* Left: Type Icon + Title + Meta + Description */}
+                    <div className="flex items-start gap-3.5 flex-1">
+                      <div className="w-10 h-10 bg-white/10 border border-white/40 rounded-xs flex items-center justify-center shrink-0 mt-0.5">
+                        {isAudio ? (
+                          <Music size={18} className="text-amber-200" />
+                        ) : (
+                          <FileText size={18} className="text-white" />
+                        )}
+                      </div>
+
+                      <div className="flex flex-col items-start gap-1 text-left">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h4 className="text-white text-sm sm:text-base font-normal font-Merriweather leading-snug">
+                            {mat.title}
+                          </h4>
+                          <span className="px-1.5 py-0.5 text-[10px] uppercase font-sans font-medium tracking-wide bg-white/20 text-white rounded-xs border border-white/40">
+                            {mat.type}
+                          </span>
+                          <span className="text-white/60 text-xs font-Merriweather">
+                            {mat.size}
+                          </span>
+                        </div>
+                        <p className="text-white/80 text-xs font-normal font-Merriweather leading-relaxed max-w-3xl">
+                          {mat.description}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Right: Ornate Download Button */}
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadMaterial(mat)}
+                      disabled={isDownloading}
+                      className="relative group w-32 sm:w-36 h-9 sm:h-10 flex items-center justify-center cursor-pointer select-none transition-transform duration-150 active:scale-95 bg-white shrink-0 rounded-xs self-start sm:self-center"
+                    >
+                      <img
+                        src={buttonBorderSecondary}
+                        alt=""
+                        className="absolute inset-0 w-full h-full object-fill pointer-events-none drop-shadow-xs"
+                      />
+                      <span className="relative z-10 inline-flex items-center gap-1.5 text-neutral-950 text-xs sm:text-sm font-normal font-Merriweather leading-none">
+                        {isDownloading ? (
+                          <>
+                            <CheckCircle size={14} className="text-emerald-700 shrink-0" />
+                            <span>Saved</span>
+                          </>
+                        ) : (
+                          <>
+                            <Download size={14} className="text-neutral-950 group-hover:translate-y-0.5 transition-transform shrink-0" />
+                            <span>Download</span>
+                          </>
+                        )}
+                      </span>
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+
+        {/* 4. Bottom Row: Upcoming Session + Join This Chamber */}
         <div className="w-full flex flex-col lg:flex-row items-stretch gap-6">
           {/* Left: Upcoming Session Card */}
           <div className="flex-1 p-5 sm:p-6 bg-[#B49167]/30 border border-[#B49167]/50 flex flex-col justify-between items-start gap-4 shadow-sm">

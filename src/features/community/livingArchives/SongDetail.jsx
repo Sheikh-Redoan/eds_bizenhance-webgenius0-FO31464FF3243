@@ -13,74 +13,236 @@ export const SongDetail = () => {
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedVersionIndex, setSelectedVersionIndex] = useState(0);
+  const [isDownloaded, setIsDownloaded] = useState(false);
 
-  // Version history data matching Figma demo
-  const versionHistory = [
-    {
-      version: 'Version 1.3',
-      label: 'Latest approved revision',
-      date: '14 Jun 2025',
-      lyrics: [
-        'Cuando el alba toca el río,',
-        'y despierta el viejo sol,',
-        'llevo historias en el viento,',
-        'llevo el mundo en mi canción.',
-        '',
-        'Que la voz cruce los montes,',
-        'que la lengua guarde el mar,',
-        'cada verso es una puerta,',
-        'cada nombre, un nuevo hogar.',
-      ],
-    },
-    {
-      version: 'Version 1.2',
-      label: 'Linguistic correction',
-      date: '14 Jun 2025',
-      lyrics: [
-        'Cuando el alba toca el río,',
-        'y despierta el viejo sol,',
-        'llevo historias en el viento,',
-        'llevo el mundo en mi canción.',
-        '',
-        'Que la voz cruce los montes,',
-        'que la lengua cuide el mar,',
-        'cada verso es una puerta,',
-        'cada nombre, un nuevo hogar.',
-      ],
-    },
-    {
-      version: 'Version 1.1',
-      label: 'Translation correction',
-      date: '14 Jun 2025',
-      lyrics: [
-        'Cuando el alba toca el río,',
-        'y despierta el claro sol,',
-        'llevo historias en el viento,',
-        'llevo el alma en mi canción.',
-        '',
-        'Que la voz cruce las cumbres,',
-        'que la lengua guarde el mar,',
-        'cada verso abre una puerta,',
-        'cada nombre, un nuevo hogar.',
-      ],
-    },
-    {
-      version: 'Version 1.0',
-      label: 'Original archive version',
-      date: '14 Jun 2025',
-      lyrics: [
-        'Cuando el alba toca el río,',
-        'y despierta el gran sol,',
-        'llevo historias en el viento,',
-        'llevo el mundo en mi canción.',
-        '',
-        'Que la voz cruce los montes,',
-        'que la voz guarde el mar,',
-        'cada verso es una senda,',
-        'cada nombre, un nuevo hogar.',
-      ],
-    },
-  ];
+  // Version history data matching Every Path Russian Song
+  const isRussianSong = song?.language === 'Russian' || songId === 'song-1';
+
+  const versionHistory = isRussianSong
+    ? [
+        {
+          version: 'Version 2.1',
+          label: 'Acoustic metric translation (Complete)',
+          date: '24 Oct 2026',
+          lyrics: [
+            'Here we are standing on the hill',
+            'Мы стоим здесь, на вершине холма',
+            '',
+            'There you go walking towards the end',
+            'А ты идёшь вперёд, к самому концу',
+            '',
+            'When they see how long the road is',
+            'Когда они видят, какая длинная дорога',
+            '',
+            'Now they run left and right',
+            'Теперь они бегут то влево, то вправо',
+            '',
+            'Sprinting back to the beginning',
+            'Снова бегут к началу',
+            '',
+            'Every Path Circles back to the start',
+            'Каждый путь снова приводит к началу',
+            '',
+            'Come with me to journey forward',
+            'Пойдём со мной, продолжим путь вперёд',
+            '',
+            'Come with me to see it till the end',
+            'Пойдём со мной, дойдём до самого конца',
+            '',
+            'Come with me to feel the road',
+            'Пойдём со мной, почувствуем дорогу',
+            '',
+            'Come with me to explore the streets',
+            'Пойдём со мной, исследуем улицы',
+            '',
+            'Come with me to journey on',
+            'Пойдём со мной, продолжим путь',
+            '',
+            'Every Path Circles back to the start',
+            'Каждый путь снова приводит к началу',
+            '',
+            'Cars are rushing down the road',
+            'Машины мчатся по дороге',
+            '',
+            'Buses are stopping and slowing down',
+            'Автобусы останавливаются и замедляют ход',
+            '',
+            'Trains are moving straight on the tracks',
+            'Поезда идут прямо по рельсам',
+            '',
+            'Planes are flying in the sky above',
+            'Самолёты летят высоко в небе',
+            '',
+            'Boats are floating on in the waters',
+            'Лодки плывут дальше по воде',
+            '',
+            'Every Path Circles back to the start',
+            'Каждый путь снова приводит к началу',
+            '',
+            'Up and down, up and down, up and down you go',
+            'Вверх и вниз, вверх и вниз, вверх и вниз идёшь',
+            '',
+            'Up and down, up and down, up and down you go',
+            'Вверх и вниз, вверх и вниз, вверх и вниз идёшь',
+            '',
+            'Up and down, up and down, up and down you go',
+            'Вверх и вниз, вверх и вниз, вверх и вниз идёшь',
+            '',
+            'Every Path Circles back to the start',
+            'Каждый путь снова приводит к началу',
+            '',
+            'Мы стоим здесь, на вершине холма',
+            'Here we are standing on the hill',
+            '',
+            'А ты идёшь вперёд, к самому концу',
+            'There you go walking towards the end',
+            '',
+            'Когда они видят, какая длинная дорога',
+            'When they see how long the road is',
+            '',
+            'Теперь они бегут то влево, то вправо',
+            'Now they run left and right',
+            '',
+            'Снова бегут к началу',
+            'Sprinting back to the beginning',
+            '',
+            'Каждый путь снова приводит к началу',
+            'Every Path Circles back to the start',
+            '',
+            'Пойдём со мной, продолжим путь вперёд',
+            'Come with me to journey forward',
+            '',
+            'Пойдём со мной, дойдём до самого конца',
+            'Come with me to see it till the end',
+            '',
+            'Пойдём со мной, почувствуем дорогу',
+            'Come with me to feel the road',
+            '',
+            'Пойдём со мной, исследуем улицы',
+            'Come with me to explore the streets',
+            '',
+            'Пойдём со мной, продолжим путь',
+            'Come with me to journey on',
+            '',
+            'Спасибо, что прошёл этот путь со мной',
+            'Thank you for walking this path with me',
+            '',
+            'Давай пройдём этот путь вместе снова',
+            "Let's make this journey together again",
+          ],
+        },
+        {
+          version: 'Version 2.0',
+          label: 'Vehicle and journey stanza breakdown',
+          date: '20 Oct 2026',
+          lyrics: [
+            'Cars are rushing down the road',
+            'Машины мчатся по дороге',
+            '',
+            'Buses are stopping and slowing down',
+            'Автобусы останавливаются и замедляют ход',
+            '',
+            'Trains are moving straight on the tracks',
+            'Поезда идут прямо по рельсам',
+            '',
+            'Planes are flying in the sky above',
+            'Самолёты летят высоко в небе',
+            '',
+            'Boats are floating on in the waters',
+            'Лодки плывут дальше по воде',
+            '',
+            'Every Path Circles back to the start',
+            'Каждый путь снова приводит к началу',
+            '',
+            'Спасибо, что прошёл этот путь со мной',
+            'Thank you for walking this path with me',
+          ],
+        },
+        {
+          version: 'Version 1.0',
+          label: 'Original journey manuscript',
+          date: '15 Oct 2026',
+          lyrics: [
+            'Here we are standing on the hill',
+            'Мы стоим здесь, на вершине холма',
+            '',
+            'There you go walking towards the end',
+            'А ты идёшь вперёд, к самому концу',
+            '',
+            'Every Path Circles back to the start',
+            'Каждый путь снова приводит к началу',
+            '',
+            'Давай пройдём этот путь вместе снова',
+            "Let's make this journey together again",
+          ],
+        },
+      ]
+    : [
+        {
+          version: 'Version 1.3',
+          label: 'Latest approved revision',
+          date: '14 Jun 2025',
+          lyrics: [
+            'Cuando el alba toca el río,',
+            'y despierta el viejo sol,',
+            'llevo historias en el viento,',
+            'llevo el mundo en mi canción.',
+            '',
+            'Que la voz cruce los montes,',
+            'que la lengua guarde el mar,',
+            'cada verso es una puerta,',
+            'cada nombre, un nuevo hogar.',
+          ],
+        },
+        {
+          version: 'Version 1.2',
+          label: 'Linguistic correction',
+          date: '14 Jun 2025',
+          lyrics: [
+            'Cuando el alba toca el río,',
+            'y despierta el viejo sol,',
+            'llevo historias en el viento,',
+            'llevo el mundo en mi canción.',
+            '',
+            'Que la voz cruce los montes,',
+            'que la lengua cuide el mar,',
+            'cada verso es una puerta,',
+            'cada nombre, un nuevo hogar.',
+          ],
+        },
+        {
+          version: 'Version 1.1',
+          label: 'Translation correction',
+          date: '14 Jun 2025',
+          lyrics: [
+            'Cuando el alba toca el río,',
+            'y despierta el claro sol,',
+            'llevo historias en el viento,',
+            'llevo el alma en mi canción.',
+            '',
+            'Que la voz cruce las cumbres,',
+            'que la lengua guarde el mar,',
+            'cada verso abre una puerta,',
+            'cada nombre, un nuevo hogar.',
+          ],
+        },
+        {
+          version: 'Version 1.0',
+          label: 'Original archive version',
+          date: '14 Jun 2025',
+          lyrics: [
+            'Cuando el alba toca el río,',
+            'y despierta el gran sol,',
+            'llevo historias en el viento,',
+            'llevo el mundo en mi canción.',
+            '',
+            'Que la voz cruce los montes,',
+            'que la voz guarde el mar,',
+            'cada verso es una senda,',
+            'cada nombre, un nuevo hogar.',
+          ],
+        },
+      ];
 
   // Contributors matching Figma demo
   const contributors = [
@@ -107,7 +269,20 @@ export const SongDetail = () => {
   const currentVersionData = versionHistory[selectedVersionIndex] || versionHistory[0];
 
   const handleDownload = () => {
-    alert(`Downloading manuscript scroll for "${song?.title || 'Canto del Alba'}" (${currentVersionData.version})...`);
+    const downloadUrl = song?.audioFile || '/Every Path (2).mp3';
+    const filename = song?.filename || 'Every Path (2).mp3';
+
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    setIsDownloaded(true);
+    setTimeout(() => {
+      setIsDownloaded(false);
+    }, 1500);
   };
 
   return (
@@ -223,7 +398,16 @@ export const SongDetail = () => {
                   alt="button border"
                   className="absolute inset-0 w-full h-full pointer-events-none object-fill"
                 />
-                <span className="relative z-10">Download</span>
+                <span className="relative z-10 inline-flex items-center gap-2">
+                  {isDownloaded ? (
+                    <>
+                      <CheckCircle2 size={16} className="text-emerald-700" />
+                      <span>Downloaded</span>
+                    </>
+                  ) : (
+                    <span>Download</span>
+                  )}
+                </span>
               </button>
             </div>
           </div>
