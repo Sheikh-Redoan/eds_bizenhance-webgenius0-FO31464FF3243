@@ -1,6 +1,5 @@
 import { baseApi } from './baseApi';
 import {
-  MOCK_POSTS,
   MOCK_THREADS,
   MOCK_COURSES,
   MOCK_CONTESTS,
@@ -9,18 +8,21 @@ import {
 
 export const communityApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    // Guild Gate Posts
+    // ── Guild Gate ──────────────────────────────────────────────────────────
+    getCategories: builder.query({
+      query: () => '/community-categories',
+      transformResponse: (res) => res.data,
+      providesTags: ['CommunityCategory'],
+    }),
+
     getPosts: builder.query({
-      queryFn: async ({ category, tag } = {}) => {
-        let results = [...MOCK_POSTS];
-        if (category && category !== 'All') {
-          results = results.filter((p) => p.category.toLowerCase() === category.toLowerCase());
-        }
-        if (tag) {
-          results = results.filter((p) => p.tags.includes(tag));
-        }
-        return { data: results };
+      query: ({ category_id, sort = 'latest', search, per_page = 10, page = 1 } = {}) => {
+        const params = { sort, per_page, page };
+        if (category_id) params.category_id = category_id;
+        if (search) params.search = search;
+        return { url: '/community-posts', params };
       },
+      transformResponse: (res) => res.data,
       providesTags: (result) =>
         result
           ? [...result.map(({ id }) => ({ type: 'Post', id })), { type: 'Post', id: 'LIST' }]
@@ -28,27 +30,88 @@ export const communityApi = baseApi.injectEndpoints({
     }),
 
     getPost: builder.query({
-      queryFn: async (postId) => {
-        const post = MOCK_POSTS.find((p) => p.id === postId) || MOCK_POSTS[0];
-        return { data: post };
-      },
+      query: (postId) => `/community-post/${postId}`,
+      transformResponse: (res) => res.data,
       providesTags: (result, error, id) => [{ type: 'Post', id }],
     }),
 
     createPost: builder.mutation({
-      queryFn: async (newPost) => {
-        const created = {
-          ...newPost,
-          id: `post-${Date.now()}`,
-          views: 1,
-          repliesCount: 0,
-          likes: 0,
-          createdAt: new Date().toISOString(),
-        };
-        MOCK_POSTS.unshift(created);
-        return { data: created };
-      },
+      query: (formData) => ({
+        url: '/community-post/create',
+        method: 'POST',
+        body: formData,
+      }),
+      transformResponse: (res) => res.data,
       invalidatesTags: [{ type: 'Post', id: 'LIST' }],
+    }),
+
+    updatePost: builder.mutation({
+      query: ({ id, formData }) => ({
+        url: `/community-post/update/${id}`,
+        method: 'POST',
+        body: formData,
+      }),
+      transformResponse: (res) => res.data,
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'Post', id },
+        { type: 'Post', id: 'LIST' },
+      ],
+    }),
+
+    deletePost: builder.mutation({
+      query: (postId) => ({
+        url: `/community-post/delete/${postId}`,
+        method: 'POST',
+      }),
+      invalidatesTags: [{ type: 'Post', id: 'LIST' }],
+    }),
+
+    likePost: builder.mutation({
+      query: (postId) => ({
+        url: `/community-post/like/${postId}`,
+        method: 'POST',
+      }),
+      transformResponse: (res) => res.data,
+      invalidatesTags: (result, error, postId) => [{ type: 'Post', id: postId }],
+    }),
+
+    addComment: builder.mutation({
+      query: ({ postId, content, parent_id = null }) => ({
+        url: `/community-post/comment/${postId}`,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content, parent_id }),
+      }),
+      transformResponse: (res) => res.data,
+      invalidatesTags: (result, error, { postId }) => [{ type: 'Post', id: postId }],
+    }),
+
+    updateComment: builder.mutation({
+      query: ({ commentId, content }) => ({
+        url: `/community-post/comment/update/${commentId}`,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content }),
+      }),
+      transformResponse: (res) => res.data,
+      invalidatesTags: [{ type: 'Reply' }],
+    }),
+
+    deleteComment: builder.mutation({
+      query: (commentId) => ({
+        url: `/community-post/comment/delete/${commentId}`,
+        method: 'POST',
+      }),
+      invalidatesTags: [{ type: 'Reply' }],
+    }),
+
+    likeComment: builder.mutation({
+      query: (commentId) => ({
+        url: `/community-post/comment/like/${commentId}`,
+        method: 'POST',
+      }),
+      transformResponse: (res) => res.data,
+      invalidatesTags: [{ type: 'Reply' }],
     }),
 
     // Wing-Scoped Thread Engine
@@ -199,9 +262,17 @@ export const communityApi = baseApi.injectEndpoints({
 });
 
 export const {
+  useGetCategoriesQuery,
   useGetPostsQuery,
   useGetPostQuery,
   useCreatePostMutation,
+  useUpdatePostMutation,
+  useDeletePostMutation,
+  useLikePostMutation,
+  useAddCommentMutation,
+  useUpdateCommentMutation,
+  useDeleteCommentMutation,
+  useLikeCommentMutation,
   useGetThreadsQuery,
   useGetThreadQuery,
   useCreateThreadMutation,

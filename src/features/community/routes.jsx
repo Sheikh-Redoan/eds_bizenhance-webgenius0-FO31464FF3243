@@ -14,6 +14,7 @@ const GuildHall = lazy(() => import('./guildHall/GuildHall'));
 const GuildGate = lazy(() => import('./guildGate/GuildGate'));
 const NewPost = lazy(() => import('./guildGate/NewPost'));
 const PostDetail = lazy(() => import('./guildGate/PostDetail'));
+const EditPost = lazy(() => import('./guildGate/EditPost'));
 
 // Study Chambers
 const StudyChambers = lazy(() => import('./studyChambers/StudyChambers'));
@@ -74,6 +75,7 @@ export const CommunityRoutes = () => {
           <Route path="guild-gate" element={<RouteAuth><GuildGate /></RouteAuth>} />
           <Route path="guild-gate/new" element={<RouteAuth><NewPost /></RouteAuth>} />
           <Route path="guild-gate/posts/:postId" element={<RouteAuth><PostDetail /></RouteAuth>} />
+          <Route path="guild-gate/posts/:postId/edit" element={<RouteAuth><EditPost /></RouteAuth>} />
 
           {/* Study Chambers */}
           <Route path="study-chambers" element={<RouteAuth><StudyChambers /></RouteAuth>} />

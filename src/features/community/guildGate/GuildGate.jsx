@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { ChevronRight } from 'lucide-react';
-import { useGetPostsQuery } from '../../../redux/api/communityApi';
+import { selectCurrentUser } from '../../../redux/slices/authSlice';
+import { useGetPostsQuery, useGetCategoriesQuery } from '../../../redux/api/communityApi';
 import PostCard from './components/PostCard';
 import Skeleton from '../../../components/ui/Skeleton';
 import EmptyState from '../../../components/ui/EmptyState';
@@ -10,47 +12,29 @@ import guildGateBannerImg from '../../../assets/images/guild_gate.jpg';
 
 export const GuildGate = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('LATEST');
+  const currentUser = useSelector(selectCurrentUser);
+  const currentUserId = currentUser?.id;
+  const [activeCategoryId, setActiveCategoryId] = useState('all');
 
-  const { data: posts = [], isLoading } = useGetPostsQuery({
-    category: activeTab === 'LATEST' ? 'All' : activeTab,
-  });
+  const { data: categories = [], isLoading: isCategoriesLoading } = useGetCategoriesQuery();
+
+  const queryArg = activeCategoryId === 'all' || activeCategoryId === 'mine'
+    ? {}
+    : { category_id: activeCategoryId };
+
+  const { data: allPosts = [], isLoading: isPostsLoading } = useGetPostsQuery(queryArg);
+
+  const posts = activeCategoryId === 'mine'
+    ? allPosts.filter((p) => p.user_id === currentUserId || p.user?.id === currentUserId)
+    : allPosts;
+
+  const isLoading = isCategoriesLoading || isPostsLoading;
 
   const tabs = [
-    { id: 'LATEST', label: 'LATEST' },
-    { id: 'General Discussion', label: 'General Discussion' },
-    { id: 'Introductions', label: 'Introductions' },
-    { id: 'Language & Translation', label: 'Language & Translation' },
+    { id: 'all', label: 'LATEST' },
+    ...categories.map((cat) => ({ id: cat.id, label: cat.name })),
+    { id: 'mine', label: 'MY POSTS' },
   ];
-
-  const filteredPosts = posts.filter((p) => {
-    if (activeTab === 'LATEST') return true;
-    if (activeTab === 'General Discussion') {
-      return (
-        p.category === 'General Discussion' ||
-        p.category === 'Analysis' ||
-        p.category === 'Announcements'
-      );
-    }
-    if (activeTab === 'Introductions') {
-      return (
-        p.category === 'Introductions' ||
-        (p.tags || []).some((t) => t.toLowerCase().includes('intro'))
-      );
-    }
-    if (activeTab === 'Language & Translation') {
-      return (
-        p.category === 'Questions' ||
-        p.category === 'Analysis' ||
-        (p.tags || []).some((t) =>
-          ['korean', 'french', 'spanish', 'grammar', 'translation', 'language'].some((k) =>
-            t.toLowerCase().includes(k)
-          )
-        )
-      );
-    }
-    return true;
-  });
 
   return (
     <div className="w-full max-w-6xl mx-auto flex flex-col justify-start items-start gap-8 my-2">
@@ -73,7 +57,6 @@ export const GuildGate = () => {
 
       {/* 2. Panoramic Banner Card */}
       <div className="w-full h-48 sm:h-56 relative rounded-sm overflow-hidden outline outline-[3px] outline-offset-[-3px] outline-stone-400/80 shadow-2xl">
-        {/* Background Image with Dark Gradient Overlay */}
         <img
           src={guildGateBannerImg}
           alt="The Guild Gate"
@@ -81,7 +64,6 @@ export const GuildGate = () => {
         />
         <div className="w-full h-full absolute inset-0 bg-gradient-to-r from-black/90 via-black/55 to-black/30 border-2 border-white/20" />
 
-        {/* Banner Text Content */}
         <div className="relative z-10 w-full h-full px-6 sm:px-8 py-6 sm:py-8 flex flex-col justify-end items-start gap-1 text-left">
           <h1 className="text-white text-3xl sm:text-5xl font-normal font-OldLondon leading-[1.1] tracking-wide drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
             The Guild Gate
@@ -105,7 +87,6 @@ export const GuildGate = () => {
             </p>
           </div>
 
-          {/* Ornate Button: CREATE NEW POST */}
           <button
             type="button"
             onClick={() => navigate('/community/guild-gate/new')}
@@ -124,14 +105,14 @@ export const GuildGate = () => {
         </div>
 
         {/* 4. Tab Strip */}
-        <div className="w-full border-b border-stone-400/40 flex items-end overflow-x-auto no-scrollbar">
+        <div className="w-full border-b border-stone-400/40 flex items-end">
           {tabs.map((tab) => {
-            const isActive = activeTab === tab.id;
+            const isActive = activeCategoryId === tab.id;
             return (
               <button
-                key={tab.id}
+                key={String(tab.id)}
                 type="button"
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => setActiveCategoryId(tab.id)}
                 className={`px-4 sm:px-6 py-3 font-Merriweather text-sm sm:text-base cursor-pointer whitespace-nowrap transition-colors border-b-2 -mb-[2px] ${
                   isActive
                     ? 'text-white border-stone-300 font-semibold'
@@ -151,7 +132,7 @@ export const GuildGate = () => {
             <Skeleton variant="card" className="h-36" />
             <Skeleton variant="card" className="h-36" />
           </div>
-        ) : filteredPosts.length === 0 ? (
+        ) : posts.length === 0 ? (
           <div className="w-full py-8">
             <EmptyState
               title="No conversations yet"
@@ -162,8 +143,8 @@ export const GuildGate = () => {
           </div>
         ) : (
           <div className="w-full flex flex-col gap-4 sm:gap-5 pt-1">
-            {filteredPosts.map((post) => (
-              <PostCard key={post.id} post={post} />
+            {posts.map((post) => (
+              <PostCard key={post.id} post={post} currentUserId={currentUserId} />
             ))}
           </div>
         )}

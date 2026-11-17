@@ -15,7 +15,7 @@ export const baseApi = createApi({
   }),
   tagTypes: [
     "Auth", "User", "Language", "Category", "Song", "SongDetails", "Dashboard", "Plans", "FunFact",
-    "Post", "Thread", "Course", "Contest", "Enrollment", "Session", "Reply"
+    "Post", "Thread", "Course", "Contest", "Enrollment", "Session", "Reply", "CommunityCategory"
   ],
   endpoints: () => ({}),
 });
